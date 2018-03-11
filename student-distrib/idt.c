@@ -37,14 +37,14 @@ void BR()
 {
 	cli();
 	printf(" Bound Range Exceedded error \n" );
-	while(1)
+	while(1);
 }
 
 void UD()
 {
 	cli();
 	printf(" Invalid Opcode \n" );
-	while(1)
+	while(1);
 }
 
 void NM()
@@ -154,7 +154,7 @@ void unknown()
 void init_idt()
 {
 	int i;
-	void *idt_interrupts = {DE,DB,NMI,BP,OF,BR,UD,NM,DF,CSO,TS,NP,SS,GP,PF,IntelR,MF,AC,MC,XF,Sys_Error,unknown}; // firt 19 interrupts 
+	void *idt_interrupts[22] = {DE,DB,NMI,BP,OF,BR,UD,NM,DF,CSO,TS,NP,SS,GP,PF,IntelR,MF,AC,MC,XF,Sys_Error,unknown}; // firt 19 interrupts 
 	//notice that the 15th one is some intel reserved interrupt I will just keep an intel reserved error
 	//kept an unknown function pointer in the 
 	for (i = 0; i < NUM_VEC; ++i)

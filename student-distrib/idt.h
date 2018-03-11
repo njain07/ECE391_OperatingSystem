@@ -3,7 +3,7 @@
 
 //importing files
 #include "x86_desc.h"
-
+#include "lib.h"
 // Initalising the IDT
 void init_idt();
 
@@ -17,7 +17,7 @@ void BR();
 void UD();
 void NM();
 void DF();
-void CSO()
+void CSO();
 void TS();
 void NP();
 void SS();
