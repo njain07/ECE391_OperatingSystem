@@ -1,5 +1,5 @@
-#ifnded _ITD_H
-#define _IDIT_H
+#ifndef _IDT_H
+#define _IDT_H
 
 //importing files
 #include "x86_desc.h"
@@ -26,7 +26,7 @@ void PF();
 void IntelR();
 void MF();
 void AC();
-void MC()
+void MC();
 void XF();
 void Sys_Error();
 void unknown();

@@ -1,32 +1,5 @@
 #include "idt.h"
 
-void init_idt(){
-int i;
-void *idt_interrupts = {DE,DB,NMI,BP,OF,BR,UD,NM,DF,CSO,TS,NP,SS,GP,PF,IntelR,MF,AC,MC,XF,Sys_Error,unknown} // firt 19 interrupts 
-//notice that the 15th one is some intel reserved interrupt I will just keep an intel reserved error
-//kept an unknown function pointer in the 
-for (i = 0; i < NUM_VEC; ++i)
-	{
-		idt[i].seg_selector = KERNEL_CS;
-		idt[i].reserved3 = 0;
-		idt[i].reserved2 = 1;
-		idt[i].reserved1 = 1; // theese three lines initialises the entry to be that of an interrupt gate since they are all 32 bits
-		idt[i].reserved0 = 0; 
-		idt[i].dpl = 0;
-		if( i == 0x80) 		//remember to magic number this one
-			idt[i].dpl = 3;
-		idt[i].present = 0;  // set to zero to show it is unused interrupt
-		
-if (i < 20)
-	SET_IDT_ENTRY(idt[i],idt_interrupts[i]);
-else if i == 0x80
-	SET_IDT_ENTRY(idt[i],idt_interrupts[20]); // if this doesnt work try SET_IDT_ENTRY(idt[i],*Sys_Error);
-else
-	SET_IDT_ENTRY(idt[i],idt_interrupts[21]); // if this doesnt work try SET_IDT_ENTRY(idt[i],*unknown);
-// note that we cold change the if else if to add more interrupts when needed 
-}
-}
-
 void DE()
 {
 	cli();
@@ -176,4 +149,32 @@ void unknown()
 	cli();
 	printf(" unknown error\n" );
 	while(1);
+}
+
+void init_idt()
+{
+	int i;
+	void *idt_interrupts = {DE,DB,NMI,BP,OF,BR,UD,NM,DF,CSO,TS,NP,SS,GP,PF,IntelR,MF,AC,MC,XF,Sys_Error,unknown}; // firt 19 interrupts 
+	//notice that the 15th one is some intel reserved interrupt I will just keep an intel reserved error
+	//kept an unknown function pointer in the 
+	for (i = 0; i < NUM_VEC; ++i)
+		{
+			idt[i].seg_selector = KERNEL_CS;
+			idt[i].reserved3 = 0;
+			idt[i].reserved2 = 1;
+			idt[i].reserved1 = 1; // theese three lines initialises the entry to be that of an interrupt gate since they are all 32 bits
+			idt[i].reserved0 = 0; 
+			idt[i].dpl = 0;
+			if( i == 0x80) 		//remember to magic number this one
+				idt[i].dpl = 3;
+			idt[i].present = 0;  // set to zero to show it is unused interrupt
+			
+			if (i < 20)
+				SET_IDT_ENTRY(idt[i],idt_interrupts[i]);
+			else if (i == 0x80)
+				SET_IDT_ENTRY(idt[i],idt_interrupts[20]); // if this doesnt work try SET_IDT_ENTRY(idt[i],*Sys_Error);
+			else
+				SET_IDT_ENTRY(idt[i],idt_interrupts[21]); // if this doesnt work try SET_IDT_ENTRY(idt[i],*unknown);
+			// note that we cold change the if else if to add more interrupts when needed 
+		}
 }
