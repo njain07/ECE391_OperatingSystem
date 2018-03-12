@@ -1,6 +1,17 @@
-/* keyboard.h - Defines used in interactions with the keyboard devices and its interrupts
+/* rtc.h - Defines used in interactions with the rtc and its interrupts
  * vim:ts=4 noexpandtab
  */
+
+
+/*
+ * Author: Hyun Do Jung, 03.10.18
+ * Reference materials: OSDEV website
+ * Filename: rtc.c
+ * History:
+ *    SL    1    Sun Mar 11 14:20:50 2018
+ *        First written for MP3.1
+ */
+
 
 #ifndef _RTC_H_
 #define _RTC_H_
@@ -29,4 +40,4 @@ void rtc_init(void);
 /* interrupt handler for rtc */
 void rtc_interrupt_handler(void);
 
-#endif
+#endif /* _RTC_H_ */

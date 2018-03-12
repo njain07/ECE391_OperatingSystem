@@ -1,6 +1,15 @@
-/* i8259.h - Defines used in interactions with the 8259 interrupt
- * controller
+/* i8259.h - Defines used in interactions with the 8259 interrupt controller
  * vim:ts=4 noexpandtab
+ */
+
+
+/*
+ * Editor: Hyun Do Jung, 03.10.18
+ * Reference materials: lecture 10 of ECE391sp18, OSDEV website, appendix
+ * Filename: i8259.c
+ * History:
+ *    SL    1    Fri Sep 10 08:11:42 2018
+ *        First editted for MP3.1
  */
 
 #ifndef _I8259_H
@@ -29,7 +38,6 @@
 #define EOI                 0x60
 #define ENABLE_IRQ_MASK     0xFE
 #define DISABLE_IRQ_MASK    0x01
-
 
 
 /* Externally-visible functions */
