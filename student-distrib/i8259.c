@@ -38,28 +38,25 @@ void i8259_init(void) {
     slave_mask = 0xFF;
     
     /* ICW1, with master port and slave port */
-    outb_p(ICW1, MASTER_8259_PORT);
-    outb_p(ICW1,  SLAVE_8259_PORT);
+    outb(ICW1, MASTER_8259_PORT);
+    outb(ICW1,  SLAVE_8259_PORT);
     
     /* ICW2, set starting points of MASTER and SLAVE, a.k.a IRQ remapping */
     /* If device raises an interrupt that is connected to IRQ0, IRQ number will be 0x20 */
-    outb_p(ICW2_MASTER, MASTER_8259_PORT+1);
-    outb_p(ICW2_SLAVE,   SLAVE_8259_PORT+1);
+    outb(ICW2_MASTER, MASTER_8259_PORT+1);
+    outb(ICW2_SLAVE,   SLAVE_8259_PORT+1);
     
     /* ICW3, differente MASTER and SLAVE PICs */
     /* MASTER IRQ2 is connected with SLAVE PIC */
-    outb_pICW3_MASTER, MASTER_8259_PORT+1);
-    outb_p(ICW3_SLAVE,  SLAVE_8259_PORT+1);
+    outb(ICW3_MASTER, MASTER_8259_PORT+1);
+    outb(ICW3_SLAVE,  SLAVE_8259_PORT+1);
     
     /* ICW4, Check if master does AUTO EOI or normal EOI */
     /* MASTER PIC */
-    if (auto_eoi)
-        outb_p(AEOI, MASTER_8259_PORT+1);
-    else
-        outb_p(ICW4, MASTER_8259_PORT+1);
+    outb(ICW4, MASTER_8259_PORT+1);
     
     /* SLAVE PIC */
-    outb_p(ICW4, SLAVE_8259_PORT);
+    outb(ICW4, SLAVE_8259_PORT);
  
     /* initiatlize SLAVE PIC */
     enable_irq(IRQ2);
@@ -83,15 +80,16 @@ void enable_irq(uint32_t irq_num) {
         return;
     
     /* initiate mask = 1111 1110, active low */
+    uint8_t mask, master_mask;
     uint8_t temp_mask = ENABLE_IRQ_MASK;
     
     /* If irq_num is in bound ofMASTER */
-    if ( (irq_num >= 0) && (irq_num <= 7) ){
+    if ((irq_num >= 0) && (irq_num <= 7)){
         
         /* left shift on the mask, 1 on each bit is moving to left, thus add 1 */
         int i = 0;
-        for (i = 0; b < irq_num; i++){
-            mask = (mask << 1) + 1;
+        for (i = 0; i < irq_num; i++){
+            mask = (temp_mask << 1) + 1;
         }
         
         master_mask = master_mask & mask;
@@ -99,15 +97,15 @@ void enable_irq(uint32_t irq_num) {
     }
     
     /* If irq_num is in bound of SLAVE PIC */
-    if ( (irq_num >= 8) && (irq_num <= 15) ){
+    if ((irq_num >= 8) && (irq_num <= 15)){
         
         /* subtract irq_num by 8(range: 0 to 7) */
         irq_num -= 8;
         
         /* left shift on the mask, 1 on each bit is moving to left, thus add 1 */
         int i = 0;
-        for (i = 0; b < irq_num; i++){
-            mask = (mask << 1) + 1;
+        for (i = 0; i < irq_num; i++) {
+            mask = (temp_mask << 1) + 1;
         }
         
         slave_mask = slave_mask & mask;
@@ -129,19 +127,20 @@ void enable_irq(uint32_t irq_num) {
 void disable_irq(uint32_t irq_num) {
     
     /* if IRQ_NUM is out of bound, simply do nothing, but return*/
-    if ( (irq_num < 0) || (irq_num > 15) )
+    if ((irq_num < 0) || (irq_num > 15))
         return;
     
     /* initiate mask = 0000 0001, undo enable_irq */
+    uint8_t mask, master_mask;
     uint8_t temp_mask = DISABLE_IRQ_MASK;
     
     /* If irq_num is in bound of MASTER PIC */
-    if ( (irq_num >= 0) && (irq_num <= 7) ){
+    if ((irq_num >= 0) && (irq_num <= 7)) {
         
         /* left shift on the mask, 1 on each bit is moving to left, thus add 1 */
         int i = 0;
-        for (i = 0; b < irq_num; i++){
-            mask = (mask << 1) + 1;
+        for (i = 0; i < irq_num; i++){
+            mask = (temp_mask << 1) + 1;
         }
         
         master_mask = master_mask ^ mask;
@@ -149,15 +148,15 @@ void disable_irq(uint32_t irq_num) {
     }
     
     /* If irq_num is in bound of SLAVE PIC */
-    if ( (irq_num >= 8) && (irq_num <= 15) ){
+    if ((irq_num >= 8) && (irq_num <= 15)) {
         
         /* subtract irq_num by 8(range: 0 to 7) */
         irq_num -= 8;
         
         /* left shift on the mask, 1 on each bit is moving to left, thus add 1 */
         int i = 0;
-        for (i = 0; b < irq_num; i++){
-            mask = (mask << 1) + 1;
+        for (i = 0; i < irq_num; i++) {
+            mask = (temp_mask << 1) + 1;
         }
         
         slave_mask = slave_mask ^ mask;
@@ -189,13 +188,13 @@ void send_eoi(uint32_t irq_num) {
     cli_and_save(flag_backup);
     
     /* MASTER PIC, EOI return */
-    if ( (irq_num >= 0) && (irq_num <= 7) ){
+    if ((irq_num >= 0) && (irq_num <= 7)) {
         outb(master_mask, MASTER_8259_PORT + 1);
         outb(EOI | irq_num, MASTER_8259_PORT);
     }
     
     /* SLAVE PIC, EOI return */
-    if ( (irq_num >= 0) && (irq_num <= 7) ){
+    if ((irq_num >= 0) && (irq_num <= 7)) {
         irq_num -= 8;
         outb(slave_mask, SLAVE_8259_PORT + 1);
         outb(EOI | irq_num, MASTER_8259_PORT);

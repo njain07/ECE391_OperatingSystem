@@ -36,7 +36,7 @@ void OF()
 void BR()
 {
 	cli();
-	printf(" Bound Range Exceedded error \n" );
+	printf(" Bound Range Exceeded error \n" );
 	while(1);
 }
 

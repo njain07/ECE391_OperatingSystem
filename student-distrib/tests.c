@@ -45,7 +45,24 @@ int idt_test(){
 	return result;
 }
 
-// add more tests here
+int idt_de_test(){
+	TEST_HEADER;
+
+	int a = 1/0;
+	return a;
+}
+
+// int idt_pf_test(){
+// 	TEST_HEADER;
+
+	
+// }
+
+// int idt_mf_test(){
+// 	TEST_HEADER;
+
+	
+// }
 
 /* Checkpoint 2 tests */
 /* Checkpoint 3 tests */
@@ -57,4 +74,5 @@ int idt_test(){
 void launch_tests(){
 	TEST_OUTPUT("idt_test", idt_test());
 	// launch your tests here
+	idt_de_test();
 }

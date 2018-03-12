@@ -1,3 +1,4 @@
+#include "types.h"
 #include "paging.h"
 
 /* 0-4MB has 4KB pages
@@ -8,22 +9,6 @@
 //video memory is 4kb page
 //one page table is 1kb
 //one page directory is 1kb
-
-#define ONE_KB 1024
-#define FOUR_KB ONE_KB*4
-#define ONE_MB ONE_KB*ONE_KB
-#define FOUR_MB ONE_MB*4
-
-#define USER (?)
-#define S_RW_PRESENT 0x00000003 // attributes: supervisor level, read/write, present
-#define NOT_PRESENT 0x00000002
-
-#define KERNEL_VIRTUAL_ADDR 0x400000
-
-// alignment
-int page_table[ONE_KB] __attribute__((aligned (FOUR_KB)));
-int page_directory[ONE_KB] __attribute__((aligned (FOUR_KB)));
-int video_page_table[ONE_KB] __attribute__((aligned (FOUR_KB)));
 
 
 void init_paging()
@@ -40,35 +25,63 @@ void init_paging()
 	/* Put the page table in the page directory */
 	page_directory[0] = ((uint32_t)page_table) | S_RW_PRESENT;
 
+	/* Setting video memory attributes */
+	page_table[VIDEO_MEM] = page_table[VIDEO_MEM] | S_RW_PRESENT;
+
 	enable_paging();
 }
 
+/* enable_paging()
+ * 
+ * Sets CR0, CR3, and CR4
+ * CR0 - the 32nd bit of this register holds the paging bit; we set it to 1 to enable paging
+ * CR3 - holds the address of the page directory; used when virtual addressing is enabled
+ * CR4 - used in protected mode to enable page size extension; determines whether the IF flag can be enabled 
+ */
 extern void enable_paging()
 {
-	/* Sets CR0, CR3, and CR4
-	 * CR0 - the 32nd bit of this register holds the paging bit; we set it to 1 to enable paging
-	 * CR3 - holds the address of the page directory; used when virtual addressing is enabled
-	 * CR4 - used in protected mode to enable page size extension; determines whether the IF flag can be enabled 
-	 */
 	asm volatile (
+		"xorl %%eax, %%eax;"
+		"movl $page_directory, %%eax;"	//move the address of the page directory into CR3 indirectly through eax
 		"movl %%eax, %%cr3;"
+		"xorl %%eax, %%eax;"			//clear eax
 		"movl %%cr4, %%eax;"
-		"orl $0x00000010, %%eax;"
+		"orl $0x00000010, %%eax;"		//enable page size extension (PAE) in CR4 indirectly through eax 
+		"movl %%eax, %%cr4;"
+		"xorl %%eax, %%eax;"				//clear eax
 		"movl %%cr0, %%eax;"
-		"orl $0x80000001, %%eax;"
+		"orl $0x80000001, %%eax;"		//enable the paging bit in CR0 indirectly through eax
 		"movl %%eax, %%cr0;"
-		:							//input regs
-		:							//output regs
-		:"eax"						//clobbered regs
+		:								//input regs
+		:								//output regs
+		:"eax"							//clobbered regs
 		);
 }
 
-void create4MBpage()
+/* create_process_page()
+ * 
+ * Creates a 4MB page which maps the virtual address at 128MB to the corresponding physical memory
+ */
+void create_process_page()
 {
-	
+	// 
+	//page_directory[32] = 
+
+	// Flush TLB
+	asm volatile (
+		"movl %%cr3, %%eax;"
+		"movl %%eax, %%cr3;"
+		:								//input regs
+		:								//output regs
+		:"eax"							//clobbered regs
+		);
 }
 
-void create4KBpage()
+/* create_vidmem_page()
+ * 
+ * 
+ */
+void create_vidmem_page()
 {
 
 }

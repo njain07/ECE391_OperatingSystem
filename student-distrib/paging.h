@@ -2,14 +2,23 @@
 #define PAGING
 
 #define ONE_KB 1024
-#define FOUR_KB 4096
-#define ONE_MB 1048576
-#define FOUR_MB 4194304
-#define PRESENT 0x00000003 (?)
-#define NOT_PRESENT 0x00000002
-#define WRITE (?)
+#define FOUR_KB ONE_KB*4
+#define ONE_MB ONE_KB*ONE_KB
+#define FOUR_MB ONE_MB*4
+#define MB_128 0x08000000 
+
 #define USER (?)
-#define KERNEL 0x400000
+#define S_RW_PRESENT 0x00000003 // attributes: supervisor level, read/write, present
+#define NOT_PRESENT 0x00000002
+#define U_W_PRESENT 0x00000087 // attributes: user level, write, present
+
+#define KERNEL_VIRTUAL_ADDR 0x400000
+#define VIDEO_MEM 0xB8000
+
+// alignment
+int page_table[ONE_KB] __attribute__((aligned (FOUR_KB)));
+int page_directory[ONE_KB] __attribute__((aligned (FOUR_KB)));
+int video_memory[ONE_KB] __attribute__((aligned (FOUR_KB)));
 
 
 void init_paging();
