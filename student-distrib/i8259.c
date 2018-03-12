@@ -60,7 +60,7 @@ void enable_irq(uint32_t irq_num) {
         return;
     
     /* initiate mask = 1111 1110, active low */
-    uint8_t temp_mask = 0xFE;
+    uint8_t temp_mask = ENABLE_IRQ_MASK;
     
     /* If irq_num is in bound ofMASTER */
     if ( (irq_num >= 0) && (irq_num <= 7) ){
@@ -100,7 +100,7 @@ void disable_irq(uint32_t irq_num) {
         return;
     
     /* initiate mask = 0000 0001, undo enable_irq */
-    uint8_t temp_mask = 0x01;
+    uint8_t temp_mask = DISABLE_IRQ_MASK;
     
     /* If irq_num is in bound of MASTER PIC */
     if ( (irq_num >= 0) && (irq_num <= 7) ){
@@ -135,5 +135,27 @@ void disable_irq(uint32_t irq_num) {
 
 /* Send end-of-interrupt signal for the specified IRQ */
 void send_eoi(uint32_t irq_num) {
+    
+    /* if IRQ_NUM is out of bound, simply do nothing, but return*/
+    if ( (irq_num < 0) || (irq_num > 15) )
+        return;
+    
+    /* save current flag */
+    uint32_t flag_backup;
+    cli_and_save(flag_backup);
+    
+    /* MASTER PIC, EOI return */
+    if ( (irq_num >= 0) && (irq_num <= 7) ){
+        outb(master_mask, MASTER_8259_PORT + 1);
+        outb(EOI | irq_num, MASTER_8259_PORT);
+    }
+    
+    /* SLAVE PIC, EOI return */
+    if ( (irq_num >= 0) && (irq_num <= 7) ){
+        irq_num -= 8;
+        outb(slave_mask, SLAVE_8259_PORT + 1);
+        outb(EOI | irq_num, MASTER_8259_PORT);
+        outb(EOI + IRQ2,    MASTER_8259_PORT);
+    }
 }
 

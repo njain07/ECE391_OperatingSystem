@@ -27,6 +27,8 @@
  * the interrupt number and sent out to the PIC
  * to declare the interrupt finished */
 #define EOI                 0x60
+#define ENABLE_IRQ_MASK     0xFE
+#define DISABLE_IRQ_MASK    0x01
 
 
 
