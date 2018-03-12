@@ -8,7 +8,7 @@
 #include "i8259.h"
 #include "debug.h"
 #include "tests.h"
-
+#include "idt.h"
 #define RUN_TESTS
 
 /* Macros. */
@@ -148,7 +148,7 @@ void entry(unsigned long magic, unsigned long addr) {
      * without showing you any output */
     /*printf("Enabling Interrupts\n");
     sti();*/
-
+    init_idt();
 #ifdef RUN_TESTS
     /* Run tests */
     launch_tests();

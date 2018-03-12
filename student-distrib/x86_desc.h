@@ -145,7 +145,7 @@ do {                                                            \
 } while (0)
 
 /* An interrupt descriptor entry (goes into the IDT) */
-typedef union idt_desc_t {
+typedef union idt_desc_t {  
     uint32_t val[2];
     struct {
         uint16_t offset_15_00;
