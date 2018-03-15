@@ -3,14 +3,16 @@
  */
 
 
-/*
- * Editor: Hyun Do Jung, 03.10.18
+
+/* Editor: Hyun Do Jung, 03.10.18
  * Reference materials: lecture 10 of ECE391sp18, OSDEV website, appendix
  * Filename: i8259.c
  * History:
  *    SL    1    Fri Mar 10 08:11:42 2018
  *        First editted for MP3.1
- */
+ *    SL    2    Thu Mar 15 16:02:00 2018
+ *        Revision 1, adding more comments, making sure it works
+ */ 
 
 
 #include "i8259.h"
@@ -27,16 +29,19 @@ uint8_t slave_mask;  /* IRQs 8-15 */
  *   INPUTS: none
  *   OUTPUTS: none
  *   RETURN VALUE: none
- *   SIDE EFFECTS: MASTER and SLAVE PICs get initialized
+ *   SIDE EFFECTS: MASTER and SLAVE PICs get initialized. 
  */
 
 /* Initialize the 8259 PIC */
 void i8259_init(void) {
     
-    /* set masks */
-    master_mask = 0xFF;
-    slave_mask = 0xFF;
-    
+
+    /* OSDEV says we should have flag stored beforehand, but do we?
+    /* mask all MASKS before even starting the initialization 
+    master_mask = MASK_ALL;
+    slave_mask = MASK_ALL;
+    */
+
     /* ICW1, with master port and slave port */
     outb(ICW1, MASTER_8259_PORT);
     outb(ICW1,  SLAVE_8259_PORT);
@@ -52,20 +57,18 @@ void i8259_init(void) {
     outb(ICW3_SLAVE,  SLAVE_8259_PORT+1);
     
     /* ICW4, Check if master does AUTO EOI or normal EOI */
-    /* MASTER PIC */
-    outb(ICW4, MASTER_8259_PORT+1);
-    
-    /* SLAVE PIC */
-    outb(ICW4, SLAVE_8259_PORT);
+    outb(ICW4, MASTER_8259_PORT+1);    
+    outb(ICW4, SLAVE_8259_PORT+1);
  
     /* initiatlize SLAVE PIC */
-    enable_irq(IRQ2);
+    enable_irq(IRQ2_FOR_SLAVE);
 }
 
 
 /*
  * enable_irq
- *   DESCRIPTION: Enables an interrupt requested depends on the irq number that is passed in.
+ *   DESCRIPTION: Enables an interrupt requested depends on the 
+ *                irq number(irq_num) that is passed in.
  *   INPUTS: irq_num
  *   OUTPUTS: none
  *   RETURN VALUE: none
@@ -75,25 +78,26 @@ void i8259_init(void) {
 /* Enable (unmask) the specified IRQ */
 void enable_irq(uint32_t irq_num) {
     
-    /* if IRQ_NUM is out of bound, simply do nothing, but return*/
+    /* if IRQ_NUM is out of bound, simply do nothing, but return */
     if ( (irq_num < 0) || (irq_num > 15) )
         return;
     
     /* initiate mask = 1111 1110, active low */
-    uint8_t mask, master_mask;
+    uint8_t master_mask;
     uint8_t temp_mask = ENABLE_IRQ_MASK;
+    int i = 0;
     
-    /* If irq_num is in bound ofMASTER */
-    if ((irq_num >= 0) && (irq_num <= 7)){
+    /* If irq_num is in bound of MASTER PIC */
+    if ( (irq_num >= 0) && (irq_num <= 7) ){
         
         /* left shift on the mask, 1 on each bit is moving to left, thus add 1 */
-        int i = 0;
         for (i = 0; i < irq_num; i++){
-            mask = (temp_mask << 1) + 1;
+            temp_mask = (temp_mask << 1) + 1;
         }
         
-        master_mask = master_mask & mask;
+        master_mask = master_mask & temp_mask;
         outb(master_mask, MASTER_8259_PORT + 1);
+        return;
     }
     
     /* If irq_num is in bound of SLAVE PIC */
@@ -103,20 +107,21 @@ void enable_irq(uint32_t irq_num) {
         irq_num -= 8;
         
         /* left shift on the mask, 1 on each bit is moving to left, thus add 1 */
-        int i = 0;
         for (i = 0; i < irq_num; i++) {
-            mask = (temp_mask << 1) + 1;
+            temp_mask = (temp_mask << 1) + 1;
         }
         
-        slave_mask = slave_mask & mask;
+        slave_mask = slave_mask & temp_mask;
         outb(slave_mask, SLAVE_8259_PORT + 1);
+        return;
     }
 }
 
 
 /*
  * disable_irq
- *   DESCRIPTION: disables an interrupt requested depends on the irq number that is passed in.
+ *   DESCRIPTION: Disbles an interrupt requested depends on the 
+ *                irq number(irq_num) that is passed in.
  *   INPUTS: irq_num
  *   OUTPUTS: none
  *   RETURN VALUE: none
@@ -126,25 +131,26 @@ void enable_irq(uint32_t irq_num) {
 /* Disable (mask) the specified IRQ */
 void disable_irq(uint32_t irq_num) {
     
-    /* if IRQ_NUM is out of bound, simply do nothing, but return*/
+    /* if IRQ_NUM is out of bound, simply do nothing, but return */
     if ((irq_num < 0) || (irq_num > 15))
         return;
     
     /* initiate mask = 0000 0001, undo enable_irq */
-    uint8_t mask, master_mask;
+    uint8_t master_mask;
     uint8_t temp_mask = DISABLE_IRQ_MASK;
+    int i = 0;
     
     /* If irq_num is in bound of MASTER PIC */
     if ((irq_num >= 0) && (irq_num <= 7)) {
         
-        /* left shift on the mask, 1 on each bit is moving to left, thus add 1 */
-        int i = 0;
+        /* left shift on the mask, 0 on each bit is moving to left */
         for (i = 0; i < irq_num; i++){
-            mask = (temp_mask << 1) + 1;
+            temp_mask = temp_mask << 1;
         }
         
-        master_mask = master_mask ^ mask;
+        master_mask = master_mask | temp_mask;
         outb(master_mask, MASTER_8259_PORT + 1);
+        return;
     }
     
     /* If irq_num is in bound of SLAVE PIC */
@@ -153,14 +159,14 @@ void disable_irq(uint32_t irq_num) {
         /* subtract irq_num by 8(range: 0 to 7) */
         irq_num -= 8;
         
-        /* left shift on the mask, 1 on each bit is moving to left, thus add 1 */
-        int i = 0;
+        /* left shift on the mask, 0 on each bit is moving to left */
         for (i = 0; i < irq_num; i++) {
-            mask = (temp_mask << 1) + 1;
+            temp_mask = temp_mask << 1; 
         }
         
-        slave_mask = slave_mask ^ mask;
+        slave_mask = slave_mask | temp_mask;
         outb(slave_mask, SLAVE_8259_PORT + 1);
+        return;
     }
     
 }
@@ -179,7 +185,7 @@ void disable_irq(uint32_t irq_num) {
 /* Send end-of-interrupt signal for the specified IRQ */
 void send_eoi(uint32_t irq_num) {
     
-    /* if IRQ_NUM is out of bound, simply do nothing, but return*/
+    /* if IRQ_NUM is out of bound, simply do nothing, but return */
     if ( (irq_num < 0) || (irq_num > 15) )
         return;
     
@@ -189,15 +195,17 @@ void send_eoi(uint32_t irq_num) {
     
     /* MASTER PIC, EOI return */
     if ((irq_num >= 0) && (irq_num <= 7)) {
-        outb(master_mask, MASTER_8259_PORT + 1);
+        //outb(master_mask, MASTER_8259_PORT + 1);
         outb(EOI | irq_num, MASTER_8259_PORT);
     }
     
     /* SLAVE PIC, EOI return */
     if ((irq_num >= 0) && (irq_num <= 7)) {
         irq_num -= 8;
-        outb(slave_mask, SLAVE_8259_PORT + 1);
-        outb(EOI | irq_num, MASTER_8259_PORT);
-        outb(EOI + IRQ2,    MASTER_8259_PORT);
+        //outb(slave_mask, SLAVE_8259_PORT + 1);
+        outb(EOI | irq_num,        MASTER_8259_PORT);
+        outb(EOI + IRQ2_FOR_SLAVE, MASTER_8259_PORT);
     }
+
+    sti_and_restore(flag_backup);
 }

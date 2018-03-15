@@ -10,6 +10,8 @@
  * History:
  *    SL    1    Fri Sep 10 08:11:42 2018
  *        First editted for MP3.1
+ *    SL    2    Thu Mar 15 16:02:00 2018
+ *        Revision 1, adding more comments, making sure it works
  */
 
 #ifndef _I8259_H
@@ -24,7 +26,6 @@
 /* Initialization control words to init each PIC.
  * See the Intel manuals for details on the meaning
  * of each word */
-#define IRQ2				0x02
 #define ICW1                0x11
 #define ICW2_MASTER         0x20
 #define ICW2_SLAVE          0x28
@@ -37,9 +38,12 @@
  * the interrupt number and sent out to the PIC
  * to declare the interrupt finished */
 #define EOI                 0x60
+
+/* Magic numbers declared for i8259_init */
 #define ENABLE_IRQ_MASK     0xFE
 #define DISABLE_IRQ_MASK    0x01
-
+#define MASK_ALL  			0xFF
+#define IRQ2_FOR_SLAVE	 	0x02
 
 /* Externally-visible functions */
 /* Initialize both PICs */
