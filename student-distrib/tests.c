@@ -45,12 +45,12 @@ int idt_test(){
 	return result;
 }
 
-// int idt_de_test(){
-// 	TEST_HEADER;
+int idt_de_test(){
+	TEST_HEADER;
 
-// 	int a = 1/0;
-// 	return a;
-// }
+	int a = 1/0;
+	return a;
+}
 
 // int idt_pf_test(){
 // 	TEST_HEADER;
@@ -75,5 +75,5 @@ void launch_tests(){
 	TEST_OUTPUT("idt_test", idt_test());
 	//while (1);
 	// launch your tests here
-	// idt_de_test();
+	 idt_de_test();
 }

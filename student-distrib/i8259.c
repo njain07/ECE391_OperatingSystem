@@ -37,7 +37,7 @@ void i8259_init(void) {
     
 
     /* OSDEV says we should have flag stored beforehand, but do we?
-    /* mask all MASKS before even starting the initialization 
+     mask all MASKS before even starting the initialization 
     master_mask = MASK_ALL;
     slave_mask = MASK_ALL;
     */
@@ -207,5 +207,5 @@ void send_eoi(uint32_t irq_num) {
         outb(EOI + IRQ2_FOR_SLAVE, MASTER_8259_PORT);
     }
 
-    sti_and_restore(flag_backup);
+    //sti_and_restore(flag_backup);
 }
