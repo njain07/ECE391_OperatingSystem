@@ -166,7 +166,7 @@ void init_idt()
 			idt[i].dpl = 0;
 			if(i == 0x80) 		//remember to magic number this one
 				idt[i].dpl = 3;
-			idt[i].present = 0;  // set to zero to show it is unused interrupt
+			idt[i].present = 1;  // set to zero to show it is unused interrupt
 			
 			if (i < 20)
 				SET_IDT_ENTRY(idt[i], idt_interrupts[i]);

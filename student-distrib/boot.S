@@ -30,7 +30,7 @@ continue:
     # IDT(interrupt Descriptor Table), differentiate between different
     # types of exceptions, or different hardware devices.
     # Load the IDT, just like GDT, revised by Mike(03.08)
-    lldt    ldt_desc_ptr
+    # lldt    ldt_desc_ptr
 
     # Load CS with the new descriptor value
     ljmp    $KERNEL_CS, $keep_going
