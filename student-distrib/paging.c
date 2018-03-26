@@ -19,16 +19,21 @@ void init_paging()
 	int i;
 	for(i=0; i<ONE_KB; i++) {
 		page_directory[i] = NOT_PRESENT;
-		page_table[i] = (i*FOUR_KB) | S_RW_PRESENT;
+		first_page_table[i] = (i*FOUR_KB) | NOT_PRESENT;
 	}
 
 	/* Put the page table in the page directory */
-	page_directory[0] = ((uint32_t)page_table) | S_RW_PRESENT;
+	page_directory[0]= ((uint32_t)first_page_table) | S_RW_PRESENT;
 
 	/* Setting video memory attributes */
-	page_table[VIDEO_MEM] = page_table[VIDEO_MEM] | S_RW_PRESENT;
+	first_page_table[VIDEO_MEM/FOUR_KB] = first_page_table[VIDEO_MEM/FOUR_KB] | S_RW_PRESENT;
+	page_directory[1]= FOUR_MB | S_RW_PRESENT | ENABLE4MB;
+
+	enable4MBPaging()
 
 	enable_paging();
+
+	
 }
 
 /* enable_paging()
@@ -77,12 +82,41 @@ void create_process_page()
 		);
 }
 
-/* create_vidmem_page()
- * 
- * 
- */
-void create_vidmem_page()
-{
 
+
+/* enablePaging
+ * Inputs: none
+ * Return Value: None
+ * Function: sets bit 31 of register cr0 to enable paging */
+static inline void enablePaging()
+{
+    asm volatile (
+    	"xorl %%eax, %%eax;"
+		"movl $page_directory, %%eax;"	//move the address of the page directory into CR3 indirectly through eax
+		"movl %%eax, %%cr3;"
+
+    	"mov %%cr0, %%eax;"
+    	"or  $0x80000000, %%eax;"	 	/* sets bit 31 of register cr0 to enable paging */
+    	"mov %%eax, %%cr0;"
+    	:
+        :
+        : "eax"
+    );
+}
+
+/* enable4MBPaging
+ * Inputs: none
+ * Return Value: None
+ * Function: sets bit 4 of register cr4 to enable 4MB page sizes */
+static inline void enable_4MB_Paging()
+{
+    asm volatile (
+    	"mov %%cr4, %%eax;"
+    	"or  $0x00000010, %%eax;"			/* sets bit 4 of register cr4 to enable 4MB page sizes */
+    	"mov %%eax, %%cr4;"
+    	:
+        :
+        : "eax"
+    );
 }
 

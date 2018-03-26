@@ -16,9 +16,9 @@
 #define VIDEO_MEM 0xB8000
 
 // alignment
-int page_table[ONE_KB] __attribute__((aligned (FOUR_KB)));
+int first_page_table[ONE_KB] __attribute__((aligned (FOUR_KB)));
 int page_directory[ONE_KB] __attribute__((aligned (FOUR_KB)));
-int video_memory[ONE_KB] __attribute__((aligned (FOUR_KB)));
+//int video_memory[ONE_KB] __attribute__((aligned (FOUR_KB)));
 
 
 void init_paging();
