@@ -50,6 +50,11 @@ int idt_de_test(){
 
 	int a = 1/0;
 	return a;
+    // int* a = 0x4000;
+    // int* b = 0x7FFFFD;
+    // *a = 0;
+    // *b = 0;
+
 }
 
 // int idt_pf_test(){

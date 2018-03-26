@@ -27,9 +27,9 @@ void init_paging()
 
 	/* Setting video memory attributes */
 	first_page_table[VIDEO_MEM/FOUR_KB] = first_page_table[VIDEO_MEM/FOUR_KB] | S_RW_PRESENT;
-	page_directory[1]= FOUR_MB | S_RW_PRESENT | ENABLE4MB;
+	page_directory[1]= FOUR_MB | S_RW_PRESENT | FOUR_MB;
 
-	enable4MBPaging()
+	enable_4MB_Paging();
 
 	enable_paging();
 

@@ -9,6 +9,7 @@
 #include "debug.h"
 #include "tests.h"
 #include "idt.h"
+//#include "paging.h"
 #define RUN_TESTS
 
 /* Macros. */
@@ -149,6 +150,8 @@ void entry(unsigned long magic, unsigned long addr) {
     /*printf("Enabling Interrupts\n");
     sti();*/
     init_idt();
+
+    //init_paging(); // Intialising paging function
 #ifdef RUN_TESTS
     /* Run tests */
     launch_tests();
