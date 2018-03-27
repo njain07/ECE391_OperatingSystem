@@ -1,0 +1,15 @@
+BUGLOG:
+
+Checkpoint 1:
+
+1) system crashed
+	Problem: IDT entries were set to absent
+	Fix: we set the IDT entries to present
+
+2) system crashed when we included paging.h in kernel.c
+	Problem: we accessed the wrong memory location for initializing the page for video memory
+	Fix: changed VIDEO_MEM from 0xB8 to 0xB8000
+
+Checkpoint 2:
+
+1) 

@@ -35,6 +35,9 @@
 #define    RTC_INTERRUPT       0x40
 #define    RTC_IRQ             8
 
+/* others */
+#define    RS_MASK             0xF0
+
 
 /* initialize the keyboard */
 void rtc_init(void);
@@ -49,9 +52,12 @@ int32_t rtc_open(const uint8_t* filename);
 int32_t rtc_close(int32_t fd);
 
 /* handler for reading RTC */
-int32_t rtc_read(int32_t fd);
+int32_t rtc_read(int32_t fd, void* buf, int32_t nbytes);
 
 /* handler for writing RTC */
-int32_t rtc_write(int32_t* buf, int32_t nbytes);
+int32_t rtc_write(int32_t fd, const void* buf, int32_t nbytes);
+
+/* handler for setting an interrupt frequency of rtc */
+void rtc_set_int_freq(int32_t target_freq);
 
 #endif /* _RTC_H_ */
