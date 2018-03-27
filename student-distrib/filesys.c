@@ -10,10 +10,10 @@
 extern void filesys_init()
 {
 	boot_block->num_dir = FILESYS_ADDR;
-	boot_block->num_inodes = FILESYS_ADDR + 4;
-	boot_block->num_dblocks = FILESYS_ADDR + 8;
-	boot_block->reserved = FILESYS_ADDR + 12;
-	boot_block->dentries = FILESYS_ADDR + 64;
+	boot_block->num_inodes = FILESYS_ADDR + FOUR_B;
+	boot_block->num_dblocks = FILESYS_ADDR + EIGHT_B;
+	boot_block->reserved = FILESYS_ADDR + TWELVE_B;
+	boot_block->dentries = FILESYS_ADDR + SF_B;
 }
 
 /* filesys_open
@@ -84,16 +84,16 @@ int32_t read_dentry_by_name(const uint8_t* fname, dentry_t* dentry)
 
 	for(index = 0; index < num_dentries; index++)
 	{
-		if(strncmp(fname, boot_block->dentries[index]->file_name, 32) == 0)
+		if(strncmp(fname, boot_block->dentries[index]->file_name, DENTRY_FILE_NAME_SIZE-1) == 0)
 		{
-			strncpy(dentry->file_name, boot_block->dentries[index]->file_name, 32);
-			dentry->file_name[33] = '\0';
+			strncpy(dentry->file_name, boot_block->dentries[index]->file_name, DENTRY_FILE_NAME_SIZE-1);
+			dentry->file_name[DENTRY_FILE_NAME_SIZE] = '\0';
 			dentry->file_type = boot_block->dentries[index]->file_type;
 			dentry->inode_num = boot_block->dentries[index]->inode_num;
 			retval = 0;
 		}
 	}
-	
+
 	return retval;
 }
 
@@ -112,8 +112,8 @@ int32_t read_dentry_by_index(uint32_t index, dentry_t* dentry)
 	if(index < 0 || index > (num_dentries-1) || dentry == NULL)
 		return -1;
 
-	strncpy(dentry->file_name, boot_block->dentries[index]->file_name, 32);
-	dentry->file_name[33] = '\0';
+	strncpy(dentry->file_name, boot_block->dentries[index]->file_name, DENTRY_FILE_NAME_SIZE-1);
+	dentry->file_name[DENTRY_FILE_NAME_SIZE] = '\0';
 	dentry->file_type = boot_block->dentries[index]->file_type;
 	dentry->inode_num = boot_block->dentries[index]->inode_num;
 	return 0;
