@@ -1,6 +1,7 @@
 #include "tests.h"
 #include "x86_desc.h"
 #include "lib.h"
+#include "rtc.h"
 
 #define PASS 1
 #define FAIL 0
@@ -70,6 +71,45 @@ int idt_de_test(){
 // }
 
 /* Checkpoint 2 tests */
+void rtc_test(){
+    clear();
+    rtc_interrupt_flag = 1;
+    rtc_open(NULL);
+}
+
+/*
+void rtc_test2(int* frequency){
+    clear();
+    rtc_interrupt_flag = 1;
+    
+    while(1){
+        if(rtc_count == 0){
+            rtc_open(NULL);
+            rtc_write(0,frequency,4);
+        }
+        
+        if(*frequency >= 1024)
+            break;
+        
+        if( (rtc_count % 80) == 0){
+            char c[1] = {'1'};
+            term_write(0,(char*)c,1);
+            *frequency *= 2;
+            rtc_write(0,frequency,4);
+        }
+    }
+}
+*/
+
+void rtc_test3(){
+    rtc_interrupt_flag = 1;
+    clear();
+    rtc_open(NULL);
+    rtc_read(0,0,0);
+    
+}
+
+
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */

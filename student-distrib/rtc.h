@@ -38,6 +38,8 @@
 /* others */
 #define    RS_MASK             0xF0
 
+/* Flag used in rtc_read prevent other possible interrupts occured during it, until it gets cleared */
+volatile int rtc_interrupt_flag = 0;
 
 /* initialize the keyboard */
 void rtc_init(void);
