@@ -81,7 +81,7 @@ void rtc_interrupt_handler(void){
 int32_t rtc_open(const uint8_t* filename){
      
      /* SET rtc frequnecy = 2 Hz */
-     //set_rtc_frequency(2);
+     rtc_set_int_freq(2);
      return 0;
 }
 
@@ -97,7 +97,7 @@ int32_t rtc_open(const uint8_t* filename){
 int32_t rtc_close(int32_t fd){
     
     /* RESET rtc frequnecy = 2 Hz */
-    //set_rtc_frequency(2);
+    rtc_set_int_freq(2);
     return 0;
 }
 
@@ -111,12 +111,10 @@ int32_t rtc_close(int32_t fd){
  */
 
 /* handler for reading RTC */
-int32_t rtc_read(int32_t fd){
-    
-    rtc_interrupt_flag = 1;
+int32_t rtc_read(int32_t fd, void* buf, int32_t nbytes){
     
     /* during interrupt, do nothing */
-    while(rtc_interrupt_flag){   }
+    while(!rtc_interrupt_flag){ /* SPIN, waiting until the next RTC interrupt */  }
     
     /* clear the interrupt flag */
     rtc_interrupt_flag = 0;
@@ -125,20 +123,74 @@ int32_t rtc_read(int32_t fd){
 
 /*
  * rtc_write
- *   DESCRIPTION: helper function for reading the RTC
- *   INPUTS: pointer to the file descriptor that will be closed
+ *   DESCRIPTION: helper function for writing the RTC
+ *   INPUTS:
  *   OUTPUTS: none
- *   RETURN VALUE: always return 0
+ *   RETURN VALUE: return -1 on failure, return 0 on success
  *   SIDE EFFECTS: flag is cleared after an interrupt
  */
 
 /* handler for reading RTC */
-int32_t rtc_write(int32_t* buf, int32_t nbytes){
+int32_t rtc_write(int32_t fd, const void* buf, int32_t nbytes){
     
-    /* during interrupt, do nothing */
-    while(!rtc_interrupt_flag){   }
+    /* set local variable */
+    int32_t target_freq;
     
-    /* clear the interrupt flag */
-    rtc_interrupt_flag = 0;
-    return 0;
+    /* Boundary check, only accepts 4 bytes */
+    if( (nbytes != 4) || ((int32_t)buf == NULL) )
+        return -1;
+    else
+        target_freq = *((int32_t*)buf);
+    
+    /* set a interrupt freq as wanted */
+    rtc_set_int_freq(target_freq);
+    
+    return nbytes;
 }
+
+/*
+ * rtc_set_int_freq
+ *   DESCRIPTION: helper function for setting an interrupt frequency as wanted
+ *   INPUTS: int32_t target_freq
+ *   OUTPUTS: none
+ *   RETURN VALUE:
+ *   SIDE EFFECTS:
+ */
+
+/* handler for setting an interrupt frequency of rtc */
+void rtc_set_int_freq(int32_t target_freq){
+    
+    /* set local variables */
+    char freq;
+    unsigned char old_a_val;
+    
+    /* backup; save previous reg A value */
+    outb(RTC_NMIDIS_REG_A, RTC_REG_NUM_PORT);
+    old_a_val = inb(RTC_DATA_PORT);
+    
+    /* Values defined in RTC Datasheet(new) */
+    switch(target_freq){
+        case 8192:
+        case 4096:
+        case 2048:
+            return;
+            
+        case 1024: freq = 0x06; break;
+        case 512: freq = 0x07; break;
+        case 256: freq = 0x08; break;
+        case 128: freq = 0x09; break;
+        case 64:  freq = 0x0A; break;
+        case 32:  freq = 0x0B; break;
+        case 16:  freq = 0x0C; break;
+        case 8:   freq = 0x0D; break;
+        case 4:   freq = 0x0E; break;
+        case 2:   freq = 0x0F; break;
+        
+        default: return;
+    }
+    
+    /* set RS values */
+    outb(RTC_NMIDIS_REG_A, RTC_REG_NUM_PORT);
+    outb( (old_a_val & RS_MASK) | freq, RTC_DATA_PORT);
+}
+
