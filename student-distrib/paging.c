@@ -10,7 +10,14 @@
 //one page table is 4mb
 //one page directory is 4gb
 
-
+/*
+ * init_paging
+ *   DESCRIPTION: initializes paging
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: none
+ *   SIDE EFFECTS: sets up page directories and page tables
+ */
 void init_paging()
 {
 	/* Initialize all entries in the page directory as not present, and
@@ -36,12 +43,21 @@ void init_paging()
 	
 }
 
+/*
+ * enable_paging
+ *   DESCRIPTION: initializes paging
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: none
+ *   SIDE EFFECTS: sets CR0 and CR3
+ * 				   CR0 - the 32nd bit of this register holds the paging bit; we set it to 1 to enable paging
+ * 				   CR3 - holds the address of the page directory; used when virtual addressing is enabled
+ */
 void enable_paging()
 {
     asm volatile (
-		"movl $page_directory, %%eax;"	//move the address of the page directory into CR3 indirectly through eax
+		"movl $page_directory, %%eax;"	/* move the address of the page directory into CR3 indirectly through eax */
 		"movl %%eax, %%cr3;"
-
 
     	"xorl %%eax, %%eax;"
     	"movl %%cr0, %%eax;"
@@ -54,15 +70,16 @@ void enable_paging()
 
 }
 
-/* enable4MBPaging
+/* enable_4MB_Paging
  * Inputs: none
  * Return Value: None
- * Function: sets bit 4 of register cr4 to enable 4MB page sizes */
+ * Function: sets bit 4 of register cr4 to enable 4MB page sizes for the kernel
+ */
 void enable_4MB_Paging()
 {
     asm volatile (
     	"movl %%cr4, %%eax;"
-    	"orl  $0x00000010, %%eax;"			/* sets bit 4 of register cr4 to enable 4MB page sizes */
+    	"orl  $0x00000010, %%eax;"
     	"movl %%eax, %%cr4;"
     	:
         :
