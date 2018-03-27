@@ -7,8 +7,8 @@
 
 //one page is 4kb
 //video memory is 4kb page
-//one page table is 1kb
-//one page directory is 1kb
+//one page table is 4mb
+//one page directory is 4gb
 
 
 void init_paging()
