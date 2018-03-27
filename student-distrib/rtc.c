@@ -119,16 +119,25 @@ int32_t rtc_write(int32_t fd, const void* buf, int32_t nbytes){
     
     /* set local variable */
     int32_t target_freq;
+    int i, count;
     
     /* Boundary check, only accepts 4 bytes */
     if( (nbytes != 4) || ((int32_t)buf == NULL) )
         return -1;
     else
         target_freq = *((int32_t*)buf);
-    
+        
     /* set a interrupt freq as wanted */
     rtc_set_int_freq(target_freq);
     
+
+
+    /* testing */
+    for(i = 0; i < target_freq; i++){
+        count = 1;
+        putc('1');
+    }
+
     return nbytes;
 }
 
