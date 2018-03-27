@@ -46,16 +46,11 @@ int idt_test(){
 	return result;
 }
 
-int idt_de_test(){
+void zero_error(){
 	TEST_HEADER;
 
-	// int a = 1/0;
-	// return a;
-    int* a = 0x4000;
-    int* b = 0x7FFFFFD;
-    *a = 0;
-    *b = 0;
-    return a;
+	int a = 1/0;
+
 }
 
 // int idt_pf_test(){
@@ -69,7 +64,40 @@ int idt_de_test(){
 
 	
 // }
-
+void fault_paging_test()
+{
+	int* a = 0x4000;
+    int* b = 0x7FFFFFD;
+    *a = 0;
+    *b = 0;
+}
+void no_fault_paging_test()
+{
+	TEST_HEADER;
+	
+	//should not page fault
+	int * var;
+	
+	//tests kernel
+	var = (int *)0x400000;
+	*var = *var;
+	
+	var = (int *)0x400001;
+	*var = *var;
+	
+	var = (int *)0x799999;
+	*var = *var;
+	
+	//tests vid mem
+	var = (int *)0xB8000;
+	*var = *var;
+	
+	var = (int *)0xB8001;
+	*var = *var;
+	
+	var = (int *)0xB8999;
+	*var = *var;
+}
 /* Checkpoint 2 tests */
 void rtc_test(){
     clear();
@@ -113,12 +141,22 @@ void rtc_test3(){
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */
-
+void rtc_test()
+{
+	clear();
+	rtc_open(NULL); 
+}
 
 /* Test suite entry point */
 void launch_tests(){
 	TEST_OUTPUT("idt_test", idt_test());
 	//while (1);
 	// launch your tests here
-	 idt_de_test();
+	 //checkpoint1
+	 //zero_error();
+	 //fault_paging_test();
+	 //no_fault_paging_test();
+
+	 //checkpoint2
+	 rtc_test();
 }

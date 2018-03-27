@@ -85,22 +85,6 @@ int32_t rtc_open(const uint8_t* filename){
 }
 
 /*
- * rtc_close
- *   DESCRIPTION: helper function for closing the RTC
- *   INPUTS: pointer to the file descriptor that will be closed
- *   OUTPUTS: none
- *   RETURN VALUE: always return 0
- *   SIDE EFFECTS: handles with closing RTC, reset frequency to 2 Hz.
- */
-
-int32_t rtc_close(int32_t fd){
-    
-    /* RESET rtc frequnecy = 2 Hz */
-    rtc_set_int_freq(2);
-    return 0;
-}
-
-/*
  * rtc_read
  *   DESCRIPTION: helper function for reading the RTC
  *   INPUTS: pointer to the file descriptor that will be closed
@@ -145,6 +129,22 @@ int32_t rtc_write(int32_t fd, const void* buf, int32_t nbytes){
     rtc_set_int_freq(target_freq);
     
     return nbytes;
+}
+
+/*
+ * rtc_close
+ *   DESCRIPTION: helper function for closing the RTC
+ *   INPUTS: pointer to the file descriptor that will be closed
+ *   OUTPUTS: none
+ *   RETURN VALUE: always return 0
+ *   SIDE EFFECTS: handles with closing RTC, reset frequency to 2 Hz.
+ */
+
+int32_t rtc_close(int32_t fd){
+    
+    /* RESET rtc frequnecy = 2 Hz */
+    rtc_set_int_freq(2);
+    return 0;
 }
 
 /*

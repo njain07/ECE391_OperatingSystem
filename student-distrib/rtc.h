@@ -50,14 +50,14 @@ void rtc_interrupt_handler(void);
 /* handler for opening RTC */
 int32_t rtc_open(const uint8_t* filename);
 
-/* handler for closing RTC */
-int32_t rtc_close(int32_t fd);
-
 /* handler for reading RTC */
 int32_t rtc_read(int32_t fd, void* buf, int32_t nbytes);
 
 /* handler for writing RTC */
 int32_t rtc_write(int32_t fd, const void* buf, int32_t nbytes);
+
+/* handler for closing RTC */
+int32_t rtc_close(int32_t fd);
 
 /* handler for setting an interrupt frequency of rtc */
 void rtc_set_int_freq(int32_t target_freq);
