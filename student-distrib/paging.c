@@ -30,7 +30,7 @@ void init_paging()
 	//page_directory[1]= FOUR_MB | S_RW_PRESENT ;
 	page_directory[1]= FOUR_MB |0xC3;
 
-
+	enable_4MB_Paging();
 	enable_paging();
 
 	
@@ -42,10 +42,6 @@ void enable_paging()
 		"movl $page_directory, %%eax;"	//move the address of the page directory into CR3 indirectly through eax
 		"movl %%eax, %%cr3;"
 
-		"xorl %%eax, %%eax;"
-		"movl %%cr4, %%eax;"
-    	"orl  $0x00000010, %%eax;"			 //sets bit 4 of register cr4 to enable 4MB page sizes 
-    	"movl %%eax, %%cr4;"
 
     	"xorl %%eax, %%eax;"
     	"movl %%cr0, %%eax;"
