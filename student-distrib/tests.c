@@ -48,13 +48,13 @@ int idt_test(){
 int idt_de_test(){
 	TEST_HEADER;
 
-	int a = 1/0;
-	return a;
-    // int* a = 0x4000;
-    // int* b = 0x7FFFFD;
-    // *a = 0;
-    // *b = 0;
-
+	// int a = 1/0;
+	// return a;
+    int* a = 0x4000;
+    int* b = 0x7FFFFFD;
+    *a = 0;
+    *b = 0;
+    return a;
 }
 
 // int idt_pf_test(){
