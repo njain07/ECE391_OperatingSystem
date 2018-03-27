@@ -10,6 +10,8 @@
  * History:
  *    SL    1    Sun Mar 11 14:20:50 2018
  *        First written for MP3.1
+ *    SL    2    Thu Mar 22 10:13:12 2018
+ *        Modified, commented for MP3.1 and added firstly for MP3.2
  */
 
 
@@ -39,5 +41,17 @@ void rtc_init(void);
 
 /* interrupt handler for rtc */
 void rtc_interrupt_handler(void);
+
+/* handler for opening RTC */
+int32_t rtc_open(const uint8_t* filename);
+
+/* handler for closing RTC */
+int32_t rtc_close(int32_t fd);
+
+/* handler for reading RTC */
+int32_t rtc_read(int32_t fd);
+
+/* handler for writing RTC */
+int32_t rtc_write(int32_t* buf, int32_t nbytes);
 
 #endif /* _RTC_H_ */
