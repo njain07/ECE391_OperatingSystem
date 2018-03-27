@@ -3,25 +3,30 @@
 
 #include "types.h" 
 #include "lib.h" 
+#include "pcb.h"
 
-typedef struct inode_t
-{
+// typedef struct inode_t
+// {
 
-} inode_t;
+// } inode_t;
 
 typedef struct dentry_t
 {
 	uint8_t file_name[33];
-	uint32_t file_type;
-	uint32_t inode_num;
+	uint32_t file_type;		//0 for a file giving user-level access to the RTC, 1 for directory, 2 for a regular file
+	uint32_t inode_num;		//only meaningful for regular files; ignored for RTC and directory
 } dentry_t;
 
-typedef struct boot_t
+typedef struct boot_block_t
 {
 	uint32_t num_dir;
 	uint32_t num_inodes;
 	uint32_t num_dblocks;
-} boot_t;
+	uint32_t reserved[13];
+	struct dentry_t dentries[63];
+} boot_block_t;
+
+boot_block_t* boot_block;
 
 extern void filesys_init();
 
