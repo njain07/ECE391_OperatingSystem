@@ -5,25 +5,29 @@
 #include "lib.h" 
 #include "pcb.h"
 
-#define FOUR_B 4
-#define EIGHT_B 8
-#define TWELVE_B 12
-#define SF_B 64
+#define FOUR_B 4*8
+#define EIGHT_B 8*8
+#define TWELVE_B 12*8
+#define SF_B 64*8
 
 #define DENTRY_FILE_NAME_SIZE 33
+#define DENTRY_PADDING 6
 #define BOOT_BLOCK_RESERVED 13
 #define NUM_DENTRIES 63
 
-// typedef struct inode_t
-// {
+#define FILESYS_ADDR 0x0040F000
 
-// } inode_t;
+typedef struct inode_t
+{
+	//make 64 bytes
+} inode_t;
 
 typedef struct dentry_t
 {
 	uint8_t file_name[DENTRY_FILE_NAME_SIZE];
 	uint32_t file_type;		//0 for a file giving user-level access to the RTC, 1 for directory, 2 for a regular file
 	uint32_t inode_num;		//only meaningful for regular files; ignored for RTC and directory
+	uint32_t padding[DENTRY_PADDING];
 } dentry_t;
 
 typedef struct boot_block_t
@@ -39,10 +43,15 @@ boot_block_t* boot_block;
 
 extern void filesys_init();
 
-int32_t filesys_open(const uint8_t* filename);
-int32_t filesys_read(int32_t fd, void* buf, int32_t nbytes);
-int32_t filesys_write(int32_t fd, const void* buf, int32_t nbytes);
-int32_t filesys_close(int32_t fd);
+int32_t file_open(const uint8_t* filename);
+int32_t file_read(int32_t fd, void* buf, int32_t nbytes);
+int32_t file_write(int32_t fd, const void* buf, int32_t nbytes);
+int32_t file_close(int32_t fd);
+
+int32_t dir_open(const uint8_t* filename);
+int32_t dir_read(int32_t fd, void* buf, int32_t nbytes);
+int32_t dir_write(int32_t fd, const void* buf, int32_t nbytes);
+int32_t dir_close(int32_t fd);
 
 int32_t read_dentry_by_name(const uint8_t* fname, dentry_t* dentry);
 int32_t read_dentry_by_index(uint32_t index, dentry_t* dentry);
