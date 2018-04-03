@@ -99,6 +99,47 @@ void no_fault_paging_test()
 	*var = *var;
 }
 /* Checkpoint 2 tests */
+<<<<<<< HEAD
+void rtc_test(){
+    clear();
+    rtc_interrupt_flag = 1;
+    rtc_open(NULL);
+}
+
+/*
+void rtc_test2(int* frequency){
+    clear();
+    rtc_interrupt_flag = 1;
+    
+    while(1){
+        if(rtc_count == 0){
+            rtc_open(NULL);
+            rtc_write(0,frequency,4);
+        }
+        
+        if(*frequency >= 1024)
+            break;
+        
+        if( (rtc_count % 80) == 0){
+            char c[1] = {'1'};
+            term_write(0,(char*)c,1);
+            *frequency *= 2;
+            rtc_write(0,frequency,4);
+        }
+    }
+}
+*/
+
+void rtc_test3(){
+    rtc_interrupt_flag = 1;
+    clear();
+    rtc_open(NULL);
+    rtc_read(0,0,0);
+    
+}
+
+
+=======
 void rtc_test4(){
 	clear();
 		int32_t buf[5] = {1, 2, 4, 8, 16};
@@ -112,6 +153,7 @@ void rtc_test4(){
 
 }
 
+>>>>>>> 1cc7ccdb38d318f347caee43c56eda1b451b8067
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */

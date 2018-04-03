@@ -19,8 +19,7 @@
 #include "i8259.h"
 #include "lib.h"
 
-/* Flag used in rtc_read prevent other possible interrupts occured during it, until it gets cleared */
-volatile int rtc_interrupt_flag = 0;
+
 
 
 /*
