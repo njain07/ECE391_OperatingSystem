@@ -5,21 +5,25 @@
 #include "lib.h" 
 #include "pcb.h"
 
-#define FOUR_B 4*8
-#define EIGHT_B 8*8
-#define TWELVE_B 12*8
-#define SF_B 64*8
+#define FOUR_B 1
+#define EIGHT_B 2
+#define TWELVE_B 3
+#define SF_B 16
 
+#define NUM_DATA_BLOCKS 1023
 #define DENTRY_FILE_NAME_SIZE 33
 #define DENTRY_PADDING 6
 #define BOOT_BLOCK_RESERVED 13
 #define NUM_DENTRIES 63
 
 #define FILESYS_ADDR 0x0040F000
+#define BLOCK_SIZE_ADDR 4096*8
+#define BLOCK_SIZE 4096
 
 typedef struct inode_t
 {
-	//make 64 bytes
+	uint32_t length;
+	uint32_t data_blocks[NUM_DATA_BLOCKS];
 } inode_t;
 
 typedef struct dentry_t
@@ -35,8 +39,8 @@ typedef struct boot_block_t
 	uint32_t num_dir;
 	uint32_t num_inodes;
 	uint32_t num_dblocks;
-	uint32_t reserved[BOOT_BLOCK_RESERVED];
-	struct dentry_t dentries[NUM_DENTRIES];
+	uint32_t* reserved;
+	dentry_t* dentries;
 } boot_block_t;
 
 boot_block_t* boot_block;

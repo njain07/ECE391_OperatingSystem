@@ -35,13 +35,13 @@ volatile int rtc_interrupt_flag = 0;
 void rtc_init(void){
     
     /* variable holding the old register value */
-    unsigned char old_reg_val = inb(RTC_DATA_PORT);
-    
     outb(RTC_NMIDIS_REG_B, RTC_REG_NUM_PORT);             // outportb(0x70, 0x8B), select register b, disable NMI
-    
+    unsigned char old_reg_val = inb(RTC_DATA_PORT);        // read from RTC_DATA_PORT
+
+    outb(RTC_NMIDIS_REG_B, RTC_REG_NUM_PORT);
     /* periodic interrupt, turning on IRQ8 */
     outb(old_reg_val | RTC_INTERRUPT, RTC_DATA_PORT);     // outportb(0x71, old_reg_val | 0x40) -- write the old register value ORed with 0x40, turning on bit 6 of register B
-    enable_irq(RTC_IRQ);
+    enable_irq(RTC_IRQ);                                    // write to RTC_DATA_PORT
 }
 
 
@@ -63,7 +63,7 @@ void rtc_interrupt_handler(void){
     inb(RTC_DATA_PORT);                                  // just throw away contents
     send_eoi(RTC_IRQ);                                   // done int, send EOI to IRQ8
     
-    rtc_interrupt_flag = 0;
+    rtc_interrupt_flag = 1;
     /* critical section ended */
     sti();
 }
@@ -98,10 +98,10 @@ int32_t rtc_open(const uint8_t* filename){
 int32_t rtc_read(int32_t fd, void* buf, int32_t nbytes){
     
     /* during interrupt, do nothing */
-    while(!rtc_interrupt_flag){ /* SPIN, waiting until the next RTC interrupt */  }
+    rtc_interrupt_flag = 0;
+    while(rtc_interrupt_flag == 0){ /* SPIN, waiting until the next RTC interrupt */  }
     
     /* clear the interrupt flag */
-    rtc_interrupt_flag = 0;
     return 0;
 }
 
@@ -153,7 +153,7 @@ int32_t rtc_write(int32_t fd, const void* buf, int32_t nbytes){
 int32_t rtc_close(int32_t fd){
     
     /* RESET rtc frequnecy = 2 Hz */
-    rtc_set_int_freq(2);
+    //rtc_set_int_freq(2);
     return 0;
 }
 

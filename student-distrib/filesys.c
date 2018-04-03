@@ -22,12 +22,13 @@
 extern void filesys_init()
 {
 	// boot_block = FILESYS_ADDR;
+	uint32_t* fa = (uint32_t*)FILESYS_ADDR;
 
-	boot_block->num_dir = *(FILESYS_ADDR);
-	boot_block->num_inodes = *(FILESYS_ADDR + FOUR_B);
-	boot_block->num_dblocks = *(FILESYS_ADDR + EIGHT_B);
-	boot_block->reserved = *(FILESYS_ADDR + TWELVE_B);
-	boot_block->dentries = *(FILESYS_ADDR + SF_B);
+	boot_block->num_dir = *(fa);
+	boot_block->num_inodes = *(fa + FOUR_B);
+	boot_block->num_dblocks = *(fa + EIGHT_B);
+	boot_block->reserved = (uint32_t*)(fa + TWELVE_B);
+	boot_block->dentries = (dentry_t*)(fa + SF_B);
 }
 
 /* file_open
@@ -39,7 +40,8 @@ extern void filesys_init()
  */
 int32_t file_open(const uint8_t* filename)
 {
-	read_dentry_by_name(filename)
+	dentry_t* dentry;
+	read_dentry_by_name(filename, dentry);
 	return 0;
 }
 
@@ -157,13 +159,14 @@ int32_t read_dentry_by_name(const uint8_t* fname, dentry_t* dentry)
 	{
 		for(index = 0; index < num_dentries; index++)
 		{
-			if(strncmp(fname, boot_block->dentries[index]->file_name, DENTRY_FILE_NAME_SIZE-1) == 0)
+			if(strncmp((int8_t*)fname, (int8_t*)boot_block->dentries[index].file_name, DENTRY_FILE_NAME_SIZE-1) == 0)
 			{
-				strncpy(dentry->file_name, boot_block->dentries[index]->file_name, DENTRY_FILE_NAME_SIZE-1);
+				strncpy((int8_t*)dentry->file_name, (int8_t*)boot_block->dentries[index].file_name, DENTRY_FILE_NAME_SIZE-1);
 				dentry->file_name[DENTRY_FILE_NAME_SIZE] = '\0';
-				dentry->file_type = boot_block->dentries[index]->file_type;
-				dentry->inode_num = boot_block->dentries[index]->inode_num;
+				dentry->file_type = boot_block->dentries[index].file_type;
+				dentry->inode_num = boot_block->dentries[index].inode_num;
 				retval = 0;
+				break;
 			}
 		}
 	}
@@ -186,24 +189,76 @@ int32_t read_dentry_by_index(uint32_t index, dentry_t* dentry)
 	if(index < 0 || index > (num_dentries-1) || dentry == NULL)
 		return -1;
 
-	strncpy(dentry->file_name, boot_block->dentries[index]->file_name, DENTRY_FILE_NAME_SIZE-1);
+	strncpy((int8_t*)dentry->file_name, (int8_t*)boot_block->dentries[index].file_name, DENTRY_FILE_NAME_SIZE-1);
 	dentry->file_name[DENTRY_FILE_NAME_SIZE] = '\0';
-	dentry->file_type = boot_block->dentries[index]->file_type;
-	dentry->inode_num = boot_block->dentries[index]->inode_num;
+	dentry->file_type = boot_block->dentries[index].file_type;
+	dentry->inode_num = boot_block->dentries[index].inode_num;
 	return 0;
 }
 
 /* read_data
- *   DESCRIPTION: 
- *   INPUTS: inode -- 
- *           offset -- 
- *           buf -- 
- *           length -- 
+ *   DESCRIPTION: reads data from the file corresponding to the inode
+ *   INPUTS: inode -- the inode of the file to read data from
+ *           offset -- number of bytes from the beginning of the filename
+ * 					   which gives the location to start reading
+ *           buf -- the buffer to be filled with the data being read
+ *           length -- number of bytes to read
  *   OUTPUTS: none
- *   RETURN VALUE: 
+ *   RETURN VALUE: number of bytes read for success, -1 for failure
  *   SIDE EFFECTS: 
  */
 int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length)
 {
-	return 0;
+	// check for valid inode
+	if(inode<0 || inode>=(boot_block->num_inodes))
+		return -1;
+
+	// find pointer to inode
+	inode_t* inode_ptr;
+	uint32_t* fa = (uint32_t*)FILESYS_ADDR;
+	inode_ptr = (inode_t*) *(fa + ((inode+1)*BLOCK_SIZE_ADDR));
+
+	// check for valid offset
+	if(offset<0 || offset>=(inode_ptr->length))
+		return -1;
+
+	// check for valid length
+	if(length<0)
+		return -1;
+	if((offset+length)>(inode_ptr->length))
+		length = (inode_ptr->length) - offset;
+
+	// loop through data blocks
+	uint32_t data_block, data_block_num, initial_offset, read_from_block, length_left, bytes_read_successfully;
+	uint8_t* data_block_ptr, * buf_ptr;
+	data_block = offset / BLOCK_SIZE;
+	initial_offset = offset % BLOCK_SIZE;
+
+	length_left = length;
+	buf_ptr = buf;
+	bytes_read_successfully = 0;
+	while(length_left > 0)
+	{
+		read_from_block = (length_left > BLOCK_SIZE)? BLOCK_SIZE : length_left;
+		data_block_num = inode_ptr->data_blocks[data_block];
+		data_block_ptr = (uint8_t*) *(fa + ((boot_block->num_inodes)*BLOCK_SIZE_ADDR) + (data_block_num*BLOCK_SIZE_ADDR));
+		if(data_block_ptr != NULL)
+		{
+			memcpy(buf_ptr, data_block_ptr, read_from_block);
+			bytes_read_successfully += read_from_block;
+		}
+		else
+		{
+			bytes_read_successfully = (bytes_read_successfully==0)? -1 : bytes_read_successfully;
+			return bytes_read_successfully;
+		}
+			
+
+		buf_ptr += read_from_block;
+		length_left = length_left - read_from_block;
+		if(length_left > 0)
+			data_block++;
+	}
+
+	return bytes_read_successfully;
 }
