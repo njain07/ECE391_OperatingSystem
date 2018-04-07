@@ -46,12 +46,12 @@ int idt_test(){
 	return result;
 }
 
-void zero_error(){
-	TEST_HEADER;
+// void zero_error(){
+// 	TEST_HEADER;
 
-	int a = 1/0;
+// 	int a = 1/0;
 
-}
+// }
 
 // int idt_pf_test(){
 // 	TEST_HEADER;
@@ -66,8 +66,8 @@ void zero_error(){
 // }
 void fault_paging_test()
 {
-	int* a = 0x4000;
-    int* b = 0x7FFFFFD;
+	int* a = (int*) 0x4000;
+    int* b = (int*) 0x7FFFFFD;
     *a = 0;
     *b = 0;
 }
@@ -143,22 +143,18 @@ void rtc_test4(){
 		int32_t buf[5] = {1, 2, 4, 8, 16};
 	rtc_init();
 
-	rtc_write(0, buf[0] ,4);
-	rtc_write(0, buf[1] ,4);
-	rtc_write(0, buf[2] ,4);
-	rtc_write(0, buf[3] ,4);
-	rtc_write(0, buf[4] ,4);
+	rtc_write(0, (void*)buf[0] ,4);
+	rtc_write(0, (void*)buf[1] ,4);
+	rtc_write(0, (void*)buf[2] ,4);
+	rtc_write(0, (void*)buf[3] ,4);
+	rtc_write(0, (void*)buf[4] ,4);
 
 }
 
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */
-void rtc_test()
-{
-	clear();
-	rtc_open(NULL); 
-}
+
 
 /* Test suite entry point */
 void launch_tests(){
