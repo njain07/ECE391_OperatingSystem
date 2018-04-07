@@ -32,6 +32,8 @@
  */
 
 void rtc_init(void){
+    /* interrupt flag set */
+    rtc_interrupt_flag = 0; // moved from rtc.h since any intialization in header files are inhibited.
     
     /* variable holding the old register value */
     outb(RTC_NMIDIS_REG_B, RTC_REG_NUM_PORT);             // outportb(0x70, 0x8B), select register b, disable NMI
@@ -41,6 +43,8 @@ void rtc_init(void){
     /* periodic interrupt, turning on IRQ8 */
     outb(old_reg_val | RTC_INTERRUPT, RTC_DATA_PORT);     // outportb(0x71, old_reg_val | 0x40) -- write the old register value ORed with 0x40, turning on bit 6 of register B
     enable_irq(RTC_IRQ);                                    // write to RTC_DATA_PORT
+    
+    test_interrupts();
 }
 
 
