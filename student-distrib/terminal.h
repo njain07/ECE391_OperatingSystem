@@ -20,7 +20,7 @@
 #include "keyboard.h"
 #include "lib.h"
 #include "rtc.h"
-#include "file_system.h"
+#include "filesys.h"
 
 
 #define  BUFFER_SIZE    128
@@ -62,5 +62,5 @@ int32_t terminal_read(int32_t fd, void* buf, int32_t nbytes);
 int32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes);
 
 /* Switch to the next terminal */
-void terminal_switch(uint8_t terminal_id)
+void terminal_switch(uint8_t terminal_id);
 #endif /* _TERMINAL_H_ */

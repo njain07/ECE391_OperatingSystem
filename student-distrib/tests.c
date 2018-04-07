@@ -99,7 +99,6 @@ void no_fault_paging_test()
 	*var = *var;
 }
 /* Checkpoint 2 tests */
-<<<<<<< HEAD
 void rtc_test(){
     clear();
     rtc_interrupt_flag = 1;
@@ -139,7 +138,6 @@ void rtc_test3(){
 }
 
 
-=======
 void rtc_test4(){
 	clear();
 		int32_t buf[5] = {1, 2, 4, 8, 16};
@@ -153,7 +151,6 @@ void rtc_test4(){
 
 }
 
->>>>>>> 1cc7ccdb38d318f347caee43c56eda1b451b8067
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */
