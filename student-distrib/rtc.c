@@ -43,8 +43,7 @@ void rtc_init(void){
     /* periodic interrupt, turning on IRQ8 */
     outb(old_reg_val | RTC_INTERRUPT, RTC_DATA_PORT);     // outportb(0x71, old_reg_val | 0x40) -- write the old register value ORed with 0x40, turning on bit 6 of register B
     enable_irq(RTC_IRQ);                                    // write to RTC_DATA_PORT
-    
-    test_interrupts();
+
 }
 
 
@@ -66,6 +65,7 @@ void rtc_interrupt_handler(void){
     inb(RTC_DATA_PORT);                                  // just throw away contents
     send_eoi(RTC_IRQ);                                   // done int, send EOI to IRQ8
     
+    test_interrupts();
     rtc_interrupt_flag = 1;
     /* critical section ended */
     sti();
