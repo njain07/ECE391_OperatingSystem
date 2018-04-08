@@ -44,20 +44,20 @@ void i8259_init(void) {
 
     /* ICW1, with master port and slave port */
     outb(ICW1, MASTER_8259_PORT);
-    outb(ICW1,  SLAVE_8259_PORT);
+    outb(ICW2_MASTER, MASTER_8259_PORT+1);
+    outb(ICW3_MASTER, MASTER_8259_PORT+1);
+    outb(ICW4, MASTER_8259_PORT+1);    
     
+    outb(ICW1,  SLAVE_8259_PORT);
     /* ICW2, set starting points of MASTER and SLAVE, a.k.a IRQ remapping */
     /* If device raises an interrupt that is connected to IRQ0, IRQ number will be 0x20 */
-    outb(ICW2_MASTER, MASTER_8259_PORT+1);
     outb(ICW2_SLAVE,   SLAVE_8259_PORT+1);
     
     /* ICW3, differente MASTER and SLAVE PICs */
     /* MASTER IRQ2 is connected with SLAVE PIC */
-    outb(ICW3_MASTER, MASTER_8259_PORT+1);
     outb(ICW3_SLAVE,  SLAVE_8259_PORT+1);
     
     /* ICW4, Check if master does AUTO EOI or normal EOI */
-    outb(ICW4, MASTER_8259_PORT+1);    
     outb(ICW4, SLAVE_8259_PORT+1);
  
     /* initiatlize SLAVE PIC */
@@ -190,8 +190,9 @@ void send_eoi(uint32_t irq_num) {
         return;
     
     /* save current flag */
+    //// chahnge made
     uint32_t flag_backup;
-    cli_and_save(flag_backup);
+    //cli_and_save(flag_backup);
     
     /* MASTER PIC, EOI return */
     if ((irq_num >= 0) && (irq_num <= 7)) {
@@ -200,11 +201,11 @@ void send_eoi(uint32_t irq_num) {
     }
     
     /* SLAVE PIC, EOI return */
-    if ((irq_num >= 0) && (irq_num <= 7)) {
+    if ((irq_num >= 8) && (irq_num <= 15)) {
         irq_num -= 8;
         //outb(slave_mask, SLAVE_8259_PORT + 1);
-        outb(EOI | irq_num,        MASTER_8259_PORT);
-        outb(EOI + IRQ2_FOR_SLAVE, MASTER_8259_PORT);
+        outb(EOI | irq_num,        SLAVE_8259_PORT);
+        outb(EOI | IRQ2_FOR_SLAVE, MASTER_8259_PORT);
     }
 
     //sti_and_restore(flag_backup);

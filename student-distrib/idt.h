@@ -9,30 +9,50 @@
 
 // Initalising the IDT
 void init_idt();
-
+extern void DE();
+// taken from the linux kernel
+typedef struct pt_regs {
+	long ebx;
+	long ecx;
+	long edx;
+	long esi;
+	long edi;
+	long ebp;
+	long eax;
+	int  xds;
+	int  xes;
+	int  xfs;
+	long orig_eax;
+	long eip;
+	int  xcs;
+	long eflags;
+	long esp;
+	int  xss;
+}pt_regs;
+char error_messages[19][100];
 // all the interrupt functions
-void DE();
-void DB();
-void NMI();
-void BP();
-void OF();
-void BR();
-void UD();
-void NM();
-void DF();
-void CSO();
-void TS();
-void NP();
-void SS();
-void GP();
-void PF();
-void IntelR();
-void MF();
-void AC();
-void MC();
-void XF();
-void Sys_Error();
-void unknown();
+// void DE();
+// void DB();
+// void NMI();
+// void BP();
+// void OF();
+// void BR();
+// void UD();
+// void NM();
+// void DF();
+// void CSO();
+// void TS();
+// void NP();
+// void SS();
+// void GP();
+// void PF();
+// void IntelR();
+// void MF();
+// void AC();
+// void MC();
+// void XF();
+// void Sys_Error();
+// void unknown();
 
 
 #endif

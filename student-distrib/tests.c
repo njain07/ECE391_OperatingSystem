@@ -167,17 +167,18 @@ void launch_tests(){
 	 //no_fault_paging_test();
 
 	 //checkpoint2
-	 int *ptr;
-	 int a= 2;
-	 ptr = &a;
-	 rtc_write(0,ptr,4);
-	 while(1<2)
-	 {
-			printf("1");
-	 		rtc_read(0,ptr,4);		
-			printf("2");
+	 // int *ptr;
+	 // int a= 2;
+	 // ptr = &a;
+	 // printf("A");
+	 // rtc_set_int_freq(2);
+	 // while(1<2)
+	 // {
+		// 	printf("1");
+	 // 		rtc_read(0,ptr,4);		
+		// 	printf("2");
 
-	 }
+	 // }
 
 
 }

@@ -42,6 +42,7 @@ void rtc_init(void){
     outb(RTC_NMIDIS_REG_B, RTC_REG_NUM_PORT);
     /* periodic interrupt, turning on IRQ8 */
     outb(old_reg_val | RTC_INTERRUPT, RTC_DATA_PORT);     // outportb(0x71, old_reg_val | 0x40) -- write the old register value ORed with 0x40, turning on bit 6 of register B
+    rtc_set_int_freq(2);
     enable_irq(RTC_IRQ);                                    // write to RTC_DATA_PORT
     // The last statement is confusing
 
@@ -66,7 +67,7 @@ void rtc_interrupt_handler(){
     inb(RTC_DATA_PORT);                                  // just throw away contents
     send_eoi(RTC_IRQ);                                   // done int, send EOI to IRQ8
     
-   // test_interrupts();                                 // let us keep this one in hold
+    test_interrupts();                                 // let us keep this one in hold
     rtc_interrupt_flag = 1;
     /* critical section ended */
     sti();
@@ -103,7 +104,8 @@ int32_t rtc_read(int32_t fd, void* buf, int32_t nbytes){
     
     /* during interrupt, do nothing */
     rtc_interrupt_flag = 0;
-    while(rtc_interrupt_flag == 0){ /* SPIN, waiting until the next RTC interrupt */  }
+    while(rtc_interrupt_flag == 0){ /* SPIN, waiting until the next RTC interrupt */  
+    }
     
     /* clear the interrupt flag */
     return 0;
