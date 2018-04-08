@@ -138,18 +138,18 @@ void rtc_test3(){
 }
 
 
-void rtc_test4(){
-	clear();
-		int32_t buf[5] = {1, 2, 4, 8, 16};
-	rtc_init();
+// void rtc_test4(){
+// 	clear();
+// 		int32_t buf[5] = {1, 2, 4, 8, 16};
+// 	rtc_init();
 
-	rtc_write(0, (void*)buf[0] ,4);
-	rtc_write(0, (void*)buf[1] ,4);
-	rtc_write(0, (void*)buf[2] ,4);
-	rtc_write(0, (void*)buf[3] ,4);
-	rtc_write(0, (void*)buf[4] ,4);
+// 	rtc_write(0, (void*)buf[0] ,4);
+// 	rtc_write(0, (void*)buf[1] ,4);
+// 	rtc_write(0, (void*)buf[2] ,4);
+// 	rtc_write(0, (void*)buf[3] ,4);
+// 	rtc_write(0, (void*)buf[4] ,4);
 
-}
+// }
 
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
@@ -158,7 +158,7 @@ void rtc_test4(){
 
 /* Test suite entry point */
 void launch_tests(){
-	TEST_OUTPUT("idt_test", idt_test());
+	//TEST_OUTPUT("idt_test", idt_test());
 	//while (1);
 	// launch your tests here
 	 //checkpoint1
@@ -167,5 +167,17 @@ void launch_tests(){
 	 //no_fault_paging_test();
 
 	 //checkpoint2
-	 rtc_test();
+	 int *ptr;
+	 int a= 2;
+	 ptr = &a;
+	 rtc_write(0,ptr,4);
+	 while(1<2)
+	 {
+			printf("1");
+	 		rtc_read(0,ptr,4);		
+			printf("2");
+
+	 }
+
+
 }

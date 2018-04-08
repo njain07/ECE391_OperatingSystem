@@ -4,7 +4,8 @@
 //importing files
 #include "x86_desc.h"
 #include "lib.h"
-
+#include "rtc.h"
+#include "interrupts.h"
 
 // Initalising the IDT
 void init_idt();
@@ -32,5 +33,6 @@ void MC();
 void XF();
 void Sys_Error();
 void unknown();
+
 
 #endif

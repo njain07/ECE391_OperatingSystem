@@ -176,5 +176,6 @@ void init_idt()
 				SET_IDT_ENTRY(idt[i], idt_interrupts[21]); // if this doesnt work try SET_IDT_ENTRY(idt[i], *unknown);
 			// note that we could change the if else if to add more interrupts when needed 
 		}
+	SET_IDT_ENTRY(idt[22], interrupt_rtc);
 		lidt(idt_desc_ptr);
 }

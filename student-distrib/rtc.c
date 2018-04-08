@@ -43,6 +43,7 @@ void rtc_init(void){
     /* periodic interrupt, turning on IRQ8 */
     outb(old_reg_val | RTC_INTERRUPT, RTC_DATA_PORT);     // outportb(0x71, old_reg_val | 0x40) -- write the old register value ORed with 0x40, turning on bit 6 of register B
     enable_irq(RTC_IRQ);                                    // write to RTC_DATA_PORT
+    // The last statement is confusing
 
 }
 
@@ -57,7 +58,7 @@ void rtc_init(void){
  *   SIDE EFFECTS: handles with RTC interrupts
  */
 
-void rtc_interrupt_handler(void){
+void rtc_interrupt_handler(){
     /* critical section */
     cli();
     
@@ -65,7 +66,7 @@ void rtc_interrupt_handler(void){
     inb(RTC_DATA_PORT);                                  // just throw away contents
     send_eoi(RTC_IRQ);                                   // done int, send EOI to IRQ8
     
-    test_interrupts();
+   // test_interrupts();                                 // let us keep this one in hold
     rtc_interrupt_flag = 1;
     /* critical section ended */
     sti();
@@ -122,7 +123,7 @@ int32_t rtc_write(int32_t fd, const void* buf, int32_t nbytes){
     
     /* set local variable */
     int32_t target_freq;
-    int i, count;
+    
     
     /* Boundary check, only accepts 4 bytes */
     if( (nbytes != 4) || ((int32_t)buf == NULL) )
@@ -131,15 +132,17 @@ int32_t rtc_write(int32_t fd, const void* buf, int32_t nbytes){
         target_freq = *((int32_t*)buf);
         
     /* set a interrupt freq as wanted */
+    cli();
     rtc_set_int_freq(target_freq);
-    
+    sti();
 
 
     /* testing */
-    for(i = 0; i < target_freq; i++){
-        count = 1;
-        putc('1');
-    }
+    //int i, count;
+    // for(i = 0; i < target_freq; i++){
+    //     count = 1;
+    //     putc('1');
+    // }
 
     return nbytes;
 }
