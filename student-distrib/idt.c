@@ -1,148 +1,148 @@
 #include "idt.h"
 
-// void DE()
-// {
-// 	cli();
-// 	printf(" Divide by Zero error \n" );
-// 	while(1);
-// }
+void DE()
+{
+	cli();
+	printf(" Divide by Zero error \n" );
+	while(1);
+}
 
-// void DB()
-// {
-// 	cli();
-// 	printf(" Reserved error \n" );
-// 	while(1);
-// }
-// void NMI()
-// {
-// 	cli();
-// 	printf(" NMI Interrupt \n" );
-// 	while(1);
-// }
-// void BP()
-// {
-// 	cli();
-// 	printf(" Breakpoint error \n" );
-// 	while(1);
-// }
+void DB()
+{
+	cli();
+	printf(" Reserved error \n" );
+	while(1);
+}
+void NMI()
+{
+	cli();
+	printf(" NMI Interrupt \n" );
+	while(1);
+}
+void BP()
+{
+	cli();
+	printf(" Breakpoint error \n" );
+	while(1);
+}
 
-// void OF()
-// {
-// 	cli();
-// 	printf(" Overflow error \n" );
-// 	while(1);
-// }
+ void OF()
+ {
+ 	cli();
+ 	printf(" Overflow error \n" );
+ 	while(1);
+ }
 
-// void BR()
-// {
-// 	cli();
-// 	printf(" Bound Range Exceeded error \n" );
-// 	while(1);
-// }
+ void BR()
+ {
+ 	cli();
+ 	printf(" Bound Range Exceeded error \n" );
+ 	while(1);
+ }
 
-// void UD()
-// {
-// 	cli();
-// 	printf(" Invalid Opcode \n" );
-// 	while(1);
-// }
+ void UD()
+ {
+ 	cli();
+ 	printf(" Invalid Opcode \n" );
+ 	while(1);
+ }
 
-// void NM()
-// {
-// 	cli();
-// 	printf(" Device not Available \n" );
-// 	while(1);
-// }
+ void NM()
+ {
+ 	cli();
+ 	printf(" Device not Available \n" );
+ 	while(1);
+ }
 
-// void DF()
-// {
-// 	cli();
-// 	printf(" Double Fault \n" );
-// 	while(1);
-// }
+ void DF()
+ {
+ 	cli();
+ 	printf(" Double Fault \n" );
+ 	while(1);
+ }
 
-// void CSO()
-// {
-// 	cli();
-// 	printf(" Coprocessor Segment Overrun\n" );
-// 	while(1);
-// }
+ void CSO()
+ {
+ 	cli();
+ 	printf(" Coprocessor Segment Overrun\n" );
+ 	while(1);
+ }
 
-// void TS()
-// {
-// 	cli();
-// 	printf(" Invalid TSS\n" );
-// 	while(1);
-// }
+ void TS()
+ {
+ 	cli();
+ 	printf(" Invalid TSS\n" );
+ 	while(1);
+ }
 
-// void NP()
-// {
-// 	cli();
-// 	printf(" Segment not present\n" );
-// 	while(1);
-// }
+ void NP()
+ {
+ 	cli();
+ 	printf(" Segment not present\n" );
+ 	while(1);
+ }
 
-// void SS()
-// {
-// 	cli();
-// 	printf(" Stack Segment fault\n" );
-// 	while(1);
-// }
+ void SS()
+ {
+ 	cli();
+ 	printf(" Stack Segment fault\n" );
+ 	while(1);
+ }
 
-// void GP()
-// {
-// 	cli();
-// 	printf(" General Protection\n" );
-// 	while(1);
-// }
+ void GP()
+ {
+ 	cli();
+ 	printf(" General Protection\n" );
+ 	while(1);
+ }
 
-// void PF()
-// {
-// 	cli();
-// 	printf(" Page Fault\n" );
-// 	while(1);
-// }
-// void IntelR()
-// {
-// 	cli();
-// 	printf(" Intel Reserved\n" );
-// 	while(1);
-// }
+ void PF()
+ {
+ 	cli();
+ 	printf(" Page Fault\n" );
+ 	while(1);
+ }
+ void IntelR()
+ {
+ 	cli();
+ 	printf(" Intel Reserved\n" );
+ 	while(1);
+ }
 
-// void MF()
-// {
-// 	cli();
-// 	printf(" Floating Point Error\n" );
-// 	while(1);
-// }
+ void MF()
+ {
+ 	cli();
+ 	printf(" Floating Point Error\n" );
+ 	while(1);
+ }
 
-// void AC()
-// {
-// 	cli();
-// 	printf(" Alignment Check\n" );
-// 	while(1);
-// }
+ void AC()
+ {
+ 	cli();
+ 	printf(" Alignment Check\n" );
+ 	while(1);
+ }
 
-// void MC()
-// {
-// 	cli();
-// 	printf(" Machine Check\n" );
-// 	while(1);
-// }
+ void MC()
+ {
+ 	cli();
+ 	printf(" Machine Check\n" );
+ 	while(1);
+ }
 
-// void XF()
-// {
-// 	cli();
-// 	printf(" SIMD Floating Point Exception\n" );
-// 	while(1);
-// }
+ void XF()
+ {
+ 	cli();
+ 	printf(" SIMD Floating Point Exception\n" );
+ 	while(1);
+ }
 
-// void Sys_Error()
-// {
-// 	cli();
-// 	printf(" System Error\n" );
-// 	while(1);
-// }
+ void Sys_Error()
+ {
+ 	cli();
+ 	printf(" System Error\n" );
+ 	while(1);
+ }
 
 void unknown()
 {
@@ -151,15 +151,16 @@ void unknown()
 	while(1);
 }
 
-void do_irq(pt_regs *pt){
+void do_irq(int i){
 	// get i to hold the vec num pushed by the assembly code
 	// using the pt_regs struct
-	int i = pt->orig_eax;
 	if(i==40){
 		rtc_interrupt_handler();
 	}
 	printf("The exception raised was :");
 }
+
+
 void init_idt()
 {
 	int i;
@@ -173,7 +174,7 @@ void init_idt()
 			idt[i].reserved1 = 1; // theese three lines initialises the entry to be that of an interrupt gate since they are all 32 bits
 			idt[i].reserved0 = 0; 
 			idt[i].dpl = 0;
-			if(i == 0x80 || i == 0x28) 		//remember to magic number this one
+			if(i == 0x80) 		//remember to magic number this one
 				{
 					idt[i].dpl = 3;
 					idt[i].reserved3 = 1;

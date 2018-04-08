@@ -1,4 +1,4 @@
-.global interrupt_rtc, DE, DB,NMI
+.global interrupt_rtc #, DE, DB,NMI
 # Ok so we need to write assembly code to ensure 
 interrupt_rtc:
 		pushl $40
@@ -102,7 +102,7 @@ common_interrupt:
     pushw %es
     #pushw $0
     pushw %ds
-
+    # cli	
     push %eax
     push %ebp
     push %edi
@@ -111,10 +111,11 @@ common_interrupt:
     push %ecx
     push %ebx
     push %esp
+    pushl 38(%esp)	
 
     call do_irq
 
-    addl $4,%esp
+    addl $8,%esp
     pop  %ebx
     pop  %ecx
     pop  %edx
@@ -122,10 +123,11 @@ common_interrupt:
     pop  %edi
     pop  %ebp
     pop  %eax
-
+    # sti	
     popw %ds
     popw %es
     popw %fs
+    addl $4,%esp
     iret
 	# call a common C based exception Handler
 
