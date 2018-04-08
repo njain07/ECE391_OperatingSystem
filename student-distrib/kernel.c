@@ -144,7 +144,7 @@ void entry(unsigned long magic, unsigned long addr) {
     i8259_init();
     init_paging();
     rtc_init();
-    keyboard_init();
+    //keyboard_init();
 
     /* Enable interrupts */
     /* Do not enable the following until after you have set up your

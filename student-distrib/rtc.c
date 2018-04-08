@@ -42,7 +42,7 @@ void rtc_init(void){
     outb(RTC_NMIDIS_REG_B, RTC_REG_NUM_PORT);
     /* periodic interrupt, turning on IRQ8 */
     outb(old_reg_val | RTC_INTERRUPT, RTC_DATA_PORT);     // outportb(0x71, old_reg_val | 0x40) -- write the old register value ORed with 0x40, turning on bit 6 of register B
-    rtc_set_int_freq(2);
+    rtc_set_int_freq(2); 
     enable_irq(RTC_IRQ);                                    // write to RTC_DATA_PORT
     // The last statement is confusing
 

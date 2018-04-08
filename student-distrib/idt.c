@@ -144,12 +144,12 @@
 // 	while(1);
 // }
 
-void unknown()
-{
-	cli();
-	printf(" unknown error\n" );
-	while(1);
-}
+// void unknown()
+// {
+// 	cli();
+// 	printf(" unknown error\n" );
+// 	while(1);
+// }
 
 void do_irq(pt_regs *pt){
 	// get i to hold the vec num pushed by the assembly code
