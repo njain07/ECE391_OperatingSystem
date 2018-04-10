@@ -1,4 +1,5 @@
-.global interrupt_rtc #, DE, DB,NMI
+.global interrupt_rtc ,DE,DB,NMI,BP,OF,BR,UD,NM,DF,CSO,TS,NP,SS,GP,PF,IntelR,MF,AC,MC,XF,unknown
+
 # Ok so we need to write assembly code to ensure 
 interrupt_rtc:
 		pushl $40

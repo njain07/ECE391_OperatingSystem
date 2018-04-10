@@ -1,155 +1,155 @@
 #include "idt.h"
 
-void DE()
-{
-	cli();
-	printf(" Divide by Zero error \n" );
-	while(1);
-}
+// void DE()
+// {
+// 	cli();
+// 	printf(" Divide by Zero error \n" );
+// 	while(1);
+// }
 
-void DB()
-{
-	cli();
-	printf(" Reserved error \n" );
-	while(1);
-}
-void NMI()
-{
-	cli();
-	printf(" NMI Interrupt \n" );
-	while(1);
-}
-void BP()
-{
-	cli();
-	printf(" Breakpoint error \n" );
-	while(1);
-}
+// void DB()
+// {
+// 	cli();
+// 	printf(" Reserved error \n" );
+// 	while(1);
+// }
+// void NMI()
+// {
+// 	cli();
+// 	printf(" NMI Interrupt \n" );
+// 	while(1);
+// }
+// void BP()
+// {
+// 	cli();
+// 	printf(" Breakpoint error \n" );
+// 	while(1);
+// }
 
- void OF()
- {
- 	cli();
- 	printf(" Overflow error \n" );
- 	while(1);
- }
+//  void OF()
+//  {
+//  	cli();
+//  	printf(" Overflow error \n" );
+//  	while(1);
+//  }
 
- void BR()
- {
- 	cli();
- 	printf(" Bound Range Exceeded error \n" );
- 	while(1);
- }
+//  void BR()
+//  {
+//  	cli();
+//  	printf(" Bound Range Exceeded error \n" );
+//  	while(1);
+//  }
 
- void UD()
- {
- 	cli();
- 	printf(" Invalid Opcode \n" );
- 	while(1);
- }
+//  void UD()
+//  {
+//  	cli();
+//  	printf(" Invalid Opcode \n" );
+//  	while(1);
+//  }
 
- void NM()
- {
- 	cli();
- 	printf(" Device not Available \n" );
- 	while(1);
- }
+//  void NM()
+//  {
+//  	cli();
+//  	printf(" Device not Available \n" );
+//  	while(1);
+//  }
 
- void DF()
- {
- 	cli();
- 	printf(" Double Fault \n" );
- 	while(1);
- }
+//  void DF()
+//  {
+//  	cli();
+//  	printf(" Double Fault \n" );
+//  	while(1);
+//  }
 
- void CSO()
- {
- 	cli();
- 	printf(" Coprocessor Segment Overrun\n" );
- 	while(1);
- }
+//  void CSO()
+//  {
+//  	cli();
+//  	printf(" Coprocessor Segment Overrun\n" );
+//  	while(1);
+//  }
 
- void TS()
- {
- 	cli();
- 	printf(" Invalid TSS\n" );
- 	while(1);
- }
+//  void TS()
+//  {
+//  	cli();
+//  	printf(" Invalid TSS\n" );
+//  	while(1);
+//  }
 
- void NP()
- {
- 	cli();
- 	printf(" Segment not present\n" );
- 	while(1);
- }
+//  void NP()
+//  {
+//  	cli();
+//  	printf(" Segment not present\n" );
+//  	while(1);
+//  }
 
- void SS()
- {
- 	cli();
- 	printf(" Stack Segment fault\n" );
- 	while(1);
- }
+//  void SS()
+//  {
+//  	cli();
+//  	printf(" Stack Segment fault\n" );
+//  	while(1);
+//  }
 
- void GP()
- {
- 	cli();
- 	printf(" General Protection\n" );
- 	while(1);
- }
+//  void GP()
+//  {
+//  	cli();
+//  	printf(" General Protection\n" );
+//  	while(1);
+//  }
 
- void PF()
- {
- 	cli();
- 	printf(" Page Fault\n" );
- 	while(1);
- }
- void IntelR()
- {
- 	cli();
- 	printf(" Intel Reserved\n" );
- 	while(1);
- }
+//  void PF()
+//  {
+//  	cli();
+//  	printf(" Page Fault\n" );
+//  	while(1);
+//  }
+//  void IntelR()
+//  {
+//  	cli();
+//  	printf(" Intel Reserved\n" );
+//  	while(1);
+//  }
 
- void MF()
- {
- 	cli();
- 	printf(" Floating Point Error\n" );
- 	while(1);
- }
+//  void MF()
+//  {
+//  	cli();
+//  	printf(" Floating Point Error\n" );
+//  	while(1);
+//  }
 
- void AC()
- {
- 	cli();
- 	printf(" Alignment Check\n" );
- 	while(1);
- }
+//  void AC()
+//  {
+//  	cli();
+//  	printf(" Alignment Check\n" );
+//  	while(1);
+//  }
 
- void MC()
- {
- 	cli();
- 	printf(" Machine Check\n" );
- 	while(1);
- }
+//  void MC()
+//  {
+//  	cli();
+//  	printf(" Machine Check\n" );
+//  	while(1);
+//  }
 
- void XF()
- {
- 	cli();
- 	printf(" SIMD Floating Point Exception\n" );
- 	while(1);
- }
+//  void XF()
+//  {
+//  	cli();
+//  	printf(" SIMD Floating Point Exception\n" );
+//  	while(1);
+//  }
 
- void Sys_Error()
- {
- 	cli();
- 	printf(" System Error\n" );
- 	while(1);
- }
+//  void Sys_Error()
+//  {
+//  	cli();
+//  	printf(" System Error\n" );
+//  	while(1);
+//  }
 
-void unknown()
-{
-	cli();
-	printf(" unknown error\n" );
-	while(1);
-}
+// void unknown()
+// {
+// 	cli();
+// 	printf(" unknown error\n" );
+// 	while(1);
+// }
 
 void do_irq(int i){
 	// get i to hold the vec num pushed by the assembly code
@@ -157,7 +157,7 @@ void do_irq(int i){
 	if(i==40){
 		rtc_interrupt_handler();
 	}
-	printf("The exception raised was :");
+	printf("The exception raised was : %s",error_messages[i]);
 }
 
 
@@ -210,5 +210,28 @@ void init_idt()
 	SET_IDT_ENTRY(idt[17],AC);
 	SET_IDT_ENTRY(idt[18],MC);
 	SET_IDT_ENTRY(idt[19],XF);
-		lidt(idt_desc_ptr);
+	lidt(idt_desc_ptr);
+
+	//initalizing strings 
+	error_messages[0]= " Divide by Zero error \n";
+	error_messages[1]= " Reserved error \n";
+	error_messages[2]= " NMI Interrupt \n" ;
+	error_messages[3]= " Breakpoint error \n"; 
+	error_messages[4]= " Overflow error \n" ;
+	error_messages[5]= " Bound Range Exceeded error \n" ;
+	error_messages[6]= " Invalid Opcode \n" ;
+	error_messages[7]= " Device not Available \n";
+	error_messages[8]= " Double Fault \n" ;
+	error_messages[9]= " Coprocessor Segment Overrun\n" ;
+	error_messages[10]= " Invalid TSS\n";
+	error_messages[11]= " Segment not present\n";
+	error_messages[12]= " Stack Segment fault\n";
+	error_messages[13]= " General Protection\n";
+	error_messages[14]= " Page Fault\n";
+	error_messages[15]= " Intel Reserved\n";
+	error_messages[16]= " Floating Point Error\n";
+	error_messages[17]= " Alignment Check\n";
+	error_messages[18]= " Machine Check\n";
+	error_messages[19]= " SIMD Floating Point Exception\n";
+	error_messages[20]= " unknown error \n";
 }
