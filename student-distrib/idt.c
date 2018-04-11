@@ -157,9 +157,11 @@ void do_irq(int i){
 	if(i==40){
 		rtc_interrupt_handler();
 	}
+	else{
 	printf("The exception raised was : %s",error_messages[i]);
+	while(1);
 }
-
+}
 
 void init_idt()
 {
@@ -169,12 +171,14 @@ void init_idt()
 	for (i = 0; i < NUM_VEC; i++)
 		{
 			idt[i].seg_selector = KERNEL_CS;
-			idt[i].reserved3 = 0;
+			idt[i].reserved4 = 0;
+			idt[i].reserved3 = 1;
 			idt[i].reserved2 = 1;
 			idt[i].reserved1 = 1; // theese three lines initialises the entry to be that of an interrupt gate since they are all 32 bits
 			idt[i].reserved0 = 0; 
 			idt[i].dpl = 0;
-			if(i == 0x80) 		//remember to magic number this one
+			idt[i].size = 1;
+			if(i == 0x80 ) 		//remember to magic number this one
 				{
 					idt[i].dpl = 3;
 					idt[i].reserved3 = 1;
