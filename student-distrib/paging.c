@@ -8,7 +8,7 @@
 //one page is 4kb
 //video memory is 4kb page
 //one page table is 4mb
-//one page directory is 4gb
+//one page directory is 4gb2
 
 /*
  * init_paging
@@ -37,7 +37,7 @@ void init_paging()
 	//page_directory[1]= FOUR_MB | S_RW_PRESENT ;
 	page_directory[1]= FOUR_MB |0x83;
 
-	enable_4MB_Paging();
+	//enable_4MB_Paging();
 	enable_paging();
 
 	
@@ -53,37 +53,36 @@ void init_paging()
  * 				   CR0 - the 32nd bit of this register holds the paging bit; we set it to 1 to enable paging
  * 				   CR3 - holds the address of the page directory; used when virtual addressing is enabled
  */
-void enable_paging()
+void enable_paging() // take page directory as a
 {
     asm volatile (
-		"movl $page_directory, %%eax;"	/* move the address of the page directory into CR3 indirectly through eax */
+		"movl %0, %%eax;"	/* move the address of the page directory into CR3 indirectly through eax */
 		"movl %%eax, %%cr3;"
-
+    	"movl %%cr4, %%eax;"
+    	"orl  $0x00000010, %%eax;"
+    	"movl %%eax, %%cr4;"
     	"xorl %%eax, %%eax;"
     	"movl %%cr0, %%eax;"
     	"orl  $0x80000000, %%eax;"	 	/* sets bit 31 of register cr0 to enable paging */
     	"movl %%eax, %%cr0;"
     	:
-        :
+        :"r"(page_directory)
         : "eax"
     );
 
 }
 
-/* enable_4MB_Paging
- * Inputs: none
- * Return Value: None
- * Function: sets bit 4 of register cr4 to enable 4MB page sizes for the kernel
- */
-void enable_4MB_Paging()
-{
-    asm volatile (
-    	"movl %%cr4, %%eax;"
-    	"orl  $0x00000010, %%eax;"
-    	"movl %%eax, %%cr4;"
-    	:
-        :
-        : "eax"
-    );
-}
+//  enable_4MB_Paging
+//  * Inputs: none
+//  * Return Value: None
+//  * Function: sets bit 4 of register cr4 to enable 4MB page sizes for the kernel
+ 
+// void enable_4MB_Paging()
+// {
+//     asm volatile (
+//     	:
+//         :
+//         : "eax"
+//     );
+// }
 

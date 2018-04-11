@@ -25,6 +25,6 @@ int page_directory[ONE_KB] __attribute__((aligned (FOUR_KB)));
 void init_paging();
 //void create4MBpage();
 //void create4KBpage();
-void enable_4MB_Paging();
+//void enable_4MB_Paging();
 void enable_paging();
 #endif

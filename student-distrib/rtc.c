@@ -61,16 +61,17 @@ void rtc_init(void){
 
 void rtc_interrupt_handler(){
     /* critical section */
-    cli();
-    
+    // cli();
     outb(RTC_STATUS_REG_C, RTC_REG_NUM_PORT);            // select Register C, read from register C
     inb(RTC_DATA_PORT);                                  // just throw away contents
+    putc('a');
+
     send_eoi(RTC_IRQ);                                   // done int, send EOI to IRQ8
     
-    test_interrupts();                                 // let us keep this one in hold
+    // test_interrupts();                                 // let us keep this one in hold
     rtc_interrupt_flag = 1;
     /* critical section ended */
-    sti();
+    // sti();
 }
 
 
