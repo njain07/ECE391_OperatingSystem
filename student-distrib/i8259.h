@@ -41,7 +41,7 @@
 
 /* Magic numbers declared for i8259_init */
 #define ENABLE_IRQ_MASK     0xFF //0xFE
-#define DISABLE_IRQ_MASK    0x01
+#define DISABLE_IRQ_MASK    0x00 //0x01
 #define MASK_ALL  			0xFF
 #define IRQ2_FOR_SLAVE	 	0x02
 

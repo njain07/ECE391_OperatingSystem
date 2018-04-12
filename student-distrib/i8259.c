@@ -36,29 +36,27 @@ uint8_t slave_mask;  /* IRQs 8-15 */
 void i8259_init(void) {
     
 
-    /* OSDEV says we should have flag stored beforehand, but do we?
-     mask all MASKS before even starting the initialization */
+    /* clear all IRQ lines
+     * mask all MASKS before even starting the initialization 
+     */
     master_mask = MASK_ALL;
     slave_mask = MASK_ALL;
 
-    // CLEAR ALL IRQ LINES
-
+    /* If device raises an interrupt that is connected to IRQ0, IRQ number will be 0x20 */
+    /* MASTER IRQ2 is connected with SLAVE PIC */
     /* ICW1, with master port and slave port */
+    /* ICW2, set starting points of MASTER and SLAVE, a.k.a IRQ remapping */
+    /* ICW3, differente MASTER and SLAVE PICs */
+    /* ICW4, Check if master does AUTO EOI or normal EOI */
+    
     outb(ICW1, MASTER_8259_PORT);
     outb(ICW2_MASTER, MASTER_8259_PORT+1);
     outb(ICW3_MASTER, MASTER_8259_PORT+1);
-    outb(ICW4, MASTER_8259_PORT+1);    
-    
+    outb(ICW4, MASTER_8259_PORT+1); 
+
     outb(ICW1,  SLAVE_8259_PORT);
-    /* ICW2, set starting points of MASTER and SLAVE, a.k.a IRQ remapping */
-    /* If device raises an interrupt that is connected to IRQ0, IRQ number will be 0x20 */
     outb(ICW2_SLAVE,   SLAVE_8259_PORT+1);
-    
-    /* ICW3, differente MASTER and SLAVE PICs */
-    /* MASTER IRQ2 is connected with SLAVE PIC */
     outb(ICW3_SLAVE,  SLAVE_8259_PORT+1);
-    
-    /* ICW4, Check if master does AUTO EOI or normal EOI */
     outb(ICW4, SLAVE_8259_PORT+1);
  
     /* initiatlize SLAVE PIC */
@@ -83,10 +81,8 @@ void enable_irq(uint32_t irq_num) {
     if ( (irq_num < 0) || (irq_num > 15) )
         return;
     
-    /* initiate mask = 1111 1110, active low */
-    // uint8_t master_mask;
+    /* initiate mask = 1111 1111, active low */
     uint8_t temp_mask = ENABLE_IRQ_MASK;
-    int i = 0;
     
     /* If irq_num is in bound of MASTER PIC */
     if ( (irq_num >= 0) && (irq_num <= 7) ){
@@ -95,8 +91,13 @@ void enable_irq(uint32_t irq_num) {
         // for (i = 0; i < irq_num; i++){
         //     temp_mask = (temp_mask << 1) + 1;
         // }
+
         // irq = 2
         // 1111 1011
+        // irq = 3
+        // 1111 0111
+        // irq = 4
+        // 1110 1111
 
         temp_mask = ~(0x1 << irq_num);
         
@@ -142,19 +143,19 @@ void disable_irq(uint32_t irq_num) {
     if ((irq_num < 0) || (irq_num > 15))
         return;
     
-    /* initiate mask = 0000 0001, undo enable_irq */
-    uint8_t master_mask;
+    /* initiate mask = 0000 0000, undo enable_irq */
     uint8_t temp_mask = DISABLE_IRQ_MASK;
-    int i = 0;
     
     /* If irq_num is in bound of MASTER PIC */
     if ((irq_num >= 0) && (irq_num <= 7)) {
         
-        /* left shift on the mask, 0 on each bit is moving to left */
-        for (i = 0; i < irq_num; i++){
-            temp_mask = temp_mask << 1;
-        }
+        // /* left shift on the mask, 0 on each bit is moving to left */
+        // for (i = 0; i < irq_num; i++){
+        //     temp_mask = temp_mask << 1;
+        // }
         
+        temp_mask = 0x1 << irq_num;
+
         master_mask = master_mask | temp_mask;
         outb(master_mask, MASTER_8259_PORT + 1);
         return;
@@ -166,11 +167,13 @@ void disable_irq(uint32_t irq_num) {
         /* subtract irq_num by 8(range: 0 to 7) */
         irq_num -= 8;
         
-        /* left shift on the mask, 0 on each bit is moving to left */
-        for (i = 0; i < irq_num; i++) {
-            temp_mask = temp_mask << 1; 
-        }
+        // /* left shift on the mask, 0 on each bit is moving to left */
+        // for (i = 0; i < irq_num; i++) {
+        //     temp_mask = temp_mask << 1; 
+        // }
         
+        temp_mask = 0x1 << irq_num;
+
         slave_mask = slave_mask | temp_mask;
         outb(slave_mask, SLAVE_8259_PORT + 1);
         return;

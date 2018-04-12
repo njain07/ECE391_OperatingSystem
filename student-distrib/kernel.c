@@ -153,11 +153,12 @@ void entry(unsigned long magic, unsigned long addr) {
             disable_irq(i);
 	}
 
-    enable_irq(1); //keyboard
-    // enable_irq(8); //rtc
-
 
     /* Enable interrupts */
+    // enable_irq(1); //keyboard
+    enable_irq(8); //rtc
+    
+
     /* Do not enable the following until after you have set up your
      * IDT correctly otherwise QEMU will triple fault and simple close
      * without showing you any output */

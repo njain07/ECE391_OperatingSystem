@@ -181,7 +181,7 @@ void init_idt()
 			idt[i].reserved4 = 0;
 			idt[i].reserved3 = 0; //when set to 1 -> trap gate
 			idt[i].reserved2 = 1;
-			idt[i].reserved1 = 1; // these three lines initialises the entry to be that of an interrupt gate since they are all 32 bits
+			idt[i].reserved1 = 1; // these three lines initialize the entry to be that of an interrupt gate since they are all 32 bits
 			idt[i].reserved0 = 0; 
 			idt[i].dpl = 0;
 			idt[i].size = 1;
