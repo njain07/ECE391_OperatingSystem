@@ -10,6 +10,7 @@
 #include "i8259.h"
 
 #define KEYBOARD_IRQ    1
+#define KEYBOARD_STATUS_PORT 0x64
 #define KEYBOARD_PORT   0x60
 #define KEYBOARD_NUM    60
 #define BUFFER_SIZE     128
@@ -46,7 +47,7 @@ extern char keyboard_buffer[BUFFER_SIZE];
 void keyboard_init(void);
 
 /* read the scancode */
-char get_character(char scancode);
+char get_character(uint8_t scancode);
 
 /* keyboard helper function */
 void keyboard_interrupt_handler();

@@ -153,7 +153,6 @@
 void do_irq(int i){
 	// get i to hold the vec num pushed by the assembly code
 	// using the pt_regs struct
-	printf("%x", i);
 
 	if(i==40)
 	{

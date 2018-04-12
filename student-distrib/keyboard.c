@@ -15,8 +15,9 @@ void keyboard_init(void) {
 }
 
 /* Read the actual character and return it */
-char get_character(char scancode){
+char get_character(uint8_t scancode){
     char return_char;
+    printf("scancode: %x", scancode);
     switch (scancode){
         case 0x0B:    return_char = '0';    break;
         case 0x02:    return_char = '1';    break;
@@ -54,7 +55,7 @@ char get_character(char scancode){
         case 0x2D:    return_char = 'x';    break;
         case 0x15:    return_char = 'y';    break;
         case 0x2C:    return_char = 'z';    break;
-        default:      return_char = KEY_NULL;    break;
+        default:      return_char = 'x';    break;
     }
     
     return return_char;
@@ -95,30 +96,28 @@ char get_character(char scancode){
 
 void keyboard_interrupt_handler(void){
     
-    char scancode = 0;
+    uint8_t scancode = 0;
     char print_char = 0;
     
     /* critical section started */
     cli();
     send_eoi(KEYBOARD_IRQ);
-    do{
-        scancode=inb(KEYBOARD_PORT);
-        putc(scancode);
-    } while (scancode >= 0);
 
-    /* interpret the character */
-    print_char = get_character(scancode);
+    if(inb(KEYBOARD_STATUS_PORT))
+    {
+        scancode = inb(KEYBOARD_PORT);
     
-    /* putting into keyboard buffer */
-    if(buffer_index < BUFFER_SIZE-1)
-        buffer[buffer_index++] = print_char;
-    
-    /* echo to the screen */
-    putc(print_char);
-    
-    /* INTERRUPT ended */
-    
-    
+        /* interpret the character */
+        print_char = get_character(scancode);
+        
+        /* putting into keyboard buffer */
+        if(buffer_index < BUFFER_SIZE-1)
+            buffer[buffer_index++] = print_char;
+        
+        /* echo to the screen */
+        // putc(print_char);
+    }
+
     /* critical section ended */
     sti();
 }
