@@ -15,7 +15,7 @@ void keyboard_init(void) {
 }
 
 /* Read the actual character and return it */
-char get_scancode(char scancode){
+char get_character(char scancode){
     char return_char;
     switch (scancode){
         case 0x0B:    return_char = '0';    break;
@@ -58,6 +58,39 @@ char get_scancode(char scancode){
     }
     
     return return_char;
+
+    //print scancodes to check which set to use
+    //handle unknown scancodes
+
+    // if(flags->shift == 0 && flags->caps == 0 && flags->ctrl == 0 && flags->alt == 0)
+    // {
+
+    // }
+
+    // else if(flags->shift == 1 && flags->caps == 0 && flags->ctrl == 0 && flags->alt == 0)
+    // {
+        
+    // }
+
+    // else if(flags->shift == 0 && flags->caps == 1 && flags->ctrl == 0 && flags->alt == 0)
+    // {
+        
+    // }
+
+    // else if(flags->shift == 0 && flags->caps == 0 && flags->ctrl == 1 && flags->alt == 0)
+    // {
+        
+    // }
+
+    // else if(flags->shift == 0 && flags->caps == 0 && flags->ctrl == 0 && flags->alt == 1)
+    // {
+        
+    // }
+
+    // else if(flags->shift == 1 && flags->caps == 1 && flags->ctrl == 0 && flags->alt == 0)
+    // {
+        
+    // }
 }
 
 void keyboard_interrupt_handler(void){
@@ -67,13 +100,14 @@ void keyboard_interrupt_handler(void){
     
     /* critical section started */
     cli();
-    
+    send_eoi(KEYBOARD_IRQ);
     do{
         scancode=inb(KEYBOARD_PORT);
-    } while (scancode <= 0);
+        putc(scancode);
+    } while (scancode >= 0);
 
     /* interpret the character */
-    print_char = get_scancode(scancode);
+    print_char = get_character(scancode);
     
     /* putting into keyboard buffer */
     if(buffer_index < BUFFER_SIZE-1)
@@ -83,7 +117,7 @@ void keyboard_interrupt_handler(void){
     putc(print_char);
     
     /* INTERRUPT ended */
-    send_eoi(KEYBOARD_IRQ);
+    
     
     /* critical section ended */
     sti();
@@ -93,8 +127,9 @@ void keyboard_interrupt_handler(void){
 /* clear the whole buffer  */
 void clear_buffer(void){
     int i;
-    for(i=0; i < BUFFER_SIZE; i++){
+
+    for(i=0; i < BUFFER_SIZE; i++)
         buffer[i] = KEY_NULL;
-    }
+
     buffer_index = 0;
 }

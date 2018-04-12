@@ -153,8 +153,9 @@ void entry(unsigned long magic, unsigned long addr) {
             disable_irq(i);
 	}
 
-    // enable_irq(1);
-    enable_irq(8);
+    enable_irq(1); //keyboard
+    // enable_irq(8); //rtc
+
 
     /* Enable interrupts */
     /* Do not enable the following until after you have set up your

@@ -56,7 +56,9 @@ int32_t file_open(const uint8_t* filename)
  */
 int32_t file_read(int32_t fd, void* buf, int32_t nbytes)
 {
-	//need to write
+	// how to get inode and offset from fd?
+	// int32_t count;
+	// count = read_data(uint32_t inode, uint32_t offset, buf, nbytes);
 	return 0;
 }
 
@@ -71,7 +73,6 @@ int32_t file_read(int32_t fd, void* buf, int32_t nbytes)
  */
 int32_t file_write(int32_t fd, const void* buf, int32_t nbytes)
 {
-	// return 0;
 	return -1;
 }
 
@@ -96,6 +97,8 @@ int32_t file_close(int32_t fd)
  */
 int32_t dir_open(const uint8_t* filename)
 {
+	dentry_t* dentry;
+	read_dentry_by_name(filename, dentry);
 	return 0;
 }
 
@@ -110,7 +113,9 @@ int32_t dir_open(const uint8_t* filename)
  */
 int32_t dir_read(int32_t fd, void* buf, int32_t nbytes)
 {
-	//need to write
+	// dentry_t* dentry;
+	// how to get inode and offset from fd?
+	// read_dentry_by_index(bootblock_index, dentry);
 	return 0;
 }
 
@@ -125,7 +130,6 @@ int32_t dir_read(int32_t fd, void* buf, int32_t nbytes)
  */
 int32_t dir_write(int32_t fd, const void* buf, int32_t nbytes)
 {
-	// return 0;
 	return -1;
 }
 

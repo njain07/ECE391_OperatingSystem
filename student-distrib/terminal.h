@@ -32,9 +32,6 @@
 #define  WRITE          2
 #define  WAIT           3
 
-
-/*  */
-char keyboard_buffer[BUFFER_SIZE];
 int b_index;
 int read_index;
 int read_flag;
@@ -62,5 +59,9 @@ int32_t terminal_read(int32_t fd, void* buf, int32_t nbytes);
 int32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes);
 
 /* Switch to the next terminal */
-void terminal_switch(uint8_t terminal_id);
+// void terminal_switch(uint8_t terminal_id);
+
+// scrolling ???
+
+
 #endif /* _TERMINAL_H_ */

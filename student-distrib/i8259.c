@@ -37,10 +37,11 @@ void i8259_init(void) {
     
 
     /* OSDEV says we should have flag stored beforehand, but do we?
-     mask all MASKS before even starting the initialization 
+     mask all MASKS before even starting the initialization */
     master_mask = MASK_ALL;
     slave_mask = MASK_ALL;
-    */
+
+    // CLEAR ALL IRQ LINES
 
     /* ICW1, with master port and slave port */
     outb(ICW1, MASTER_8259_PORT);
@@ -83,7 +84,7 @@ void enable_irq(uint32_t irq_num) {
         return;
     
     /* initiate mask = 1111 1110, active low */
-    uint8_t master_mask;
+    // uint8_t master_mask;
     uint8_t temp_mask = ENABLE_IRQ_MASK;
     int i = 0;
     
@@ -91,9 +92,13 @@ void enable_irq(uint32_t irq_num) {
     if ( (irq_num >= 0) && (irq_num <= 7) ){
         
         /* left shift on the mask, 1 on each bit is moving to left, thus add 1 */
-        for (i = 0; i < irq_num; i++){
-            temp_mask = (temp_mask << 1) + 1;
-        }
+        // for (i = 0; i < irq_num; i++){
+        //     temp_mask = (temp_mask << 1) + 1;
+        // }
+        // irq = 2
+        // 1111 1011
+
+        temp_mask = ~(0x1 << irq_num);
         
         master_mask = master_mask & temp_mask;
         outb(master_mask, MASTER_8259_PORT + 1);
@@ -107,10 +112,12 @@ void enable_irq(uint32_t irq_num) {
         irq_num -= 8;
         
         /* left shift on the mask, 1 on each bit is moving to left, thus add 1 */
-        for (i = 0; i < irq_num; i++) {
-            temp_mask = (temp_mask << 1) + 1;
-        }
+        // for (i = 0; i < irq_num; i++) {
+        //     temp_mask = (temp_mask << 1) + 1;
+        // }
         
+        temp_mask = ~(0x1 << irq_num);
+
         slave_mask = slave_mask & temp_mask;
         outb(slave_mask, SLAVE_8259_PORT + 1);
         return;
@@ -190,9 +197,8 @@ void send_eoi(uint32_t irq_num) {
         return;
     
     /* save current flag */
-    //// chahnge made
     uint32_t flag_backup;
-    //cli_and_save(flag_backup);
+    cli_and_save(flag_backup);
     
     /* MASTER PIC, EOI return */
     if ((irq_num >= 0) && (irq_num <= 7)) {
@@ -208,5 +214,6 @@ void send_eoi(uint32_t irq_num) {
         outb(EOI | IRQ2_FOR_SLAVE, MASTER_8259_PORT);
     }
 
-    //sti_and_restore(flag_backup);
+    sti();
+    restore_flags(flag_backup);
 }

@@ -153,13 +153,21 @@
 void do_irq(int i){
 	// get i to hold the vec num pushed by the assembly code
 	// using the pt_regs struct
-	if(i==40){
+	printf("%x", i);
+
+	if(i==40)
+	{
 		rtc_interrupt_handler();
 	}
-	else{
-	printf("The exception raised was : %s",error_messages[i]);
-	while(1);
-}
+	else if (i == 33)
+	{
+		keyboard_interrupt_handler();
+	}
+	else if (i < 32)
+	{
+		printf("The exception raised was :%s", error_messages[i]);
+		while(1);
+	}
 }
 
 void init_idt()
@@ -171,28 +179,39 @@ void init_idt()
 		{
 			idt[i].seg_selector = KERNEL_CS;
 			idt[i].reserved4 = 0;
-			idt[i].reserved3 = 1;
+			idt[i].reserved3 = 0; //when set to 1 -> trap gate
 			idt[i].reserved2 = 1;
-			idt[i].reserved1 = 1; // theese three lines initialises the entry to be that of an interrupt gate since they are all 32 bits
+			idt[i].reserved1 = 1; // these three lines initialises the entry to be that of an interrupt gate since they are all 32 bits
 			idt[i].reserved0 = 0; 
 			idt[i].dpl = 0;
 			idt[i].size = 1;
-			if(i == 0x80 ) 		//remember to magic number this one
-				{
-					idt[i].dpl = 3;
-					idt[i].reserved3 = 1;
-				}
-			idt[i].present = 1;  // set to zero to show it is unused interrupt
-			// if (i == 0x80)
-			// 	SET_IDT_ENTRY(idt[i], idt_interrupts[20]); // if this doesnt work try SET_IDT_ENTRY(idt[i], *Sys_Error);
-			// else 
-			if (i ==0x28)
-					SET_IDT_ENTRY(idt[0x28], &interrupt_rtc);
-			 else
-			 	SET_IDT_ENTRY(idt[i],unknown);
+			idt[i].present = 1;
+
+			if (i == 0x80) 		//remember to magic number this one
+			{
+				idt[i].dpl = 3;
+				idt[i].reserved3 = 1;
+			}
+
+			else if (i == 0x28)
+			{
+				SET_IDT_ENTRY(idt[0x28], &interrupt_rtc);
+			}
+			
+			else if (i == 0x21)
+			{
+				SET_IDT_ENTRY(idt[0x21], &interrupt_keyboard);
+			}
+			
+			else
+			{
+			 	SET_IDT_ENTRY(idt[i], unknown);
+			}
+
 			// 	SET_IDT_ENTRY(idt[i], idt_interrupts[21]); // if this doesnt work try SET_IDT_ENTRY(idt[i], *unknown);
 			// note that we could change the if else if to add more interrupts when needed 
 		}
+
 	SET_IDT_ENTRY(idt[0],DE);
 	SET_IDT_ENTRY(idt[1],DB);
 	SET_IDT_ENTRY(idt[2],NMI);

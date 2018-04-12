@@ -5,10 +5,11 @@
 #include "x86_desc.h"
 #include "lib.h"
 #include "rtc.h"
+#include "keyboard.h"
 
-// Initalising the IDT
+// Initalizing the IDT
 void init_idt();
-extern void DE();
+
 // taken from the linux kernel
 typedef struct pt_regs {
 	long ebx;
@@ -28,8 +29,10 @@ typedef struct pt_regs {
 	long esp;
 	int  xss;
 }pt_regs;
+
 char *error_messages[21];
 extern void interrupt_rtc();
+extern void interrupt_keyboard();
 extern void DE();
 extern void DB();
 extern void NMI();

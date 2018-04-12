@@ -27,7 +27,6 @@ void terminal_init(void){
     b_index = 0;
     read_index = 0;
     read_flag = 0;
-    return 0;
 }
 
 
@@ -86,7 +85,7 @@ int32_t terminal_read(int32_t fd, void* buf, int32_t nbytes){
     
     /* Fill buffer with data from keyboard buffer */
     for(i = 0; i < read_index; i++){
-        buffer[i] = keyboard_buffer[i];
+        // buffer[i] = keyboard_buffer[i];
         
         /* if enter was pressed, we stop reading the buffer, change the flag */
         if(buffer[read_index] == '\0'){

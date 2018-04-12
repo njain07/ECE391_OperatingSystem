@@ -1,17 +1,14 @@
-.global interrupt_rtc ,DE,DB,NMI,BP,OF,BR,UD,NM,DF,CSO,TS,NP,SS,GP,PF,IntelR,MF,AC,MC,XF,unknown
+.global interrupt_rtc , interrupt_keyboard
+.global DE, DB, NMI, BP, OF, BR, UD, NM, DF, CSO, TS, NP, SS, GP, PF, IntelR, MF, AC, MC, XF, unknown
 
-# Ok so we need to write assembly code to ensure 
 interrupt_rtc:
-		//iret
-		pushal
-		pushl $40
-		jmp common_interrupt
-
-
-NMI_Exception:
 	pushal
-	pushl $3
+	pushl $40
+	jmp common_interrupt
 
+interrupt_keyboard:
+	pushal
+	pushl $33
 	jmp common_interrupt
 
 DE:
@@ -123,40 +120,36 @@ common_interrupt:
 	# save all the registers 
 	# as in the pt_regs struct
 	#pushw $0
-	// pushl %fs
-	// #pushw $0
- //    pushl %es
- //    #pushw $0
- //    pushl %ds
- //    # cli	
- //    push %eax
- //    push %ebp
- //    push %edi
- //    push %esi
- //    push %edx
- //    push %ecx
- //    push %ebx
- //    push %esp
- //    pushl 44(%esp)	
+	#pushl %fs
+	#pushw $0
+ 	#pushl %es
+	#pushw $0
+	#pushl %ds
+	# cli	
+	#push %eax
+	#push %ebp
+	#push %edi
+	#push %esi
+	#push %edx
+	#push %ecx
+	#push %ebx
+ 	#push %esp
+	#pushl 44(%esp)	
 
-     call do_irq
+    call do_irq
 
-    // addl $8,%esp
-    // pop  %ebx
-    // pop  %ecx
-    // pop  %edx
-    // pop  %esi
-    // pop  %edi
-    // pop  %ebp
-    // pop  %eax
-    // # sti	
-    // popl %ds
-    // popl %es
-    // popl %fs
+	#addl $8,%esp
+	#pop  %ebx
+	#pop  %ecx
+	#pop  %edx
+	#pop  %esi
+	#pop  %edi
+	#pop  %ebp
+	#pop  %eax
+	# sti	
+	#popl %ds
+	#popl %es
+	#popl %fs
     addl $4,%esp
     popal
     iret
-	# call a common C based exception Handler
-
-	# Pop all 
-	# Then do IRET
