@@ -4,10 +4,6 @@
 
 #include "keyboard.h"
 
-/* local variables */
-char buffer[BUFFER_SIZE];
-int buffer_index = 0;
-
 /* character arrays */
 /* Scan Code Set 1 from OSDEV */
 
@@ -52,6 +48,7 @@ void keyboard_init(void) {
     flags.caps = 0;
     flags.ctrl = 0;
     flags.alt = 0;
+    buffer_index = 0;
 }
 
 /* Read the actual character and return it */
@@ -118,6 +115,8 @@ char get_character(uint8_t scancode){
     if(scancode == 0x0E)
     {
         buffer_index--;
+        buffer[buffer_index] = KEY_NULL;
+        buffer_index--;
         backspace();
     }
 
@@ -142,35 +141,31 @@ char get_character(uint8_t scancode){
 
     /* return corresponding character */
     char return_char = 0;
-    if(flags.shift == 0 && flags.caps == 0)
+    if(scancode != 0x0E)
     {
-        if(scancode < 0x3B)
-            return_char = lowercase[scancode];
-    }
+        if(flags.shift == 0 && flags.caps == 0)
+        {
+            if(scancode < 0x3B)
+                return_char = lowercase[scancode];
+        }
 
-    else if(flags.shift == 1 && flags.caps == 0)
-    {
-        if(scancode < 0x3B)
-            return_char = shift_case[scancode];
-    }
+        else if(flags.shift == 1 && flags.caps == 0)
+        {
+            if(scancode < 0x3B)
+                return_char = shift_case[scancode];
+        }
 
-    else if(flags.shift == 0 && flags.caps == 1)
-    {
-        if(scancode < 0x3B)
-            return_char = caps_case[scancode];
-    }
+        else if(flags.shift == 0 && flags.caps == 1)
+        {
+            if(scancode < 0x3B)
+                return_char = caps_case[scancode];
+        }
 
-    else if(flags.shift == 1 && flags.caps == 1)
-    {
-        if(scancode < 0x3B)
-            return_char = shift_caps_case[scancode];
-    }
-
-    // put character in buffer
-    if(buffer_index<BUFFER_SIZE)
-    {
-        buffer[buffer_index] = return_char;
-        buffer_index++;
+        else if(flags.shift == 1 && flags.caps == 1)
+        {
+            if(scancode < 0x3B)
+                return_char = shift_caps_case[scancode];
+        }
     }
 
     return return_char;
@@ -193,8 +188,11 @@ void keyboard_interrupt_handler(void){
         print_char = get_character(scancode);
         
         /* putting into keyboard buffer */
-        if(buffer_index < BUFFER_SIZE-1)
-            buffer[buffer_index++] = print_char;
+        if((buffer_index < BUFFER_SIZE-1) && (print_char != 0))
+        {
+            buffer[buffer_index] = print_char;
+            buffer_index++;
+        }
         
         /* echo to the screen */
         if(print_char!=0)

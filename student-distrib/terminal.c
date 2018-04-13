@@ -13,7 +13,6 @@
 */
  
 #include "terminal.h"
-#include "lib.h"
 
 /*
  * terminal_init
@@ -27,6 +26,7 @@ void terminal_init(void){
     b_index = 0;
     read_index = 0;
     read_flag = 0;
+    enter = 0;
 }
 
 
@@ -77,11 +77,11 @@ int32_t terminal_read(int32_t fd, void* buf, int32_t nbytes){
     if (nbytes == 0)
         return 0;
     
+    /* spin until flag is up */
+    while(enter != 1); // and while buffer_index < BUFFER SIZE
+
     /* Changing name with buffer for given parameter buf*/
     char* buffer = (char*)buf;
-
-    /* spin until flag is up */
-    while(read_flag != 1);
     
     /* Fill buffer with data from keyboard buffer */
     for(i = 0; i < read_index; i++){
@@ -114,7 +114,7 @@ int32_t term_write(int32_t fd, const void* buf, int32_t nbytes){
     if( (nbytes < 0) || (buf == NULL) )
         return FAIL;
     
-    /* NO BYTES, */
+    /* NO BYTES */
     if (b_index == BUFFER_SIZE)
         return 0;
     

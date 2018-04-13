@@ -26,10 +26,13 @@ typedef struct flag_struct
 	uint8_t alt; 
 } flag_struct;
 
-extern uint8_t enter;
+uint8_t enter;
 flag_struct flags;
 
-extern char keyboard_buffer[BUFFER_SIZE];
+char buffer[BUFFER_SIZE];
+int buffer_index;
+
+// extern char keyboard_buffer[BUFFER_SIZE];
 
 /* initialize the keyboard */
 void keyboard_init(void);
