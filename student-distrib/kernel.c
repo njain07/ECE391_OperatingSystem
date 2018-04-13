@@ -12,6 +12,7 @@
 #include "paging.h"
 #include "rtc.h"
 #include "keyboard.h"
+#include "terminal.h"
 #define RUN_TESTS
 
 /* Macros. */
@@ -144,7 +145,7 @@ void entry(unsigned long magic, unsigned long addr) {
     i8259_init();
     init_paging();
     rtc_init();
-    keyboard_init();
+    terminal_init();
 	
 	int i;
 	for(i=0;i<16;i++)

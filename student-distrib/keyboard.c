@@ -44,11 +44,12 @@ const uint8_t shift_caps_case[59] =
 /* Simple init helper for keyboard initialization */
 void keyboard_init(void) {
     enable_irq(KEYBOARD_IRQ);
+    buffer_index = 0;
     flags.shift = 0;
     flags.caps = 0;
     flags.ctrl = 0;
     flags.alt = 0;
-    buffer_index = 0;
+    enter = 0;
 }
 
 /* Read the actual character and return it */
@@ -192,11 +193,9 @@ void keyboard_interrupt_handler(void){
         {
             buffer[buffer_index] = print_char;
             buffer_index++;
+            /* echo to the screen */
+            putc(print_char);
         }
-        
-        /* echo to the screen */
-        if(print_char!=0)
-           putc(print_char);
     }
 
     /* critical section ended */

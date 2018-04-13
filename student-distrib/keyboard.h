@@ -32,8 +32,6 @@ flag_struct flags;
 char buffer[BUFFER_SIZE];
 int buffer_index;
 
-// extern char keyboard_buffer[BUFFER_SIZE];
-
 /* initialize the keyboard */
 void keyboard_init(void);
 
@@ -45,9 +43,5 @@ void keyboard_interrupt_handler();
 
 /* clear buffer */
 void clear_buffer();
-
-// backspace should use video memory
-// cursor ???
-// enter will call clear_buffer()
 
 #endif

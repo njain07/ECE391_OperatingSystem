@@ -22,11 +22,12 @@
  *   RETURN VALUE: return 0 on success
  *   SIDE EFFECTS: none
  */
-void terminal_init(void){
+void terminal_init(void)
+{
+    keyboard_init();
     b_index = 0;
     read_index = 0;
     read_flag = 0;
-    enter = 0;
 }
 
 
@@ -38,7 +39,8 @@ void terminal_init(void){
  *   RETURN VALUE: none
  *   SIDE EFFECTS: none
  */
-int32_t terminal_open(const uint8_t* filename){
+int32_t terminal_open(const uint8_t* filename)
+{
     return 0;
 }
 
@@ -50,7 +52,9 @@ int32_t terminal_open(const uint8_t* filename){
  *   RETURN VALUE: return 0
  *   SIDE EFFECTS: clear the screen
  */
-int32_t terminal_close(int32_t fd){
+int32_t terminal_close(int32_t fd)
+{
+    clear_buffer();
     clear();
     return 0;
 }
@@ -65,7 +69,8 @@ int32_t terminal_close(int32_t fd){
  *   SIDE EFFECTS: fills the buffer with data.
  */
 
-int32_t terminal_read(int32_t fd, void* buf, int32_t nbytes){
+int32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
+{
     
     int i = 0;
     
@@ -81,7 +86,11 @@ int32_t terminal_read(int32_t fd, void* buf, int32_t nbytes){
     while(enter != 1); // and while buffer_index < BUFFER SIZE
 
     /* Changing name with buffer for given parameter buf*/
-    char* buffer = (char*)buf;
+    for(i=0; i<BUFFER_SIZE; i++)
+    {
+        buf[i] = buffer[i];
+        nbytes++;
+    }
     
     /* Fill buffer with data from keyboard buffer */
     for(i = 0; i < read_index; i++){
@@ -107,7 +116,8 @@ int32_t terminal_read(int32_t fd, void* buf, int32_t nbytes){
  *   RETURN VALUE: the nubmer of bytes written, OR -1 for failure
  *   SIDE EFFECTS: fills the buffer with data.
  */
-int32_t term_write(int32_t fd, const void* buf, int32_t nbytes){
+int32_t term_write(int32_t fd, const void* buf, int32_t nbytes)
+{
     int i = 0;
     
     /* Boundary check */
