@@ -20,18 +20,13 @@ typedef struct flag_struct
 {
 	uint8_t shift;
 	uint8_t caps;
-	uint8_t crtl;
+	uint8_t ctrl;
 	uint8_t alt; 
 } flag_struct;
 
-flag_struct * flags;
+flag_struct flags;
 
 extern char keyboard_buffer[BUFFER_SIZE];
-
-// const uint8_t lowercase[59] = 
-// {
-
-// }
 
 // const uint8_t caps[59] = 
 // {
