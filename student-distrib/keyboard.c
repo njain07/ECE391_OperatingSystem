@@ -7,7 +7,7 @@
 
 /* local variables */
 char buffer[BUFFER_SIZE];
-int buffer_index = 0;
+int buffer_index = 0; //assert buffer_index < BUFFER_SIZE
 
 /* character arrays */
 /* Scan Code Set 1 from OSDEV */
@@ -115,12 +115,16 @@ char get_character(uint8_t scancode){
     }
 
     if(scancode == 0x0E)
-        // delete last character in buffer
+    {
+        buffer_index--;
         backspace();
+    }
 
     if(scancode == 0x1C)
-        // clear buffer
+    {
+        // clear_buffer();
         enter_func();
+    }
 
     /* check for flags */
     if(flags.ctrl == 1)
@@ -137,31 +141,35 @@ char get_character(uint8_t scancode){
         return 0;
 
     /* return corresponding character */
+    char return_char = 0;
     if(flags.shift == 0 && flags.caps == 0)
     {
         if(scancode < 0x3B)
-            return lowercase[scancode];
+            return_char = lowercase[scancode];
     }
 
     else if(flags.shift == 1 && flags.caps == 0)
     {
         if(scancode < 0x3B)
-            return shift_case[scancode];
+            return_char = shift_case[scancode];
     }
 
     else if(flags.shift == 0 && flags.caps == 1)
     {
         if(scancode < 0x3B)
-            return caps_case[scancode];
+            return_char = caps_case[scancode];
     }
 
     else if(flags.shift == 1 && flags.caps == 1)
     {
         if(scancode < 0x3B)
-            return shift_caps_case[scancode];
+            return_char = shift_caps_case[scancode];
     }
 
-    return 0;
+    buffer[buffer_index] = return_char;
+    buffer_index++;
+
+    return return_char;
 
 }
 
