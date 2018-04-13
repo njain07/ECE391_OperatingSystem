@@ -201,6 +201,11 @@ void keyboard_interrupt_handler(void){
             buffer[buffer_index] = print_char;
             buffer_index++;
             /* echo to the screen */
+             if(screen_x_val() == 79 ) // check if last letter of line 
+                {
+                set_screen_x(0);
+                set_screen_y((screen_y_val() + 1));
+                }
             putc(print_char);
         }
     }
