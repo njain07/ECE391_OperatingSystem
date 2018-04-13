@@ -57,9 +57,6 @@ void keyboard_init(void) {
 
 /* Read the actual character and return it */
 char get_character(uint8_t scancode){
-    //print scancodes to check which set to use
-    //handle unknown scancodes
-
     switch(scancode)
     {
         case 0x2A:  
@@ -78,7 +75,6 @@ char get_character(uint8_t scancode){
             // left shift released
             flags.shift = 0;
             // printf("left shift released | ");
-            //return 0;
             break;
 
         case 0xB6:
@@ -116,14 +112,6 @@ char get_character(uint8_t scancode){
             flags.alt = 0;
             // printf("alt released | ");
             break;
-
-        case 0x0E:
-            // backspace pressed
-            break;
-
-        case 0x8E:
-            // backspace released
-            break;
     }
 
     if(scancode == 0x0E)
@@ -134,6 +122,7 @@ char get_character(uint8_t scancode){
         // clear buffer
         enter_func();
 
+    /* check for flags */
     if(flags.ctrl == 1)
     {
         //check for ctrl-l
@@ -147,6 +136,7 @@ char get_character(uint8_t scancode){
     if(flags.alt == 1)
         return 0;
 
+    /* return corresponding character */
     if(flags.shift == 0 && flags.caps == 0)
     {
         if(scancode < 0x3B)
