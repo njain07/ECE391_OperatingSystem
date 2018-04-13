@@ -86,11 +86,12 @@ int32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
     while(enter != 1); // and while buffer_index < BUFFER SIZE
 
     /* Changing name with buffer for given parameter buf*/
-    for(i=0; i<BUFFER_SIZE; i++)
-    {
-        buf[i] = buffer[i];
-        nbytes++;
-    }
+    // for(i=0; i<BUFFER_SIZE; i++)
+    // {
+    //     buf[i] = buffer[i];
+    //     nbytes++;
+    // }
+    char* buffer = (char*)buf;
     
     /* Fill buffer with data from keyboard buffer */
     for(i = 0; i < read_index; i++){

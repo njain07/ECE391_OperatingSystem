@@ -20,6 +20,14 @@ int screen_y_val(void) {
     return screen_y;
 }
 
+void set_screen_x(int x_val) {
+    screen_x = x_val;
+}
+
+void set_screen_y(int y_val) {
+    screen_y = y_val;
+}
+
 /* void clear(void);
  * Inputs: void
  * Return Value: none

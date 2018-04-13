@@ -9,6 +9,8 @@
 
 int screen_x_val(void);
 int screen_y_val(void);
+void set_screen_x(int x_val);
+void set_screen_y(int y_val);
 
 int32_t printf(int8_t *format, ...);
 void putc(uint8_t c);

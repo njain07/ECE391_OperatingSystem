@@ -115,16 +115,23 @@ char get_character(uint8_t scancode){
     // backspace
     if(scancode == 0x0E)
     {
-        buffer_index--;
+        if(buffer_index>0)
+            buffer_index--;
+        
         buffer[buffer_index] = KEY_NULL;
         buffer_index--;
         backspace();
     }
 
+    char return_char = 0;
+
     // enter
     if(scancode == 0x1C)
     {
         enter = 1;
+        enter_func();
+        return_char = '\n';
+        clear_buffer();
     }
 
     if(flags.ctrl == 1)
@@ -141,7 +148,7 @@ char get_character(uint8_t scancode){
         return 0;
 
     /* return corresponding character */
-    char return_char = 0;
+    
     if(scancode != 0x0E)
     {
         if(flags.shift == 0 && flags.caps == 0)
