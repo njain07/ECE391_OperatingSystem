@@ -185,16 +185,16 @@ void backspace(void) {
         if(screen_x > 0) {
             screen_x--;
         }
-        else if(screen_x = 0) {
+        else if(screen_x == 0) {
             screen_x = NUM_COLS;
             screen_y--;
         }
     }
-    else if(screen_y = 0) {
+    else if(screen_y == 0) {
         if(screen_x > 0) {
             screen_x--;
         }
-        else if(screen_x = 0) {
+        else if(screen_x == 0) {
             return;
         }
     }
@@ -208,6 +208,16 @@ void backspace(void) {
 
     screen_x = backspace_x;
     screen_y = backspace_y;
+}
+
+void enter_func(void) {
+    if(screen_y < NUM_ROWS) {
+        screen_y++;
+        screen_x = 0;
+    }
+    else if(screen_y == NUM_ROWS) {
+        // scroll();
+    }
 }
 
 /* int8_t* itoa(uint32_t value, int8_t* buf, int32_t radix);

@@ -127,7 +127,12 @@ char get_character(uint8_t scancode){
     }
 
     if(scancode == 0x0E)
+        // delete last character in buffer
         backspace();
+
+    if(scancode == 0x1C)
+        // clear buffer
+        enter_func();
 
     if(flags.ctrl == 1)
     {
