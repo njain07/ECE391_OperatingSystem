@@ -19,8 +19,7 @@
 #include "types.h"
 #include "keyboard.h"
 #include "lib.h"
-#include "rtc.h"
-#include "filesys.h"
+#include "keyboard.h"
 
 
 #define  BUFFER_SIZE    128

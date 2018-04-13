@@ -3,11 +3,10 @@
  */
 
 #include "keyboard.h"
-#include "lib.h"
 
 /* local variables */
 char buffer[BUFFER_SIZE];
-int buffer_index = 0; //assert buffer_index < BUFFER_SIZE
+int buffer_index = 0;
 
 /* character arrays */
 /* Scan Code Set 1 from OSDEV */
@@ -57,6 +56,7 @@ void keyboard_init(void) {
 
 /* Read the actual character and return it */
 char get_character(uint8_t scancode){
+    // handles flags
     switch(scancode)
     {
         case 0x2A:  
@@ -114,19 +114,19 @@ char get_character(uint8_t scancode){
             break;
     }
 
+    // backspace
     if(scancode == 0x0E)
     {
         buffer_index--;
         backspace();
     }
 
+    // enter
     if(scancode == 0x1C)
     {
-        // clear_buffer();
-        enter_func();
+        enter = 1;
     }
 
-    /* check for flags */
     if(flags.ctrl == 1)
     {
         //check for ctrl-l
@@ -166,8 +166,12 @@ char get_character(uint8_t scancode){
             return_char = shift_caps_case[scancode];
     }
 
-    buffer[buffer_index] = return_char;
-    buffer_index++;
+    // put character in buffer
+    if(buffer_index<BUFFER_SIZE)
+    {
+        buffer[buffer_index] = return_char;
+        buffer_index++;
+    }
 
     return return_char;
 

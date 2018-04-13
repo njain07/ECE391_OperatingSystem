@@ -12,6 +12,14 @@ static int screen_x;
 static int screen_y;
 static char* video_mem = (char *)VIDEO;
 
+int screen_x_val(void) {
+    return screen_x;
+}
+
+int screen_y_val(void) {
+    return screen_y;
+}
+
 /* void clear(void);
  * Inputs: void
  * Return Value: none

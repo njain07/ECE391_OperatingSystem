@@ -16,6 +16,8 @@
 #define BUFFER_SIZE     128
 #define KEY_NULL        '\0'
 
+#include "lib.h"
+
 typedef struct flag_struct
 {
 	uint8_t shift;
@@ -24,19 +26,10 @@ typedef struct flag_struct
 	uint8_t alt; 
 } flag_struct;
 
+extern uint8_t enter;
 flag_struct flags;
 
 extern char keyboard_buffer[BUFFER_SIZE];
-
-// const uint8_t caps[59] = 
-// {
-
-// }
-
-// const uint8_t shift[59] = 
-// {
-
-// }
 
 /* initialize the keyboard */
 void keyboard_init(void);
