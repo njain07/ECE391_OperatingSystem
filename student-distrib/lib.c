@@ -180,6 +180,36 @@ void putc(uint8_t c) {
     }
 }
 
+void backspace(void) {
+    if(screen_y > 0) {
+        if(screen_x > 0) {
+            screen_x--;
+        }
+        else if(screen_x = 0) {
+            screen_x = NUM_COLS;
+            screen_y--;
+        }
+    }
+    else if(screen_y = 0) {
+        if(screen_x > 0) {
+            screen_x--;
+        }
+        else if(screen_x = 0) {
+            return;
+        }
+    }
+
+    int backspace_x, backspace_y;
+
+    backspace_x = screen_x;
+    backspace_y = screen_y;
+
+    putc(' ');
+
+    screen_x = backspace_x;
+    screen_y = backspace_y;
+}
+
 /* int8_t* itoa(uint32_t value, int8_t* buf, int32_t radix);
  * Inputs: uint32_t value = number to convert
  *            int8_t* buf = allocated buffer to place string in

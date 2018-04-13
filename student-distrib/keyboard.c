@@ -116,7 +116,18 @@ char get_character(uint8_t scancode){
             flags.alt = 0;
             // printf("alt released | ");
             break;
+
+        case 0x0E:
+            // backspace pressed
+            break;
+
+        case 0x8E:
+            // backspace released
+            break;
     }
+
+    if(scancode == 0x0E)
+        backspace();
 
     if(flags.ctrl == 1)
     {
@@ -128,33 +139,31 @@ char get_character(uint8_t scancode){
         }
     }
 
-    if(flags.shift == 0 && flags.caps == 0 && flags.alt == 0)
+    if(flags.alt == 1)
+        return 0;
+
+    if(flags.shift == 0 && flags.caps == 0)
     {
         if(scancode < 0x3B)
             return lowercase[scancode];
     }
 
-    else if(flags.shift == 1 && flags.caps == 0 && flags.alt == 0)
+    else if(flags.shift == 1 && flags.caps == 0)
     {
         if(scancode < 0x3B)
             return shift_case[scancode];
     }
 
-    else if(flags.shift == 0 && flags.caps == 1 && flags.alt == 0)
+    else if(flags.shift == 0 && flags.caps == 1)
     {
         if(scancode < 0x3B)
             return caps_case[scancode];
     }
 
-    else if(flags.shift == 1 && flags.caps == 1 && flags.alt == 0)
+    else if(flags.shift == 1 && flags.caps == 1)
     {
         if(scancode < 0x3B)
             return shift_caps_case[scancode];
-    }
-    
-    else if(flags.alt == 1)
-    {
-        return 0;
     }
 
     return 0;
