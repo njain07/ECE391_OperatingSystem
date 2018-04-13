@@ -25,6 +25,13 @@ const uint8_t lowercase[59] =
     '`', 0, '\\', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 
     0, 0, 0, ' ', 0};
 
+// const uint8_t shift_case[59] = 
+//     {0, 0, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 0, 
+//     0, 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', 
+//     0, 0, 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', 
+//     '`', 0, '\\', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 
+//     0, 0, 0, ' ', 0};
+
 /* Simple init helper for keyboard initialization */
 void keyboard_init(void) {
     enable_irq(KEYBOARD_IRQ);
@@ -83,6 +90,64 @@ char get_character(uint8_t scancode){
     //print scancodes to check which set to use
     //handle unknown scancodes
 
+    switch(scancode)
+    {
+        case 0x2A:  
+            // left shift pressed
+            flags.shift = 1;
+            printf("left shift pressed | ");   
+            break;
+
+        case 0x36:
+            // right shift pressed 
+            flags.shift = 1;
+            printf("right shift pressed | ");
+            break;
+
+        case 0xAA:
+            // left shift released
+            flags.shift = 0;
+            printf("left shift released | ");
+            //return 0;
+            break;
+
+        case 0xB6:
+            // right shift released
+            flags.shift = 0;
+            printf("right shift released | ");
+            break;
+
+        case 0x3A:
+            // caps
+            flags.caps = ~flags.caps;
+            printf("ALL CAPS | ");
+            break;
+
+        case 0x1D:
+            // left or right ctrl pressed
+            flags.ctrl = 1;
+            printf("ctrl pressed | ");
+            break;
+
+        case 0x9D:
+            // left or right ctrl released
+            flags.ctrl = 0;
+            printf("ctrl released | ");
+            break;
+
+        case 0x38:
+            // left or right alt pressed
+            flags.alt = 1;
+            printf("alt pressed | ");
+            break;
+
+        case 0xB8:
+            // left or right alt released
+            flags.alt = 0;
+            printf("alt released | ");
+            break;
+    }
+
     if(flags.ctrl == 1)
     {
         //check for ctrl-l
@@ -90,8 +155,8 @@ char get_character(uint8_t scancode){
 
     if(flags.shift == 0 && flags.caps == 0 && flags.alt == 0)
     {
-        printf("%c", lowercase[scancode]);
-        return lowercase[scancode];
+        if(scancode < 0x3B)
+            return lowercase[scancode];
     }
 
     else if(flags.shift == 1 && flags.caps == 0 && flags.alt == 0)
@@ -114,7 +179,7 @@ char get_character(uint8_t scancode){
         //not able to type
     }
 
-    return 'x';
+    return 0;
 
 }
 
@@ -130,16 +195,19 @@ void keyboard_interrupt_handler(void){
     if(inb(KEYBOARD_STATUS_PORT))
     {
         scancode = inb(KEYBOARD_PORT);
-    
-        /* interpret the character */
-        print_char = get_character(scancode);
-        
-        /* putting into keyboard buffer */
-        if(buffer_index < BUFFER_SIZE-1)
-            buffer[buffer_index++] = print_char;
-        
-        /* echo to the screen */
-        // putc(print_char);
+        //if(scancode > 0 && scancode < 0x3B)
+        //{
+            /* interpret the character */
+            print_char = get_character(scancode);
+            
+            /* putting into keyboard buffer */
+            if(buffer_index < BUFFER_SIZE-1)
+                buffer[buffer_index++] = print_char;
+            
+            /* echo to the screen */
+            if(print_char!=0)
+               putc(print_char);
+        //}
     }
 
     /* critical section ended */
