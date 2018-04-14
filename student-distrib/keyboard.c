@@ -131,7 +131,7 @@ char get_character(uint8_t scancode){
         enter = 1;
         enter_func();
         return_char = '\n';
-        clear_buffer();
+        // clear_buffer();
     }
 
     if(flags.ctrl == 1)

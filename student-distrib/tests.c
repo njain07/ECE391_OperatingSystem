@@ -1,7 +1,4 @@
 #include "tests.h"
-#include "x86_desc.h"
-#include "lib.h"
-#include "rtc.h"
 
 #define PASS 1
 #define FAIL 0
@@ -151,6 +148,16 @@ void rtc_test3(){
 
 // }
 
+void terminal_test()
+{
+	// char c_array[120];
+	// terminal_read(0, c_array, 0);
+	// printf("terminal_read: %s\n", c_array);
+
+	char c_array[120] = "hello";
+	terminal_write(0, c_array, 5);
+}
+
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */
@@ -179,6 +186,5 @@ void launch_tests(){
 		// 	printf("2");
 
 	 // }
-
-
+	terminal_test();
 }

@@ -62,7 +62,7 @@ void scrolling(void)
      for (j=0; j < NUM_COLS; j++)
         {  
             *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1)) = *(uint8_t *)(video_mem + ((NUM_COLS * (i+1) + j) << 1));
-            *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1) + 1) = *(uint8_t *)(video_mem + ((NUM_COLS * (i+1) + j) << 1)+1);
+            *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1) + 1) = *(uint8_t *)(video_mem + ((NUM_COLS * (i+1) + j) << 1) + 1);
         } 
     }
     for (i=0; i < NUM_COLS; i++)

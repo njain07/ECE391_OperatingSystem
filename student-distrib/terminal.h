@@ -26,7 +26,7 @@
 #define  BUFFER_SIZE    128
 #define  TERMINAL_NUM   3
 
-#define  FAIL           -1
+// #define  FAIL           -1
 #define  READ           0
 #define  READ_DONE      1
 #define  WRITE          2
@@ -34,7 +34,6 @@
 
 int b_index;
 int read_index;
-int read_flag;
 
 /* TERMINAL DATA STRUCTURE
 typedef struct terminals{
@@ -60,8 +59,5 @@ int32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes);
 
 /* Switch to the next terminal */
 // void terminal_switch(uint8_t terminal_id);
-
-// scrolling ???
-
 
 #endif /* _TERMINAL_H_ */
