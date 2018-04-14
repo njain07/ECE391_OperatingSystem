@@ -12,20 +12,64 @@ static int screen_x;
 static int screen_y;
 static char* video_mem = (char *)VIDEO;
 
-int screen_x_val(void) {
-    return screen_x;
+void backspace(void) {
+    if(screen_y > 0) {
+        if(screen_x > 0) {
+            screen_x--;
+        }
+        else if(screen_x == 0) {
+            screen_x = NUM_COLS;
+            screen_y--;
+        }
+    }
+    else if(screen_y == 0) {
+        if(screen_x > 0) {
+            screen_x--;
+        }
+        else if(screen_x == 0) {
+            return;
+        }
+    }
+
+    int backspace_x, backspace_y;
+
+    backspace_x = screen_x;
+    backspace_y = screen_y;
+
+    putc(' ');
+
+    screen_x = backspace_x;
+    screen_y = backspace_y;
 }
 
-int screen_y_val(void) {
-    return screen_y;
+void enter_func(void) {
+    if(screen_y == (NUM_ROWS-1)) {
+        scrolling();
+        screen_x = 0;
+    }
+    else if(screen_y < NUM_ROWS) {
+        screen_y++;
+        screen_x = 0;
+    }
+
 }
 
-void set_screen_x(int x_val) {
-    screen_x = x_val;
-}
-
-void set_screen_y(int y_val) {
-    screen_y = y_val;
+void scrolling(void)
+{
+    int i,j;
+    for (i=0; i < NUM_ROWS-1; i++)
+    {
+     for (j=0; j < NUM_COLS; j++)
+        {  
+            *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1)) = *(uint8_t *)(video_mem + ((NUM_COLS * (i+1) + j) << 1));
+            *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1) + 1) = *(uint8_t *)(video_mem + ((NUM_COLS * (i+1) + j) << 1)+1);
+        } 
+    }
+    for (i=0; i < NUM_COLS; i++)
+    {
+        *(uint8_t *)(video_mem + ((NUM_COLS * (NUM_ROWS-1) + i) << 1)) = ' ';
+        *(uint8_t *)(video_mem + ((NUM_COLS * (NUM_ROWS-1) + i) << 1) + 1) = ATTRIB;   
+    }
 }
 
 /* void clear(void);
@@ -186,6 +230,20 @@ int32_t puts(int8_t* s) {
  * Return Value: void
  *  Function: Output a character to the console */
 void putc(uint8_t c) {
+    // check if last letter of line 
+     if(screen_x == 79) {
+        if(screen_y == (NUM_ROWS-1)) 
+        {
+            scrolling();
+            screen_x = 0;
+        }
+        else
+        {
+            screen_x = 0;
+            screen_y++;
+        }
+    }
+    // original putc 
     if(c == '\n' || c == '\r') {
         screen_y++;
         screen_x = 0;
@@ -195,46 +253,6 @@ void putc(uint8_t c) {
         screen_x++;
         screen_x %= NUM_COLS;
         screen_y = (screen_y + (screen_x / NUM_COLS)) % NUM_ROWS;
-    }
-}
-
-void backspace(void) {
-    if(screen_y > 0) {
-        if(screen_x > 0) {
-            screen_x--;
-        }
-        else if(screen_x == 0) {
-            screen_x = NUM_COLS;
-            screen_y--;
-        }
-    }
-    else if(screen_y == 0) {
-        if(screen_x > 0) {
-            screen_x--;
-        }
-        else if(screen_x == 0) {
-            return;
-        }
-    }
-
-    int backspace_x, backspace_y;
-
-    backspace_x = screen_x;
-    backspace_y = screen_y;
-
-    putc(' ');
-
-    screen_x = backspace_x;
-    screen_y = backspace_y;
-}
-
-void enter_func(void) {
-    if(screen_y < NUM_ROWS) {
-        screen_y++;
-        screen_x = 0;
-    }
-    else if(screen_y == NUM_ROWS) {
-        // scroll();
     }
 }
 
