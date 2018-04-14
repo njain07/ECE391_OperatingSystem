@@ -12,7 +12,11 @@ Checkpoint 1:
 
 3) RTC not working
 	Problem: IDT was not set properly
-	Fix: added .size and .present 
+	Fix: added .size and .reserved4
+
+4) interrupt wrapper would crash during iret
+	Problem: stack was unbalanced
+	Fix: instead of manually pushing all registers in the common_interrupt we added a pushal in each individual interrupt handler
 
 Checkpoint 2:
 
@@ -22,16 +26,12 @@ Checkpoint 2:
 		 enable_irq and disable_irq as it was hard-coded for the RTC only
 
 2) buffer was adding double characters (ex. hheelllloo)
-	Problem: buffer was taking in characters with both the press and 		  release
-	Fix: added an if check for the scancodes before we added it in the 		buffer
+	Problem: buffer was taking in characters with both the press and release
+	Fix: removed duplicate code which added characters into the buffer, and added an if check for the scancodes before we added it in the buffer
 
-3) buffer was incorrect after we backspaced (it added \00)
+3) buffer was incorrect after we backspaced (it added \00), and after we hit enter, the backspace was still going to the previous line
 	Problem: indexing issue
 	Fix: fixed the indexing issue
-
-4) after we hit enter, the backspace was still going to the previous line
-	Problem: 
-	Fix: 
 
 Checkpoint 3:
 

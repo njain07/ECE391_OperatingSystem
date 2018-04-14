@@ -43,24 +43,22 @@ int idt_test(){
 	return result;
 }
 
-// void zero_error(){
+// void zero_error()
+// {
 // 	TEST_HEADER;
-
 // 	int a = 1/0;
-
 // }
 
-// int idt_pf_test(){
-// 	TEST_HEADER;
-
-	
+// int idt_pf_test()
+// {
+// 		TEST_HEADER;
 // }
 
-// int idt_mf_test(){
-// 	TEST_HEADER;
-
-	
+// int idt_mf_test()
+// {
+// 		TEST_HEADER;
 // }
+
 void fault_paging_test()
 {
 	int* a = (int*) 0x4000;
@@ -95,7 +93,9 @@ void no_fault_paging_test()
 	var = (int *)0xB8999;
 	*var = *var;
 }
+
 /* Checkpoint 2 tests */
+
 void rtc_test()
 {
     clear();
@@ -103,29 +103,29 @@ void rtc_test()
     rtc_open(NULL);
 }
 
-/*
-void rtc_test2(int* frequency){
-    clear();
-    rtc_interrupt_flag = 1;
+
+// void rtc_test2(int* frequency)
+// {
+//     clear();
+//     rtc_interrupt_flag = 1;
     
-    while(1){
-        if(rtc_count == 0){
-            rtc_open(NULL);
-            rtc_write(0,frequency,4);
-        }
+//     while(1){
+//         if(rtc_count == 0){
+//             rtc_open(NULL);
+//             rtc_write(0,frequency,4);
+//         }
         
-        if(*frequency >= 1024)
-            break;
+//         if(*frequency >= 1024)
+//             break;
         
-        if( (rtc_count % 80) == 0){
-            char c[1] = {'1'};
-            term_write(0,(char*)c,1);
-            *frequency *= 2;
-            rtc_write(0,frequency,4);
-        }
-    }
-}
-*/
+//         if( (rtc_count % 80) == 0){
+//             char c[1] = {'1'};
+//             term_write(0,(char*)c,1);
+//             *frequency *= 2;
+//             rtc_write(0,frequency,4);
+//         }
+//     }
+// }
 
 void rtc_test3()
 {
@@ -136,8 +136,8 @@ void rtc_test3()
     
 }
 
-
-// void rtc_test4(){
+// void rtc_test4()
+// {
 // 	clear();
 // 		int32_t buf[5] = {1, 2, 4, 8, 16};
 // 	rtc_init();
@@ -147,7 +147,6 @@ void rtc_test3()
 // 	rtc_write(0, (void*)buf[2] ,4);
 // 	rtc_write(0, (void*)buf[3] ,4);
 // 	rtc_write(0, (void*)buf[4] ,4);
-
 // }
 
 void terminal_test()
@@ -165,6 +164,7 @@ void filesys_list_of_files()
 {
 	//call dir_read many times to print all files
 	
+	
 }
 
 void filesys_file_content()
@@ -176,28 +176,32 @@ void filesys_file_content()
 /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */
 
-
 /* Test suite entry point */
 void launch_tests(){
 	//TEST_OUTPUT("idt_test", idt_test());
 	//while (1);
 	// launch your tests here
+
 	//checkpoint1
 	//zero_error();
 	//fault_paging_test();
 	//no_fault_paging_test();	
+
 	//checkpoint2	
 	// int *ptr;	
-	// int a= 2;	// ptr = &a;	// printf("A");
+	// int a= 2;	
+	// ptr = &a;	
+	// printf("A");
 	// rtc_set_int_freq(2);
 	// while(1<2)
 	// {
-	// 	printf("1");
+	// 		printf("1");
 	// 		rtc_read(0,ptr,4);		
-	// 	printf("2");
-
+	// 		printf("2");
 	// }
 	
+
+
 	// terminal_test();
 
 	filesys_list_of_files();

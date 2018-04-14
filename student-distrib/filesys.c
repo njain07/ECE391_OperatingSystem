@@ -47,24 +47,28 @@ int32_t file_open(const uint8_t* filename)
 
 /* file_read
  *   DESCRIPTION: helper function for reading the filesystem
- *   INPUTS: fd -- 
+ *   INPUTS: fd -- file descriptor	
  *           buf -- buffer
  *           nbytes -- number of bytes to read
  *   OUTPUTS: none
- *   RETURN VALUE: 
+ *   RETURN VALUE: number of bytes read
  *   SIDE EFFECTS: fills buf with what has been read 
  */
 int32_t file_read(int32_t fd, void* buf, int32_t nbytes)
 {
-	// how to get inode and offset from fd?
-	// int32_t count;
-	// count = read_data(uint32_t inode, uint32_t offset, buf, nbytes);
-	return 0;
+	int32_t retval;
+	file_descriptor_struct file = file_array[fd];
+
+	uint32_t inode = file.inode;
+	uint32_t offset = file.file_pos;
+	uint8_t* temp_buf = (uint8_t*) buf;
+	retval = read_data(inode, offset, temp_buf, nbytes);
+	return retval;
 }
 
 /* file_write
  *   DESCRIPTION: helper function for writing to the filesystem
- *   INPUTS: fd -- 
+ *   INPUTS: fd -- file descriptor
  *           buf -- buffer
  * 			 nbytes -- number of bytes to write
  *   OUTPUTS: none
@@ -78,7 +82,7 @@ int32_t file_write(int32_t fd, const void* buf, int32_t nbytes)
 
 /* file_close
  *   DESCRIPTION: helper function for closing the filesystem
- *   INPUTS: fd -- 
+ *   INPUTS: fd -- file descriptor
  *   OUTPUTS: none
  *   RETURN VALUE: 
  *   SIDE EFFECTS: 
@@ -104,7 +108,7 @@ int32_t dir_open(const uint8_t* filename)
 
 /* dir_read
  *   DESCRIPTION: helper function for reading the directory
- *   INPUTS: fd -- 
+ *   INPUTS: fd -- file descriptor
  *           buf -- buffer
  *           nbytes -- number of bytes to read
  *   OUTPUTS: none
@@ -113,15 +117,24 @@ int32_t dir_open(const uint8_t* filename)
  */
 int32_t dir_read(int32_t fd, void* buf, int32_t nbytes)
 {
-	// dentry_t* dentry;
-	// how to get inode and offset from fd?
-	// read_dentry_by_index(bootblock_index, dentry);
+	dentry_t* dentry;
+	int32_t inode_index = dentry->inode_num;
+
+
+
+	// uint32_t dir_index = find_dentry_by_fd(fd);
+	// retval = read_dentry_by_index(dir_index, dentry);
+
+	// if(retval == -1)
+	// 	return -1;
+	// else
+
 	return 0;
 }
 
 /* dir_write
  *   DESCRIPTION: helper function for writing to the directory
- *   INPUTS: fd -- 
+ *   INPUTS: fd -- file descriptor
  *           buf -- buffer
  * 			 nbytes -- number of bytes to write
  *   OUTPUTS: none
@@ -135,7 +148,7 @@ int32_t dir_write(int32_t fd, const void* buf, int32_t nbytes)
 
 /* dir_closes
  *   DESCRIPTION: helper function for closing the directory
- *   INPUTS: fd -- 
+ *   INPUTS: fd -- file descriptor
  *   OUTPUTS: none
  *   RETURN VALUE: 
  *   SIDE EFFECTS: 
@@ -266,3 +279,26 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length
 
 	return bytes_read_successfully;
 }
+
+/* Helper functions */
+// uint32_t find_dentry_by_fd(uint32_t fd)
+// {
+// 	file_descriptor_struct file = file_array[fd];
+// 	uint32_t inode_index = file.inode;
+	
+// 	int32_t retval;
+// 	uint32_t dentry_index = 0;
+// 	dentry_t* dentry;
+// 	dentry->inode_num = -1;
+	
+// 	while(dentry->inode_num != inode_index)
+// 	{
+// 		retval = read_dentry_by_index(dentry_index, dentry);
+// 		dentry_index++;
+
+// 		if((dentry_index > 62) || (retval == -1))
+// 			return -1;
+// 	}
+
+// 	return dentry_index;
+// }
