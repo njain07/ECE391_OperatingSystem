@@ -116,11 +116,11 @@ char get_character(uint8_t scancode){
     if(scancode == 0x0E)
     {
         if(buffer_index>0)
+        {
+            buffer[buffer_index-1] = KEY_NULL;
             buffer_index--;
-        
-        buffer[buffer_index] = KEY_NULL;
-        buffer_index--;
-        backspace();
+            backspace();
+        }
     }
 
     char return_char = 0;
