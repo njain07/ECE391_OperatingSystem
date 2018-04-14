@@ -96,7 +96,8 @@ void no_fault_paging_test()
 	*var = *var;
 }
 /* Checkpoint 2 tests */
-void rtc_test(){
+void rtc_test()
+{
     clear();
     rtc_interrupt_flag = 1;
     rtc_open(NULL);
@@ -126,7 +127,8 @@ void rtc_test2(int* frequency){
 }
 */
 
-void rtc_test3(){
+void rtc_test3()
+{
     rtc_interrupt_flag = 1;
     clear();
     rtc_open(NULL);
@@ -159,6 +161,17 @@ void terminal_test()
 	terminal_write(0, c_array, n);
 }
 
+void filesys_list_of_files()
+{
+	//call dir_read many times to print all files
+	
+}
+
+void filesys_file_content()
+{
+	//loop across inodes to print files
+}
+
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */
@@ -169,23 +182,24 @@ void launch_tests(){
 	//TEST_OUTPUT("idt_test", idt_test());
 	//while (1);
 	// launch your tests here
-	 //checkpoint1
-	 //zero_error();
-	 //fault_paging_test();
-	 //no_fault_paging_test();
+	//checkpoint1
+	//zero_error();
+	//fault_paging_test();
+	//no_fault_paging_test();	
+	//checkpoint2	
+	// int *ptr;	
+	// int a= 2;	// ptr = &a;	// printf("A");
+	// rtc_set_int_freq(2);
+	// while(1<2)
+	// {
+	// 	printf("1");
+	// 		rtc_read(0,ptr,4);		
+	// 	printf("2");
 
-	 //checkpoint2
-	 // int *ptr;
-	 // int a= 2;
-	 // ptr = &a;
-	 // printf("A");
-	 // rtc_set_int_freq(2);
-	 // while(1<2)
-	 // {
-		// 	printf("1");
-	 // 		rtc_read(0,ptr,4);		
-		// 	printf("2");
+	// }
+	
+	// terminal_test();
 
-	 // }
-	terminal_test();
+	filesys_list_of_files();
+	filesys_file_content();
 }

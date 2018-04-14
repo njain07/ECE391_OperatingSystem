@@ -2,7 +2,6 @@
 #define _SYSCALLS_H
 
 #include "lib.h"
-#include "interrupts.S"
 #include "filesys.h"
 #include "rtc.h"
 #include "paging.h"

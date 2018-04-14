@@ -10,6 +10,29 @@ Checkpoint 1:
 	Problem: we accessed the wrong memory location for initializing the page for video memory
 	Fix: changed VIDEO_MEM from 0xB8 to 0xB8000
 
+3) RTC not working
+	Problem: IDT was not set properly
+	Fix: added .size and .present 
+
 Checkpoint 2:
+
+1) keyboard interrupts were not going through
+	Problem: keyboard was not connected to IDT or PIC
+	Fix: connected the keyboard to the IDT, then re-wrote the PIC
+		 enable_irq and disable_irq as it was hard-coded for the RTC only
+
+2) buffer was adding double characters (ex. hheelllloo)
+	Problem: buffer was taking in characters with both the press and 		  release
+	Fix: added an if check for the scancodes before we added it in the 		buffer
+
+3) buffer was incorrect after we backspaced (it added \00)
+	Problem: indexing issue
+	Fix: fixed the indexing issue
+
+4) after we hit enter, the backspace was still going to the previous line
+	Problem: 
+	Fix: 
+
+Checkpoint 3:
 
 1) 
