@@ -150,12 +150,13 @@ void rtc_test3(){
 
 void terminal_test()
 {
-	// char c_array[120];
-	// terminal_read(0, c_array, 0);
+	int32_t n;
+	char c_array[120];
+	n = terminal_read(0, c_array, 0);
 	// printf("terminal_read: %s\n", c_array);
 
-	char c_array[120] = "hello";
-	terminal_write(0, c_array, 5);
+	// char c_array[120] = "hello";
+	terminal_write(0, c_array, n);
 }
 
 /* Checkpoint 3 tests */

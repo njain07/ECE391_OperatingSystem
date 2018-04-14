@@ -77,10 +77,6 @@ int32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
     if((nbytes < 0) || (nbytes > BUFFER_SIZE))
         return -1;
     
-    /* NO BYTES */
-    if (nbytes == 0)
-        return 0;
-    
     /* spin until flag is up */
     while(enter != 1);
 
@@ -93,23 +89,12 @@ int32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
         nbytes++;
     }
     
-    // /* Fill buffer with data from keyboard buffer */
-    // for(i = 0; i < read_index; i++){
-    //     // buffer[i] = keyboard_buffer[i];
-        
-    //      if enter was pressed, we stop reading the buffer, change the flag 
-    //     if(buffer[read_index] == '\0'){
-    //         read_flag = 0;
-    //         break;
-    //     }
-    // }
-    
     clear_buffer();
     enter = 0;
     
     return nbytes;
-}
 
+}
 /*
  * terminal_write
  *   DESCRIPTION: Based on the buffer we read off data and writes it on the screen.
@@ -125,10 +110,6 @@ int32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes)
     /* Boundary check */
     if((nbytes < 0) || (nbytes > BUFFER_SIZE))
         return -1;
-    
-    // /* NO BYTES */
-    // if (b_index == BUFFER_SIZE)
-    //     return 0;
     
     char* temp_buf = (char*) buf;
 
