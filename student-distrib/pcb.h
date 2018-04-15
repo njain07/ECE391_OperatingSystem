@@ -3,6 +3,8 @@
 
 #include "filesys.h"
 
+// file_descriptor_struct file_array[8];
+
 typedef struct file_ops
 {
 	int32_t (*open) (const uint8_t* filename);

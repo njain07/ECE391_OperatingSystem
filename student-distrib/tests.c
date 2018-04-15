@@ -178,7 +178,7 @@ void filesys_file_content(uint32_t dentry_index)
 	{
 		inode_index = dentry->inode_num;
 		// nbytes = // how to find length of file?
-		nbytes = 1024;
+		nbytes = 10;
 		read_data(inode_index, 0, buf, nbytes);
 		printf("%s\n", buf);
 	}
@@ -217,5 +217,5 @@ void launch_tests(){
 	// terminal_test();
 
 	// filesys_list_of_files();
-	filesys_file_content(5);
+	filesys_file_content(50);
 }

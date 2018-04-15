@@ -59,10 +59,10 @@ int32_t file_read(int32_t fd, void* buf, int32_t nbytes)
 	int32_t retval = 0;
 	// file_descriptor_struct file = file_array[fd];
 
-	// uint32_t inode = file.inode;
-	// uint32_t offset = file.file_pos;
+	uint32_t inode = file.inode;
+	uint32_t offset = file.file_pos;
 	// uint8_t* temp_buf = (uint8_t*) buf;
-	// retval = read_data(inode, offset, temp_buf, nbytes);
+	retval = read_data(inode, offset, (uint8_t*) buf, nbytes);
 	return retval;
 }
 
@@ -117,12 +117,12 @@ int32_t dir_open(const uint8_t* filename)
  */
 int32_t dir_read(int32_t fd, void* buf, int32_t nbytes)
 {
+	// using boot block index , fill buf with only one filename
 	// dentry_t* dentry;
 	// int32_t inode_index = dentry->inode_num;
-
-
 	// uint32_t dir_index = find_dentry_by_fd(fd);
-	// retval = read_dentry_by_index(dir_index, dentry);
+
+	// retval = read_dentry_by_index(boot_block_index, dentry);
 
 	// if(retval == -1)
 	// 	return -1;
@@ -159,8 +159,8 @@ int32_t dir_close(int32_t fd)
 
 /* read_dentry_by_name
  *   DESCRIPTION: finds the corresponding dentry given the name
- *   INPUTS: fname -- 
- *           dentry --
+ *   INPUTS: fname -- filename
+ *           dentry -- the directory entry we found
  *   OUTPUTS: none
  *   RETURN VALUE: 
  *   SIDE EFFECTS: 
@@ -192,7 +192,7 @@ int32_t read_dentry_by_name(const uint8_t* fname, dentry_t* dentry)
 
 /* read_dentry_by_index
  *   DESCRIPTION: finds the corresponding dentry given the index
- *   INPUTS: index -- the index of the directory entry to be found
+ *   INPUTS: index -- the boot block index of the directory entry to be found
  *           dentry -- the directory entry we found
  *   OUTPUTS: none
  *   RETURN VALUE: 0 for success, -1 for failure
