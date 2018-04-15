@@ -167,9 +167,21 @@ void filesys_list_of_files()
 	
 }
 
-void filesys_file_content()
+void filesys_file_content(uint32_t dentry_index)
 {
 	//loop across inodes to print files
+	dentry_t* dentry;
+	uint32_t inode_index, nbytes;
+	uint8_t* buf;
+	read_dentry_by_index(dentry_index, dentry);
+	if(dentry->file_type == 2)
+	{
+		inode_index = dentry->inode_num;
+		// nbytes = // how to find length of file?
+		nbytes = 1024;
+		read_data(inode_index, 0, buf, nbytes);
+		printf("%s\n", buf);
+	}
 }
 
 /* Checkpoint 3 tests */
@@ -204,6 +216,6 @@ void launch_tests(){
 
 	// terminal_test();
 
-	filesys_list_of_files();
-	filesys_file_content();
+	// filesys_list_of_files();
+	filesys_file_content(5);
 }

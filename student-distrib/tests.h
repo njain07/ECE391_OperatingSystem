@@ -5,6 +5,7 @@
 #include "lib.h"
 #include "rtc.h"
 #include "terminal.h"
+#include "filesys.h"
 
 // test launcher
 void launch_tests();

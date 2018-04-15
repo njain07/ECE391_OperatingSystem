@@ -56,13 +56,13 @@ int32_t file_open(const uint8_t* filename)
  */
 int32_t file_read(int32_t fd, void* buf, int32_t nbytes)
 {
-	int32_t retval;
-	file_descriptor_struct file = file_array[fd];
+	int32_t retval = 0;
+	// file_descriptor_struct file = file_array[fd];
 
-	uint32_t inode = file.inode;
-	uint32_t offset = file.file_pos;
-	uint8_t* temp_buf = (uint8_t*) buf;
-	retval = read_data(inode, offset, temp_buf, nbytes);
+	// uint32_t inode = file.inode;
+	// uint32_t offset = file.file_pos;
+	// uint8_t* temp_buf = (uint8_t*) buf;
+	// retval = read_data(inode, offset, temp_buf, nbytes);
 	return retval;
 }
 
@@ -117,9 +117,8 @@ int32_t dir_open(const uint8_t* filename)
  */
 int32_t dir_read(int32_t fd, void* buf, int32_t nbytes)
 {
-	dentry_t* dentry;
-	int32_t inode_index = dentry->inode_num;
-
+	// dentry_t* dentry;
+	// int32_t inode_index = dentry->inode_num;
 
 
 	// uint32_t dir_index = find_dentry_by_fd(fd);
