@@ -173,6 +173,7 @@ void filesys_file_content(uint32_t dentry_index)
 	dentry_t* dentry;
 	uint32_t inode_index, nbytes;
 	uint8_t* buf;
+	printf("I reached here\n");
 	read_dentry_by_index(dentry_index, dentry);
 	if(dentry->file_type == 2)
 	{
