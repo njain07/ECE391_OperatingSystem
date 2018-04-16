@@ -11,7 +11,7 @@
 #define SF_B 16
 
 #define NUM_DATA_BLOCKS 1023
-#define DENTRY_FILE_NAME_SIZE 33
+#define DENTRY_FILE_NAME_SIZE 32
 #define DENTRY_PADDING 6
 #define BOOT_BLOCK_RESERVED 13
 #define NUM_DENTRIES 63
@@ -41,7 +41,7 @@ typedef struct boot_block_t
 	uint32_t num_inodes;
 	uint32_t num_dblocks;
 	uint32_t* reserved;
-	dentry_t dentries[NUM_DENTRIES];
+	dentry_t* dentries;
 } boot_block_t;
 
 boot_block_t* boot_block;

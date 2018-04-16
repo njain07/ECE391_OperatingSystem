@@ -34,13 +34,16 @@ extern void filesys_init()
 	boot_block->num_inodes = *(fa + FOUR_B);
 	boot_block->num_dblocks = *(fa + EIGHT_B);
 	boot_block->reserved = (uint32_t*)(fa + TWELVE_B);
+	boot_block->dentries = (dentry_t*)(fa + (SF_B));
 
-	int i;
-	for(i=1; i<=NUM_DENTRIES; i++)
-	{
-		boot_block->dentries[i] = (dentry_t)(fa + (i*SF_B));
-	}
+	// int i;
+	// for(i=1; i<=NUM_DENTRIES; i++)
+	// {
+	// 	boot_block->dentries[i] = (dentry_t)(fa + (i*SF_B));
+	// }
 	
+
+
 }
 
 /* file_open
