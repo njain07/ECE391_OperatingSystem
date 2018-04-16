@@ -33,6 +33,12 @@ Checkpoint 2:
 	Problem: indexing issue
 	Fix: fixed the indexing issue
 
+4) getting a page fault every time I accessed the boot_block
+	Problem: the FILESYS_ADDR was hardcoded
+	Fix: created a global variable and initialized it with mod->mod_start
+
+5) getting an unknown error
+
 Checkpoint 3:
 
 1) 

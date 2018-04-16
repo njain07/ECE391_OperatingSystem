@@ -13,7 +13,10 @@
 #include "rtc.h"
 #include "keyboard.h"
 #include "terminal.h"
+#include "filesys.h"
 #define RUN_TESTS
+
+uint32_t FILESYS_ADDR;
 
 /* Macros. */
 /* Check if the bit BIT in FLAGS is set. */
@@ -56,6 +59,7 @@ void entry(unsigned long magic, unsigned long addr) {
         int mod_count = 0;
         int i;
         module_t* mod = (module_t*)mbi->mods_addr;
+        FILESYS_ADDR = (unsigned int)mod->mod_start;
         while (mod_count < mbi->mods_count) {
             printf("Module %d loaded at address: 0x%#x\n", mod_count, (unsigned int)mod->mod_start);
             printf("Module %d ends at address: 0x%#x\n", mod_count, (unsigned int)mod->mod_end);
@@ -146,6 +150,7 @@ void entry(unsigned long magic, unsigned long addr) {
     init_paging();
     rtc_init();
     terminal_init();
+    filesys_init();
 	
 	int i;
 	for(i=0;i<16;i++)

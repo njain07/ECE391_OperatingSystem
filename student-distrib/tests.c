@@ -173,7 +173,7 @@ void filesys_file_content(uint32_t dentry_index)
 	dentry_t* dentry;
 	uint32_t inode_index, nbytes;
 	uint8_t* buf;
-	printf("I reached here\n");
+	// printf("I reached here\n");
 	read_dentry_by_index(dentry_index, dentry);
 	if(dentry->file_type == 2)
 	{
@@ -218,5 +218,5 @@ void launch_tests(){
 	// terminal_test();
 
 	// filesys_list_of_files();
-	filesys_file_content(50);
+	filesys_file_content(10);
 }
