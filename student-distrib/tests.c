@@ -168,6 +168,7 @@ void filesys_list_of_files()
 
 void filesys_file_content(uint32_t dentry_index)
 {
+	// tests read_dentry_by_index and read_data
 	//loop across inodes to print files
 	dentry_t* dentry;
 	uint32_t inode_index, nbytes;
@@ -187,7 +188,7 @@ void filesys_file_content(uint32_t dentry_index)
 
 void filesys_read_dentry_by_name(uint8_t* fname)
 {
-	//tests file_open and dir_open ??
+	//tests file_open and dir_open
 	dentry_t* dentry;
 	// printf("I reached here\n");
 	read_dentry_by_name(fname, dentry);
@@ -198,6 +199,8 @@ void filesys_read_dentry_by_name(uint8_t* fname)
 }
 
 /* Checkpoint 3 tests */
+
+
 /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */
 
@@ -224,12 +227,10 @@ void launch_tests(){
 	// 		rtc_read(0,ptr,4);		
 	// 		printf("2");
 	// }
-	
-
 
 	// terminal_test();
 
 	// filesys_list_of_files();
 	// filesys_file_content(10);
-	filesys_read_dentry_by_name("pingpong");
+	filesys_read_dentry_by_name("verylargetextwithverylongname.tx");
 }
