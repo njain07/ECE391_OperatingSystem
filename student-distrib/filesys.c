@@ -220,18 +220,12 @@ int32_t read_dentry_by_index(uint32_t index, dentry_t* dentry)
 	uint32_t num_dentries;
 	num_dentries = boot_block->num_dir;
 	if(index < 0 || index > (num_dentries-1) || dentry == NULL)
-	{
-		printf("error");
 		return -1;
-	}
 
 	strncpy((int8_t*)dentry->file_name, (int8_t*)boot_block->dentries[index].file_name, DENTRY_FILE_NAME_SIZE-1);
 	dentry->file_name[DENTRY_FILE_NAME_SIZE] = '\0';
-	printf("File Name: %s\n", dentry->file_name);
 	dentry->file_type = boot_block->dentries[index].file_type;
-	printf("File Type: %s\n", dentry->file_type);
 	dentry->inode_num = boot_block->dentries[index].inode_num;
-	printf("Inode Num: %s\n", dentry->inode_num);
 	return 0;
 }
 
@@ -255,17 +249,32 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length
 	// find pointer to inode
 	inode_t* inode_ptr;
 	uint32_t* fa = (uint32_t*)FILESYS_ADDR;
-	inode_ptr = (inode_t*) *(fa + ((inode+1)*BLOCK_SIZE_ADDR));
+	inode_ptr = (inode_t*) (fa + ((inode+1)*BLOCK_SIZE_ADDR));
+	inode_ptr->length = (uint32_t*) (fa + ((inode+1)*BLOCK_SIZE_ADDR));
+	inode_ptr->data_blocks = (uint32_t*) (fa + ((inode+1)*BLOCK_SIZE_ADDR) + FOUR_B);
 
+	// boot_block->num_dir = *(fa);
+	// boot_block->num_inodes = *(fa + FOUR_B);
+	// boot_block->num_dblocks = *(fa + EIGHT_B);
+
+	// printf("I reached here before check 1\n");
 	// check for valid offset
-	if(offset<0 || offset>=(inode_ptr->length))
+	if(offset<0 || offset>(inode_ptr->length)){
+		printf("error 1\n");
 		return -1;
+	}
+	// printf("I reached here after check 1\n");
 
 	// check for valid length
 	if(length<0)
 		return -1;
-	if((offset+length)>(inode_ptr->length))
+
+	// printf("I reached here before check 2\n");
+	if((offset+length)>=(inode_ptr->length)) {
+		printf("error 2\n");
 		length = (inode_ptr->length) - offset;
+	}
+	// printf("I reached here after check 2\n");
 
 	// loop through data blocks
 	uint32_t data_block, data_block_num, initial_offset, read_from_block, length_left, bytes_read_successfully;
@@ -279,11 +288,14 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length
 	while(length_left > 0)
 	{
 		read_from_block = (length_left > BLOCK_SIZE)? BLOCK_SIZE : length_left;
-		data_block_num = inode_ptr->data_blocks[data_block];
-		data_block_ptr = (uint8_t*) *(fa + ((boot_block->num_inodes)*BLOCK_SIZE_ADDR) + (data_block_num*BLOCK_SIZE_ADDR));
+		data_block_num = inode_ptr->data_blocks[data_block]; // wrong?
+
+		data_block_ptr = (uint8_t*) (fa + ((boot_block->num_inodes)*BLOCK_SIZE_ADDR) + (data_block_num*BLOCK_SIZE_ADDR)); // out of bounds
 		if(data_block_ptr != NULL)
 		{
-			memcpy(buf_ptr, data_block_ptr, read_from_block);
+	printf("I reached here 1\n");
+			memcpy(buf_ptr, data_block_ptr, read_from_block); // pf, data_block_ptr is out of bounds
+	printf("I reached here 2\n");
 			bytes_read_successfully += read_from_block;
 		}
 		else

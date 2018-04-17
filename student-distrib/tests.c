@@ -173,16 +173,25 @@ void filesys_file_content(uint32_t dentry_index)
 	dentry_t* dentry;
 	uint32_t inode_index, nbytes;
 	uint8_t* buf;
-	// printf("I reached here\n");
 	read_dentry_by_index(dentry_index, dentry);
 	if(dentry->file_type == 2)
 	{
+		clear();
 		inode_index = dentry->inode_num;
 		// nbytes = // how to find length of file?
 		nbytes = 10;
 		read_data(inode_index, 0, buf, nbytes);
-		printf("%s\n", buf);
+		printf("I reached here\n");
+		printf("%s\n", buf); // pf?
 	}
+}
+
+void filesys_read_dentry_by_name(uint8_t* fname)
+{
+	//tests file_open and dir_open ??
+	dentry_t* dentry;
+	// read_dentry_by_name(const uint8_t* fname, dentry_t* dentry)
+	read_dentry_by_name(fname, dentry);
 }
 
 /* Checkpoint 3 tests */
@@ -218,5 +227,6 @@ void launch_tests(){
 	// terminal_test();
 
 	// filesys_list_of_files();
-	filesys_file_content(10);
+	filesys_file_content(8);
+	// filesys_read_dentry_by_name('pingpong')
 }
