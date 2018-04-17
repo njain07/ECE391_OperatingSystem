@@ -250,8 +250,6 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length
 	inode_t* inode_ptr;
 	uint8_t* fa = (uint8_t*)FILESYS_ADDR;
 	inode_ptr = (inode_t*) (fa + ((inode+1)*BLOCK_SIZE_ADDR));
-	// inode_ptr->length = (uint32_t*) (fa + ((inode+1)*BLOCK_SIZE_ADDR));
-	// inode_ptr->data_blocks = (uint32_t*) (fa + ((inode+1)*BLOCK_SIZE_ADDR) + FOUR_B);
 
 	// check for valid offset
 	if(offset<0 || offset>(inode_ptr->length)){
@@ -300,6 +298,7 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length
 			data_block++;
 	}
 
+	buf[bytes_read_successfully] = '\0';
 	return bytes_read_successfully;
 }
 

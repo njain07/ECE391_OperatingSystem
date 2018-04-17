@@ -25,7 +25,6 @@ typedef struct inode_t
 {
 	uint32_t length;
 	uint32_t data_blocks[NUM_DATA_BLOCKS];
-	// uint32_t* data_blocks;
 } inode_t;
 
 typedef struct dentry_t

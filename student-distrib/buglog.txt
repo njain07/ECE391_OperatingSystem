@@ -57,9 +57,17 @@ Checkpoint 2:
 	Problem: indexing error in calculation of data_block_ptr
 	Fix: fixed the indexing error
 
-10) page faulting
-	Problem:
-	Fix:
+10) page faulting at the end of the filesys_file_content test
+	Problem: nbytes > sizeof(buf)
+	Fix: made the sizeof(buf) = nbytes
+
+11) read_data printing garbage after nbytes of the file has been printed
+	Problem: wasn't adding a '\0' character at the end of the buffer
+	Fix: added the '\0' character
+
+12) page faulting in read_dentry_by_name
+	Problem: the fname being passed in was in single quotes and so was being interpreted as an address, which was out of bounds
+	Fix: called the function with the fname in double quotes
 
 Checkpoint 3:
 
