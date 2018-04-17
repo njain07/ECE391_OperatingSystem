@@ -172,7 +172,7 @@ void filesys_file_content(uint32_t dentry_index)
 	//loop across inodes to print files
 	dentry_t* dentry;
 	uint32_t inode_index, nbytes;
-	uint8_t* buf;
+	uint8_t buf[10];
 	read_dentry_by_index(dentry_index, dentry);
 	if(dentry->file_type == 2)
 	{
@@ -181,9 +181,10 @@ void filesys_file_content(uint32_t dentry_index)
 		// nbytes = // how to find length of file?
 		nbytes = 10;
 		read_data(inode_index, 0, buf, nbytes);
-		printf("I reached here\n");
 		printf("%s\n", buf); // pf?
+		// printf("I reached here\n");
 	}
+	return;
 }
 
 void filesys_read_dentry_by_name(uint8_t* fname)
@@ -227,6 +228,6 @@ void launch_tests(){
 	// terminal_test();
 
 	// filesys_list_of_files();
-	filesys_file_content(8);
+	filesys_file_content(10);
 	// filesys_read_dentry_by_name('pingpong')
 }

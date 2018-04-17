@@ -51,7 +51,15 @@ Checkpoint 2:
 
 8) page faulting in read_data memcpy
 	Problem: data_block_ptr is out of bounds
-	Fix: 
+	Fix: fixed how the inode and boot_block structs were set up, then fixed a data type error which was messing up my math to calculate the inode_ptr
+
+9) the buffer is not getting filled after I call read_data
+	Problem: indexing error in calculation of data_block_ptr
+	Fix: fixed the indexing error
+
+10) page faulting
+	Problem:
+	Fix:
 
 Checkpoint 3:
 
