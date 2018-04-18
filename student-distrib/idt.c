@@ -40,6 +40,7 @@ void init_idt()
 			{
 				idt[i].dpl = 3;
 				idt[i].reserved3 = 1;
+				SET_IDT_ENTRY(idt[0x80], &interrupt_sys);
 			}
 
 			else if (i == 0x28)

@@ -153,3 +153,43 @@ common_interrupt:
     addl $4,%esp
     popal
     iret
+
+ #  CP 3 
+interrupt_sys:
+	pushal 
+
+	push	%es
+	push	%fs
+	push	%gs
+	
+
+	pushl 	%edx
+	pushl 	%ecx
+	pushl 	%ebx
+
+	subl $1,%eax
+	
+	cmpl	$0, %eax	
+	jl 		ERROR
+
+	cmpl	$5, %eax	#change to 9 when you get the rest 
+	jg		ERROR
+
+	call 	*jmp_table(,%eax, $4)
+	jmp 	POP
+
+ERROR:
+	movl	$-1,%eax
+
+POP:
+	popl 	%ebx
+	popl 	%ecx
+	popl 	%edx
+
+	pop 	%gs
+	pop		%fs
+	pop		%es
+
+jmp_table:
+	.long execute, halt, open, read, write, close #, getargs, vidmap, set_handler, sigreturn 
+
