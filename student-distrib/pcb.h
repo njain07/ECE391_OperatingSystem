@@ -3,8 +3,6 @@
 
 #include "filesys.h"
 
-// file_descriptor_struct file_array[8];
-
 typedef struct file_ops
 {
 	int32_t (*open) (const uint8_t* filename);
@@ -21,9 +19,11 @@ typedef struct file_descriptor_struct
 	int32_t flags;			//marks file descriptor as "in-use" etc.
 } file_descriptor_struct;
 
+file_descriptor_struct file_array[8];
+
 typedef struct pcb 
 {
-	file_descriptor_struct file_array[8];
+	// file_descriptor_struct file_array[8];
 	
 } pcb;
 

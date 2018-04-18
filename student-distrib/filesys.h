@@ -11,14 +11,15 @@
 #define SF_B 16
 
 #define NUM_DATA_BLOCKS 1023
-#define DENTRY_FILE_NAME_SIZE 33
+#define DENTRY_FILE_NAME_SIZE 32
 #define DENTRY_PADDING 6
 #define BOOT_BLOCK_RESERVED 13
 #define NUM_DENTRIES 63
 
-#define FILESYS_ADDR 0x0040F000
-#define BLOCK_SIZE_ADDR 4096*8
+#define BLOCK_SIZE_ADDR 4096 //*8
 #define BLOCK_SIZE 4096
+
+extern uint32_t FILESYS_ADDR;
 
 typedef struct inode_t
 {
@@ -39,8 +40,8 @@ typedef struct boot_block_t
 	uint32_t num_dir;
 	uint32_t num_inodes;
 	uint32_t num_dblocks;
-	uint32_t* reserved;
-	dentry_t* dentries;
+	uint32_t reserved[BOOT_BLOCK_RESERVED];
+	dentry_t dentries[NUM_DENTRIES];
 } boot_block_t;
 
 boot_block_t* boot_block;
@@ -62,6 +63,6 @@ int32_t read_dentry_by_index(uint32_t index, dentry_t* dentry);
 int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length);
 
 /* Helper functions */
-// uint32_t find_dentry_by_fd(uint32_t fd);
+uint32_t find_dentry_by_fd(uint32_t fd);
 
 #endif

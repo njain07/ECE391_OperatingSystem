@@ -164,27 +164,43 @@ void filesys_list_of_files()
 {
 	//call dir_read many times to print all files
 	
-	
 }
 
 void filesys_file_content(uint32_t dentry_index)
 {
+	// tests read_dentry_by_index and read_data
 	//loop across inodes to print files
 	dentry_t* dentry;
 	uint32_t inode_index, nbytes;
-	uint8_t* buf;
+	uint8_t buf[50];
 	read_dentry_by_index(dentry_index, dentry);
 	if(dentry->file_type == 2)
 	{
+		clear();
 		inode_index = dentry->inode_num;
 		// nbytes = // how to find length of file?
-		nbytes = 10;
+		nbytes = 50;
 		read_data(inode_index, 0, buf, nbytes);
 		printf("%s\n", buf);
 	}
+	return;
+}
+
+void filesys_read_dentry_by_name(uint8_t* fname)
+{
+	//tests file_open and dir_open
+	dentry_t* dentry;
+	// printf("I reached here\n");
+	read_dentry_by_name(fname, dentry);
+	clear();
+	printf("File Name: %s\n", dentry->file_name);
+	printf("File Type: %d\n", dentry->file_type);
+	printf("Inode Num: %d\n", dentry->inode_num);
 }
 
 /* Checkpoint 3 tests */
+
+
 /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */
 
@@ -211,11 +227,10 @@ void launch_tests(){
 	// 		rtc_read(0,ptr,4);		
 	// 		printf("2");
 	// }
-	
-
 
 	// terminal_test();
 
 	// filesys_list_of_files();
-	filesys_file_content(50);
+	// filesys_file_content(10);
+	filesys_read_dentry_by_name("verylargetextwithverylongname.tx");
 }

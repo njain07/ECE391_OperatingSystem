@@ -1,9 +1,6 @@
 .global interrupt_rtc , interrupt_keyboard
 .global DE, DB, NMI, BP, OF, BR, UD, NM, DF, CSO, TS, NP, SS, GP, PF, IntelR, MF, AC, MC, XF, unknown
 
-jmp_table:
-	.long execute, halt, open, read, write, close #, getargs, vidmap, set_handler, sigeturn 
-
 interrupt_rtc:
 	pushal
 	pushl $40

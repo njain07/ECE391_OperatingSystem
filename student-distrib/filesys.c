@@ -21,14 +21,29 @@
  */
 extern void filesys_init()
 {
-	// boot_block = FILESYS_ADDR;
+	boot_block = (boot_block_t*) FILESYS_ADDR;
 	uint32_t* fa = (uint32_t*)FILESYS_ADDR;
 
-	boot_block->num_dir = *(fa);
-	boot_block->num_inodes = *(fa + FOUR_B);
-	boot_block->num_dblocks = *(fa + EIGHT_B);
-	boot_block->reserved = (uint32_t*)(fa + TWELVE_B);
-	boot_block->dentries = (dentry_t*)(fa + SF_B);
+	// dentry_t d[NUM_DENTRIES]; 
+	// boot_block->dentries = d; 
+
+	if(fa == NULL)
+		return;
+
+	// boot_block->num_dir = *(fa);
+	// boot_block->num_inodes = *(fa + FOUR_B);
+	// boot_block->num_dblocks = *(fa + EIGHT_B);
+	// boot_block->reserved = (uint32_t*)(fa + TWELVE_B);
+	// boot_block->dentries = (dentry_t*)(fa + (SF_B));
+
+	// int i;
+	// for(i=1; i<=NUM_DENTRIES; i++)
+	// {
+	// 	boot_block->dentries[i] = (dentry_t)(fa + (i*SF_B));
+	// }
+	
+
+
 }
 
 /* file_open
@@ -57,9 +72,9 @@ int32_t file_open(const uint8_t* filename)
 int32_t file_read(int32_t fd, void* buf, int32_t nbytes)
 {
 	int32_t retval = 0;
-	// file_descriptor_struct file = file_array[fd];
+	file_descriptor_struct file = file_array[fd];
 
-	uint32_t inode = file.inode;
+	uint32_t inode = file.inode_num;
 	uint32_t offset = file.file_pos;
 	// uint8_t* temp_buf = (uint8_t*) buf;
 	retval = read_data(inode, offset, (uint8_t*) buf, nbytes);
@@ -118,17 +133,19 @@ int32_t dir_open(const uint8_t* filename)
 int32_t dir_read(int32_t fd, void* buf, int32_t nbytes)
 {
 	// using boot block index , fill buf with only one filename
-	// dentry_t* dentry;
-	// int32_t inode_index = dentry->inode_num;
-	// uint32_t dir_index = find_dentry_by_fd(fd);
-
-	// retval = read_dentry_by_index(boot_block_index, dentry);
-
-	// if(retval == -1)
-	// 	return -1;
-	// else
-
-	return 0;
+	dentry_t* dentry;
+	uint32_t boot_block_index;
+	boot_block_index = find_dentry_by_fd((uint32_t)fd);
+	int32_t retval = read_dentry_by_index(boot_block_index, dentry);
+	if(retval == -1)
+		return -1;
+	else
+	{
+		uint32_t file_name_size;
+		file_name_size = strlen(dentry->file_name);
+		strncpy((int8_t*)buf, (int8_t*)dentry->file_name, file_name_size);
+		return file_name_size;
+	}
 }
 
 /* dir_write
@@ -170,6 +187,9 @@ int32_t read_dentry_by_name(const uint8_t* fname, dentry_t* dentry)
 	uint32_t index, num_dentries, retval;
 	retval = -1;
 	num_dentries = boot_block->num_dir;
+	
+	if(strlen(fname) > DENTRY_FILE_NAME_SIZE)
+		return retval;
 
 	if(dentry != NULL)
 	{
@@ -177,8 +197,8 @@ int32_t read_dentry_by_name(const uint8_t* fname, dentry_t* dentry)
 		{
 			if(strncmp((int8_t*)fname, (int8_t*)boot_block->dentries[index].file_name, DENTRY_FILE_NAME_SIZE-1) == 0)
 			{
-				strncpy((int8_t*)dentry->file_name, (int8_t*)boot_block->dentries[index].file_name, DENTRY_FILE_NAME_SIZE-1);
-				dentry->file_name[DENTRY_FILE_NAME_SIZE] = '\0';
+				strncpy((int8_t*)dentry->file_name, (int8_t*)boot_block->dentries[index].file_name, DENTRY_FILE_NAME_SIZE);
+				// dentry->file_name[DENTRY_FILE_NAME_SIZE] = '\0';
 				dentry->file_type = boot_block->dentries[index].file_type;
 				dentry->inode_num = boot_block->dentries[index].inode_num;
 				retval = 0;
@@ -231,18 +251,23 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length
 
 	// find pointer to inode
 	inode_t* inode_ptr;
-	uint32_t* fa = (uint32_t*)FILESYS_ADDR;
-	inode_ptr = (inode_t*) *(fa + ((inode+1)*BLOCK_SIZE_ADDR));
+	uint8_t* fa = (uint8_t*)FILESYS_ADDR;
+	inode_ptr = (inode_t*) (fa + ((inode+1)*BLOCK_SIZE_ADDR));
 
 	// check for valid offset
-	if(offset<0 || offset>=(inode_ptr->length))
+	if(offset<0 || offset>(inode_ptr->length)){
+		printf("offset error\n");
 		return -1;
+	}
 
 	// check for valid length
 	if(length<0)
 		return -1;
-	if((offset+length)>(inode_ptr->length))
+
+	if((offset+length)>=(inode_ptr->length)) {
+		printf("resizing length\n");
 		length = (inode_ptr->length) - offset;
+	}
 
 	// loop through data blocks
 	uint32_t data_block, data_block_num, initial_offset, read_from_block, length_left, bytes_read_successfully;
@@ -257,7 +282,8 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length
 	{
 		read_from_block = (length_left > BLOCK_SIZE)? BLOCK_SIZE : length_left;
 		data_block_num = inode_ptr->data_blocks[data_block];
-		data_block_ptr = (uint8_t*) *(fa + ((boot_block->num_inodes)*BLOCK_SIZE_ADDR) + (data_block_num*BLOCK_SIZE_ADDR));
+
+		data_block_ptr = (uint8_t*) (fa + ((boot_block->num_inodes+1)*BLOCK_SIZE_ADDR) + (data_block_num*BLOCK_SIZE_ADDR));
 		if(data_block_ptr != NULL)
 		{
 			memcpy(buf_ptr, data_block_ptr, read_from_block);
@@ -269,35 +295,35 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length
 			return bytes_read_successfully;
 		}
 			
-
 		buf_ptr += read_from_block;
 		length_left = length_left - read_from_block;
 		if(length_left > 0)
 			data_block++;
 	}
 
+	buf[bytes_read_successfully] = '\0';
 	return bytes_read_successfully;
 }
 
 /* Helper functions */
-// uint32_t find_dentry_by_fd(uint32_t fd)
-// {
-// 	file_descriptor_struct file = file_array[fd];
-// 	uint32_t inode_index = file.inode;
+uint32_t find_dentry_by_fd(uint32_t fd)
+{
+	file_descriptor_struct file = file_array[fd];
+	uint32_t inode_index = file.inode_num;
 	
-// 	int32_t retval;
-// 	uint32_t dentry_index = 0;
-// 	dentry_t* dentry;
-// 	dentry->inode_num = -1;
+	int32_t retval;
+	uint32_t dentry_index = 0;
+	dentry_t* dentry;
+	dentry->inode_num = -1;
 	
-// 	while(dentry->inode_num != inode_index)
-// 	{
-// 		retval = read_dentry_by_index(dentry_index, dentry);
-// 		dentry_index++;
+	while(dentry->inode_num != inode_index)
+	{
+		retval = read_dentry_by_index(dentry_index, dentry);
+		dentry_index++;
 
-// 		if((dentry_index > 62) || (retval == -1))
-// 			return -1;
-// 	}
+		if((dentry_index > 62) || (retval == -1))
+			return -1;
+	}
 
-// 	return dentry_index;
-// }
+	return dentry_index;
+}

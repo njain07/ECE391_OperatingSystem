@@ -33,6 +33,42 @@ Checkpoint 2:
 	Problem: indexing issue
 	Fix: fixed the indexing issue
 
+4) page faulting every time I accessed the boot_block
+	Problem: the FILESYS_ADDR was hardcoded
+	Fix: created a global variable and initialized it with mod->mod_start
+
+5) page faulting while printing file_type or inode_num of dentry
+	Problem: I used %s in a printf statement to print a uint32_t data type (file_type and inode_num)
+	Fix: I changed it to %d
+
+6) page faulting in read_data when I accessed the length or data_blocks of inode_ptr
+	Problem: inode struct was not initialized correctly
+	Fix: initialized inode_ptr->length and inode_ptr->data_blocks
+
+7) page faulting while initializing the data_block_ptr
+	Problem: was dereferencing the pointer in intialization
+	Fix: did not dereference the address
+
+8) page faulting in read_data memcpy
+	Problem: data_block_ptr is out of bounds
+	Fix: fixed how the inode and boot_block structs were set up, then fixed a data type error which was messing up my math to calculate the inode_ptr
+
+9) the buffer is not getting filled after I call read_data
+	Problem: indexing error in calculation of data_block_ptr
+	Fix: fixed the indexing error
+
+10) page faulting at the end of the filesys_file_content test
+	Problem: nbytes > sizeof(buf)
+	Fix: made the sizeof(buf) = nbytes
+
+11) read_data printing garbage after nbytes of the file has been printed
+	Problem: wasn't adding a '\0' character at the end of the buffer
+	Fix: added the '\0' character
+
+12) page faulting in read_dentry_by_name
+	Problem: the fname being passed in was in single quotes and so was being interpreted as an address, which was out of bounds
+	Fix: called the function with the fname in double quotes
+
 Checkpoint 3:
 
 1) 
