@@ -11,6 +11,8 @@
 #define    FD_SIZE     8
 #define    KB8         0x2000
 
+pcb_t current_pcb;
+
 int32_t execute(const uint8_t* command);
 int32_t halt(uint8_t* status);
 

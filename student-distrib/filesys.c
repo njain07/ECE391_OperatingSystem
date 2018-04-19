@@ -72,7 +72,7 @@ int32_t file_open(const uint8_t* filename)
 int32_t file_read(int32_t fd, void* buf, int32_t nbytes)
 {
 	int32_t retval = 0;
-	file_descriptor_struct file = file_array[fd];
+	file_descriptor_struct file = current_pcb.file_array[fd];
 
 	uint32_t inode = file.inode_num;
 	uint32_t offset = file.file_pos;
@@ -142,7 +142,7 @@ int32_t dir_read(int32_t fd, void* buf, int32_t nbytes)
 	else
 	{
 		uint32_t file_name_size;
-		file_name_size = strlen(dentry->file_name);
+		file_name_size = strlen((int8_t*)dentry->file_name);
 		strncpy((int8_t*)buf, (int8_t*)dentry->file_name, file_name_size);
 		return file_name_size;
 	}
@@ -188,7 +188,7 @@ int32_t read_dentry_by_name(const uint8_t* fname, dentry_t* dentry)
 	retval = -1;
 	num_dentries = boot_block->num_dir;
 	
-	if(strlen(fname) > DENTRY_FILE_NAME_SIZE)
+	if(strlen((int8_t*)fname) > DENTRY_FILE_NAME_SIZE)
 		return retval;
 
 	if(dentry != NULL)
@@ -308,7 +308,7 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length
 /* Helper functions */
 uint32_t find_dentry_by_fd(uint32_t fd)
 {
-	file_descriptor_struct file = file_array[fd];
+	file_descriptor_struct file = current_pcb.file_array[fd];
 	uint32_t inode_index = file.inode_num;
 	
 	int32_t retval;

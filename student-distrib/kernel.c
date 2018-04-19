@@ -147,7 +147,7 @@ void entry(unsigned long magic, unsigned long addr) {
      * PIC, any other initialization stuff... */
     init_idt();
     i8259_init();
-    init_paging();
+    paging_init();
     rtc_init();
     terminal_init();
     filesys_init();
@@ -177,7 +177,7 @@ void entry(unsigned long magic, unsigned long addr) {
     launch_tests();
 #endif
     /* Execute the first program ("shell") ... */
-
+    // CALL EXECUTE
     /* Spin (nicely, so we don't chew up cycles) */
     asm volatile (".1: hlt; jmp .1;");
 }

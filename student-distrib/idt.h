@@ -31,6 +31,7 @@ typedef struct pt_regs {
 }pt_regs;
 
 char *error_messages[21];
+extern void interrupt_sys();
 extern void interrupt_rtc();
 extern void interrupt_keyboard();
 extern void DE();

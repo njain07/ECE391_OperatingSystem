@@ -1,4 +1,4 @@
-.global interrupt_rtc, interrupt_keyboard
+.global interrupt_rtc, interrupt_keyboard, interrupt_sys
 .global DE, DB, NMI, BP, OF, BR, UD, NM, DF, CSO, TS, NP, SS, GP, PF, IntelR, MF, AC, MC, XF, unknown
 
 interrupt_rtc:
@@ -155,13 +155,12 @@ common_interrupt:
     iret
 
  #  CP 3 
-syscall_handler:
+interrupt_sys:
 	pushal 
 
 	push	%es
 	push	%fs
 	push	%gs
-	
 
 	pushl 	%edx
 	pushl 	%ecx
@@ -169,13 +168,14 @@ syscall_handler:
 
 	subl 	$1, %eax
 	
+	# syscall value checking
 	cmpl	$0, %eax	
 	jl 		ERROR
 
 	cmpl	$5, %eax	#change to 9 for cp4
 	jg		ERROR
 
-	call 	*jmp_table( ,%eax, $4)
+	call 	*jmp_table( ,%eax, 4)
 	jmp 	POP
 
 ERROR:
@@ -191,5 +191,5 @@ POP:
 	pop		%es
 
 jmp_table:
-	.long execute, halt, open, read, write, close #, getargs, vidmap, set_handler, sigreturn 
+	.long halt, execute, read, write, open, close #, getargs, vidmap, set_handler, sigreturn 
 

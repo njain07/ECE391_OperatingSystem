@@ -2,21 +2,25 @@
 #define _PCB_H
 
 #include "filesys.h"
+#include "rtc.h"
+#include "terminal.h"
 
 #define MAX_FD_STRUCT_SIZE 8
 #define FD_MAX_INDEX 7
 
+/* Lumetta course notes, page 42 */
 typedef struct file_ops_t
 {
-	int32_t (*open) (const uint8_t* filename);
 	int32_t (*read) (int32_t fd, void* buf, int32_t nbytes);
 	int32_t (*write) (int32_t fd, const void* buf, int32_t nbytes);
+	int32_t (*open) (const uint8_t* filename);
 	int32_t (*close) (int32_t fd);
 } file_ops_t;
 
-file_ops_t rtc_ops;
-file_ops_t dir_ops;
-file_ops_t file_ops;
+extern file_ops_t rtc_ops;
+extern file_ops_t dir_ops;
+extern file_ops_t file_ops;
+extern file_ops_t terminal_ops;
 
 typedef struct file_descriptor_struct
 {
@@ -26,7 +30,7 @@ typedef struct file_descriptor_struct
 	int32_t flags;			//marks file descriptor as "in-use" (=1) etc.
 } file_descriptor_struct;	//fd_t
 
-file_descriptor_struct file_array[MAX_FD_STRUCT_SIZE];
+// file_descriptor_struct file_array[MAX_FD_STRUCT_SIZE];
 
 typedef struct pcb_t
 {
@@ -46,5 +50,7 @@ typedef struct pcb_t
 	
 	//maybe add kernel stack?
 } pcb_t;
+
+extern pcb_t current_pcb;
 
 #endif

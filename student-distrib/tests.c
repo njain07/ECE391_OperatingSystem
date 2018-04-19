@@ -232,5 +232,5 @@ void launch_tests(){
 
 	// filesys_list_of_files();
 	// filesys_file_content(10);
-	filesys_read_dentry_by_name("verylargetextwithverylongname.tx");
+	filesys_read_dentry_by_name((uint8_t*)"verylargetextwithverylongname.tx");
 }

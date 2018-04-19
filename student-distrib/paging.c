@@ -18,7 +18,7 @@
  *   RETURN VALUE: none
  *   SIDE EFFECTS: sets up page directories and page tables
  */
-void init_paging()
+void paging_init()
 {
 	/* Initialize all entries in the page directory as not present, and
 	 * map the pages in the page table to the beginning of memory

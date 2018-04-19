@@ -22,7 +22,7 @@ int page_directory[ONE_KB] __attribute__((aligned (FOUR_KB)));
 //int video_memory[ONE_KB] __attribute__((aligned (FOUR_KB)));
 
 
-void init_paging();
+void paging_init();
 //void create4MBpage();
 //void create4KBpage();
 //void enable_4MB_Paging();
