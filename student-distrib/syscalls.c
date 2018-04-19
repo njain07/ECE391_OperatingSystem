@@ -83,8 +83,9 @@ int32_t open(const uint8_t* filename)
             current_pcb.file_array[fd].file_jmp_tbl = &rtc_ops;
     }
     
-    (*current_pcb.file_array[fd].file_jmp_tbl->open)(filename); // may need help is it open or file_open? //?? not sure if syntax is correct
+    (*current_pcb.file_array[fd].file_jmp_tbl->open)(filename);
     
+    // printf("opened file\n");
     return fd;
 }
 
@@ -96,7 +97,28 @@ int32_t read(int32_t fd, void* buf, int32_t nbytes)
 
 int32_t write(int32_t fd, const void* buf, int32_t nbytes)
 {
-	return 0;
+    /* fd cannot be 0 because we cannot write to stdin */
+    if((fd < 1) || (fd > FD_MAX_INDEX))
+        return FAIL;
+
+    /* in case of the RTC, the syscall should always accept only a 4-byte integer specifying the interrupt rate in Hz */
+    // not sure if this check is necessary since it's already in rtc_write
+    if(current_pcb.file_array[fd].file_jmp_tbl == &rtc_ops)
+    {
+        if(sizeof(nbytes) != sizeof(int32_t))
+            return FAIL;
+    }
+
+    /* writes to regular files should always return -1 to indicate failure since the filesystem is read-only */
+    if(current_pcb.file_array[fd].file_jmp_tbl == &file_ops)
+        return FAIL;
+
+    /* cannot write to a file which is not in use */
+    if(current_pcb.file_array[fd].flags == 0)
+        return FAIL;
+
+    int32_t bytes_written = (*current_pcb.file_array[fd].file_jmp_tbl->write)(fd, buf, nbytes);
+	return bytes_written;
 }
 
 /*  int32_t close(int32_t fd)
@@ -124,11 +146,12 @@ int32_t close(int32_t fd)
     	return FAIL;
 
     /* closing file */
-    (*current_pcb.file_array[fd].file_jmp_tbl->close)(fd); //?? not sure if syntax is correct
+    (*current_pcb.file_array[fd].file_jmp_tbl->close)(fd);
     
     /* setting the file to not in-use */
     current_pcb.file_array[fd].flags = 0;
     
+    // printf("closed file\n");
     return SUCCESS;
 }
 

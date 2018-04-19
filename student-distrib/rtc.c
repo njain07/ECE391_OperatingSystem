@@ -19,9 +19,6 @@
 #include "i8259.h"
 #include "lib.h"
 
-
-
-
 /*
  * rtc_init
  *   DESCRIPTION: Initialize Real Time Clock(RTC)

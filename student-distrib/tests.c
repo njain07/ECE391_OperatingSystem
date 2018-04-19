@@ -200,6 +200,12 @@ void filesys_read_dentry_by_name(uint8_t* fname)
 
 /* Checkpoint 3 tests */
 
+void open_close_syscall(uint8_t* filename)
+{
+	int32_t fd;
+	fd = open(filename);
+	close(fd);
+}
 
 /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */
@@ -232,5 +238,8 @@ void launch_tests(){
 
 	// filesys_list_of_files();
 	// filesys_file_content(10);
-	filesys_read_dentry_by_name((uint8_t*)"verylargetextwithverylongname.tx");
+	// filesys_read_dentry_by_name((uint8_t*)"verylargetextwithverylongname.tx");
+
+	//checkpoint 3
+	open_close_syscall((uint8_t*)"pingpong");
 }
