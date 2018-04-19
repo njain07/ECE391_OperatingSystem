@@ -46,20 +46,6 @@ extern void filesys_init()
 
 }
 
-/* file_open
- *   DESCRIPTION: helper function for opening the filesystem
- *   INPUTS: filename -- file to be opened
- *   OUTPUTS: none
- *   RETURN VALUE: 
- *   SIDE EFFECTS: 
- */
-int32_t file_open(const uint8_t* filename)
-{
-	dentry_t* dentry;
-	read_dentry_by_name(filename, dentry);
-	return 0;
-}
-
 /* file_read
  *   DESCRIPTION: helper function for reading the filesystem
  *   INPUTS: fd -- file descriptor	
@@ -95,6 +81,20 @@ int32_t file_write(int32_t fd, const void* buf, int32_t nbytes)
 	return -1;
 }
 
+/* file_open
+ *   DESCRIPTION: helper function for opening the filesystem
+ *   INPUTS: filename -- file to be opened
+ *   OUTPUTS: none
+ *   RETURN VALUE: 
+ *   SIDE EFFECTS: 
+ */
+int32_t file_open(const uint8_t* filename)
+{
+	dentry_t* dentry;
+	read_dentry_by_name(filename, dentry);
+	return 0;
+}
+
 /* file_close
  *   DESCRIPTION: helper function for closing the filesystem
  *   INPUTS: fd -- file descriptor
@@ -104,20 +104,6 @@ int32_t file_write(int32_t fd, const void* buf, int32_t nbytes)
  */
 int32_t file_close(int32_t fd)
 {
-	return 0;
-}
-
-/* dir_open
- *   DESCRIPTION: helper function for opening the directory
- *   INPUTS: filename -- file to be opened
- *   OUTPUTS: none
- *   RETURN VALUE: 
- *   SIDE EFFECTS: 
- */
-int32_t dir_open(const uint8_t* filename)
-{
-	dentry_t* dentry;
-	read_dentry_by_name(filename, dentry);
 	return 0;
 }
 
@@ -160,6 +146,20 @@ int32_t dir_read(int32_t fd, void* buf, int32_t nbytes)
 int32_t dir_write(int32_t fd, const void* buf, int32_t nbytes)
 {
 	return -1;
+}
+
+/* dir_open
+ *   DESCRIPTION: helper function for opening the directory
+ *   INPUTS: filename -- file to be opened
+ *   OUTPUTS: none
+ *   RETURN VALUE: 
+ *   SIDE EFFECTS: 
+ */
+int32_t dir_open(const uint8_t* filename)
+{
+	dentry_t* dentry;
+	read_dentry_by_name(filename, dentry);
+	return 0;
 }
 
 /* dir_closes

@@ -71,23 +71,6 @@ void rtc_interrupt_handler(){
     // sti();
 }
 
-
-/*
- * rtc_open
- *   DESCRIPTION: helper function for opening the RTC
- *   INPUTS: uint8_t* filename(uint8_t ~= unsigned char(0~255)), pointer
- *   OUTPUTS: none
- *   RETURN VALUE: always return 0
- *   SIDE EFFECTS: handles with opening RTC, set frequency to 2 Hz.
- */
-
-int32_t rtc_open(const uint8_t* filename){
-     
-     /* SET rtc frequnecy = 2 Hz */
-     rtc_set_int_freq(2);
-     return 0;
-}
-
 /*
  * rtc_read
  *   DESCRIPTION: helper function for reading the RTC
@@ -145,6 +128,22 @@ int32_t rtc_write(int32_t fd, const void* buf, int32_t nbytes){
     // }
 
     return nbytes;
+}
+
+/*
+ * rtc_open
+ *   DESCRIPTION: helper function for opening the RTC
+ *   INPUTS: uint8_t* filename(uint8_t ~= unsigned char(0~255)), pointer
+ *   OUTPUTS: none
+ *   RETURN VALUE: always return 0
+ *   SIDE EFFECTS: handles with opening RTC, set frequency to 2 Hz.
+ */
+
+int32_t rtc_open(const uint8_t* filename){
+     
+     /* SET rtc frequnecy = 2 Hz */
+     rtc_set_int_freq(2);
+     return 0;
 }
 
 /*

@@ -3,6 +3,11 @@
 #define    SUCCESS             0
 #define    FAIL               -1
 
+int32_t halt(uint8_t* status)
+{
+    return 0;
+}
+
 int32_t execute(const uint8_t* command)
 {
     // set stdin stdout with term_ops
@@ -10,9 +15,37 @@ int32_t execute(const uint8_t* command)
 	return 0;
 }
 
-int32_t halt(uint8_t* status)
+int32_t read(int32_t fd, void* buf, int32_t nbytes)
 {
+    // keep track of file_pos in fd_array
+
 	return 0;
+}
+
+int32_t write(int32_t fd, const void* buf, int32_t nbytes)
+{
+    /* fd cannot be 0 because we cannot write to stdin */
+    if((fd < 1) || (fd > FD_MAX_INDEX))
+        return FAIL;
+
+    /* in case of the RTC, the syscall should always accept only a 4-byte integer specifying the interrupt rate in Hz */
+    // not sure if this check is necessary since it's already in rtc_write
+    if(current_pcb.file_array[fd].file_jmp_tbl == &rtc_ops)
+    {
+        if(sizeof(nbytes) != sizeof(int32_t))
+            return FAIL;
+    }
+
+    /* writes to regular files should always return -1 to indicate failure since the filesystem is read-only */
+    if(current_pcb.file_array[fd].file_jmp_tbl == &file_ops)
+        return FAIL;
+
+    /* cannot write to a file which is not in use */
+    if(current_pcb.file_array[fd].flags == 0)
+        return FAIL;
+
+    int32_t bytes_written = (*current_pcb.file_array[fd].file_jmp_tbl->write)(fd, buf, nbytes);
+	return bytes_written;
 }
 
 /*  int32_t open(const uint8_t *filename)
@@ -37,11 +70,11 @@ int32_t open(const uint8_t* filename)
     
     /* Sanity Check #1: filename check */
     if((filename == NULL) || (*filename == NULL)) //??
-    	return FAIL;
+        return FAIL;
     
     /* Sanity Check #2: read the file from filesys */
     if(read_dentry_by_name((uint8_t*) filename, &dentry) == FAIL) 
-    	return FAIL;
+        return FAIL;
     
     /* Sanity Check #3-1: check for first file descriptor not in use */
     /* file descriptor should start from index 2 because of stdin and stdout */
@@ -54,7 +87,7 @@ int32_t open(const uint8_t* filename)
     
     /* Sanity Check #3-2: if all file descriptors are in use, we can't open any more files */
     if(fd > FD_MAX_INDEX) 
-    	return FAIL;
+        return FAIL;
     
     /* let file position and the flag of FD array to be set */
     current_pcb.file_array[fd].file_pos = 0;
@@ -87,38 +120,6 @@ int32_t open(const uint8_t* filename)
     
     // printf("opened file\n");
     return fd;
-}
-
-int32_t read(int32_t fd, void* buf, int32_t nbytes)
-{
-    // keep track of file_pos in fd_array
-	return 0;
-}
-
-int32_t write(int32_t fd, const void* buf, int32_t nbytes)
-{
-    /* fd cannot be 0 because we cannot write to stdin */
-    if((fd < 1) || (fd > FD_MAX_INDEX))
-        return FAIL;
-
-    /* in case of the RTC, the syscall should always accept only a 4-byte integer specifying the interrupt rate in Hz */
-    // not sure if this check is necessary since it's already in rtc_write
-    if(current_pcb.file_array[fd].file_jmp_tbl == &rtc_ops)
-    {
-        if(sizeof(nbytes) != sizeof(int32_t))
-            return FAIL;
-    }
-
-    /* writes to regular files should always return -1 to indicate failure since the filesystem is read-only */
-    if(current_pcb.file_array[fd].file_jmp_tbl == &file_ops)
-        return FAIL;
-
-    /* cannot write to a file which is not in use */
-    if(current_pcb.file_array[fd].flags == 0)
-        return FAIL;
-
-    int32_t bytes_written = (*current_pcb.file_array[fd].file_jmp_tbl->write)(fd, buf, nbytes);
-	return bytes_written;
 }
 
 /*  int32_t close(int32_t fd)

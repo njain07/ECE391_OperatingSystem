@@ -6,6 +6,7 @@
 #include "rtc.h"
 #include "terminal.h"
 #include "filesys.h"
+#include "syscalls.h"
 
 // test launcher
 void launch_tests();

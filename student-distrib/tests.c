@@ -202,8 +202,12 @@ void filesys_read_dentry_by_name(uint8_t* fname)
 
 void open_close_syscall(uint8_t* filename)
 {
-	int32_t fd;
+	int32_t fd, bytes_printed;
+	int8_t* buf = "hello";
 	fd = open(filename);
+	// printf("FD: %d\n", fd);
+	// bytes_printed = write(fd, (void*)buf, 5);
+	// printf("Bytes Printed: %d\n", bytes_printed);
 	close(fd);
 }
 
@@ -241,5 +245,5 @@ void launch_tests(){
 	// filesys_read_dentry_by_name((uint8_t*)"verylargetextwithverylongname.tx");
 
 	//checkpoint 3
-	open_close_syscall((uint8_t*)"pingpong");
+	open_close_syscall((uint8_t*)"hello");
 }
