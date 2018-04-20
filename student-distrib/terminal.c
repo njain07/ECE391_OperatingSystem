@@ -29,35 +29,6 @@ void terminal_init(void)
     read_index = 0;
 }
 
-
-/*
- * terminal_open
- *   DESCRIPTION: opens a terminal
- *   INPUTS: none
- *   OUTPUTS: none
- *   RETURN VALUE: none
- *   SIDE EFFECTS: none
- */
-int32_t terminal_open(const uint8_t* filename)
-{
-    return 0;
-}
-
-/*
- * terminal_close
- *   DESCRIPTION: clear all screen and the terminal.
- *   INPUTS: none
- *   OUTPUTS: none
- *   RETURN VALUE: return 0
- *   SIDE EFFECTS: clear the screen
- */
-int32_t terminal_close(int32_t fd)
-{
-    clear_buffer();
-    clear();
-    return 0;
-}
-
 /*
  * terminal_read
  *   DESCRIPTION: Reads the data from one line which wil be indicated by an ending with ENTER or
@@ -129,3 +100,30 @@ int32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes)
     return nbytes;
 }
 
+/*
+ * terminal_open
+ *   DESCRIPTION: opens a terminal
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: none
+ *   SIDE EFFECTS: none
+ */
+int32_t terminal_open(const uint8_t* filename)
+{
+    return 0;
+}
+
+/*
+ * terminal_close
+ *   DESCRIPTION: clear all screen and the terminal.
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: return 0
+ *   SIDE EFFECTS: clear the screen
+ */
+int32_t terminal_close(int32_t fd)
+{
+    clear_buffer();
+    clear();
+    return 0;
+}
