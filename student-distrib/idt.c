@@ -4,7 +4,7 @@ void do_irq(int i){
 	// get i to hold the vec num pushed by the assembly code
 	// using the pt_regs struct
 
-	if(i==40)
+	if(i == 40)
 	{
 		rtc_interrupt_handler();
 	}
@@ -28,7 +28,7 @@ void init_idt()
 		{
 			idt[i].seg_selector = KERNEL_CS;
 			idt[i].reserved4 = 0;
-			idt[i].reserved3 = 0; //when set to 1 -> trap gate
+			idt[i].reserved3 = 0; //when set to 1 -> trap gate (doesn't mask interrupts, unlike interrupt gates)
 			idt[i].reserved2 = 1;
 			idt[i].reserved1 = 1; // these three lines initialize the entry to be that of an interrupt gate since they are all 32 bits
 			idt[i].reserved0 = 0; 
@@ -39,7 +39,7 @@ void init_idt()
 			if (i == 0x80) 		//remember to magic number this one
 			{
 				idt[i].dpl = 3;
-				idt[i].reserved3 = 1;
+				idt[i].reserved3 = 1; // use trap gate so it doesn't mask interrupts
 				SET_IDT_ENTRY(idt[0x80], &interrupt_sys);
 			}
 

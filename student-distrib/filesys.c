@@ -1,7 +1,7 @@
 #include "filesys.h"
 
 /*
- * Author: Nikita Jain and Vismayak Mohanarajan
+ * Authors: Nikita Jain and Vismayak Mohanarajan
  * Reference materials: MP3 Documentation
  * Filename: filesys.c
  * History:
@@ -58,7 +58,7 @@ extern void filesys_init()
 int32_t file_read(int32_t fd, void* buf, int32_t nbytes)
 {
 	int32_t retval = 0;
-	file_descriptor_struct file = current_pcb.file_array[fd];
+	file_descriptor_struct file = current_pcb->file_array[fd];
 
 	uint32_t inode = file.inode_num;
 	uint32_t offset = file.file_pos;
@@ -308,7 +308,7 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length
 /* Helper functions */
 uint32_t find_dentry_by_fd(uint32_t fd)
 {
-	file_descriptor_struct file = current_pcb.file_array[fd];
+	file_descriptor_struct file = current_pcb->file_array[fd];
 	uint32_t inode_index = file.inode_num;
 	
 	int32_t retval;

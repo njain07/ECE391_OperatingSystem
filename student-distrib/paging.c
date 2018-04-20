@@ -35,12 +35,10 @@ void paging_init()
 	/* Setting video memory attributes */
 	first_page_table[VIDEO_MEM >> SHIFT12] = VIDEO_MEM | S_RW_PRESENT;
 	//page_directory[1]= FOUR_MB | S_RW_PRESENT ;
-	page_directory[1]= FOUR_MB |0x83;
+	page_directory[1]= FOUR_MB | 0x83; // supervisor, present, read, write, size
 
 	//enable_4MB_Paging();
 	enable_paging();
-
-	
 }
 
 /*
@@ -53,23 +51,41 @@ void paging_init()
  * 				   CR0 - the 32nd bit of this register holds the paging bit; we set it to 1 to enable paging
  * 				   CR3 - holds the address of the page directory; used when virtual addressing is enabled
  */
-void enable_paging() // take page directory as a
+void enable_paging()
 {
     asm volatile (
-		"movl %0, %%eax;"	/* move the address of the page directory into CR3 indirectly through eax */
+		"movl %0, %%eax;"			/* move the address of the page directory into CR3 indirectly through eax */
 		"movl %%eax, %%cr3;"
     	"movl %%cr4, %%eax;"
     	"orl  $0x00000010, %%eax;"
     	"movl %%eax, %%cr4;"
     	"xorl %%eax, %%eax;"
     	"movl %%cr0, %%eax;"
-    	"orl  $0x80000000, %%eax;"	 	/* sets bit 31 of register cr0 to enable paging */
+    	"orl  $0x80000000, %%eax;"	 /* sets bit 31 of register cr0 to enable paging */
     	"movl %%eax, %%cr0;"
     	:
         :"r"(page_directory)
-        : "eax"
+        :"eax"
     );
 
+}
+
+void process_page(int32_t pid)
+{
+	int32_t user_loc = EIGHT_MB + (pid * FOUR_MB);
+	page_directory[32]= user_loc | 0x87; // user, present, read, write, size
+	flush_TLB();
+}
+
+void flush_TLB(void)
+{
+	asm volatile (
+		"movl %%eax, %%cr3;"
+		"movl %%cr3, %%eax;"
+		:
+		:
+		: "eax"
+	);
 }
 
 //  enable_4MB_Paging
