@@ -190,6 +190,9 @@ POP:
 	pop		%fs
 	pop		%es
 
+	popal
+	iret
+
 jmp_table:
 	.long halt, execute, read, write, open, close #, getargs, vidmap, set_handler, sigreturn 
 

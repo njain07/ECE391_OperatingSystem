@@ -9,16 +9,20 @@
 #define F   0x46
 #define ELF_BYTES   4
 
-// process_num = -1;
+int32_t process_num = -1;
 // current_pcb = NULL;
 
 int32_t halt(uint8_t* status)
 {
     /* STEP 1: restore parent data in PCB */
-
     /* STEP 2: restore parent paging */
+    if(current_pcb->parent != -1)
+        change_process(current_pcb->parent, 2);
 
     /* STEP 3: close relevant fds */
+    int32_t i;
+    for(i=0; i<FD_SIZE; i++)
+        current_pcb->file_array[i].flags = 0;
 
     /* STEP 4: jump to execute return */
 
@@ -27,12 +31,54 @@ int32_t halt(uint8_t* status)
 
 int32_t execute(const uint8_t* command)
 {
-    // set stdin stdout with terminal_ops
+    /* STEP 1: parse arguments */
+    uint8_t program[32];
+    uint8_t arguments[96];
+    uint32_t i = 0;
+
+    while(command[i] != ' ' && command[i] != '\0')
+    {
+        program[i] = command[i];
+        i++;
+    }
+    program[i] = '\0';
+    i++;    // skips the ' ' between the program and arguments
+
+    while(i<(strlen((int8_t*)command)))
+    {
+        arguments[i] = command[i];
+        i++;
+        
+    }
+    arguments[i] = '\0'; 
+
+    /* STEP 2: check file validity (DEL ELF at beginning of executable files) */
+    int32_t retval;
+    dentry_t exec_file_dentry;
+    retval = read_dentry_by_name(program, &exec_file_dentry);
+    if(retval == -1)
+        return FAIL;
+
+    uint8_t elf_buf[ELF_BYTES];
+    retval = read_data(exec_file_dentry.inode_num, 0, elf_buf, ELF_BYTES);
+    if(retval != ELF_BYTES)
+        return FAIL;
+
+    if((elf_buf[0]!=DEL) || (elf_buf[1]!=E) || (elf_buf[2]!=L) || (elf_buf[3]!=F))
+        return FAIL;
 
     /* STEP 3: set up paging */ 
     /* STEP 5: create PCB */
     /* STEP 6: prepare for context switch */
-    change_process(process_num++);
+    process_num++;
+    change_process(process_num, 1);
+
+    /* STEP 4: load file into memory */
+    // uint8_t* buf = (uint8_t*)(MB_8 + (MB_4*process_num));
+    uint8_t* buf = (uint8_t*)0x08048000;
+    uint8_t* fa = (uint8_t*)FILESYS_ADDR;
+    inode_t* inode_ptr = (inode_t*) (fa + ((exec_file_dentry.inode_num+1)*BLOCK_SIZE_ADDR));
+    read_data(exec_file_dentry.inode_num, 0, buf, inode_ptr->length);
 
     /* STEP 5: open fd's */
     current_pcb->file_array[0].file_jmp_tbl = &terminal_ops;
@@ -41,63 +87,34 @@ int32_t execute(const uint8_t* command)
     current_pcb->file_array[0].flags = 1;
     current_pcb->file_array[1].flags = 1;
 
-    int32_t i;
     for(i=2; i<FD_SIZE; i++)
         current_pcb->file_array[i].flags = 0;
 
-    /* STEP 1: parse arguments */
-    i = 0;
-
-    while(command[i] != ' ')
-    {
-        current_pcb->program[i] = command[i];
-        i++;
-    }
-    current_pcb->program[i] = '\0';
-    i++;    // skip the ' ' between the program and arguments
-
-    while(i<(strlen((int8_t*)command)))
-    {
-        current_pcb->arguments[i] = command[i];
-        i++;
-        
-    }
-    current_pcb->arguments[i] = '\0';
-
-    /* STEP 2: check file validity (DEL ELF at beginning of executable files) */
-    int32_t retval;
-    dentry_t exec_file_dentry;
-    retval = read_dentry_by_name(current_pcb->program, &exec_file_dentry);
-    if(retval == -1)
-        return FAIL;
-
-    uint8_t* elf_buf;
-    retval = read_data(exec_file_dentry.inode_num, 0, elf_buf, ELF_BYTES);
-    if(retval != ELF_BYTES)
-        return FAIL;
-
-    if((elf_buf[0]!=DEL) || (elf_buf[1]!=E) || (elf_buf[2]!=L) || (elf_buf[3]!=F))
-        return FAIL;
-
-    /* STEP 4: load file into memory */
-    uint8_t* buf = (uint8_t*)(MB_8 + (MB_4*process_num));
-    uint8_t* fa = (uint8_t*)FILESYS_ADDR;
-    inode_t* inode_ptr = (inode_t*) (fa + ((exec_file_dentry.inode_num+1)*BLOCK_SIZE_ADDR));
-    read_data(exec_file_dentry.inode_num, 0, buf, inode_ptr->length);
-
     /* STEP 7: fake IRET */
-    //do memcpy for byte 24-27; little-endian format (shift manually)
-    // memcpy(eip_value, buf[24], 4); // HOW DO I DO THIS
-    int32_t eip_value = 0;
-    int32_t esp_value = MB_8 + (MB_4*(process_num+1)) - 4;
+    //do memcpy for bytes 24-27; little-endian format (shift manually)
+    // uint8_t* eip_value, eip_value24, eip_value25, eip_value26, eip_value27;
+    // memcpy((uint8_t*)eip_value24, (uint8_t*)buf[24-1], 1);
+    // memcpy((uint8_t*)eip_value25, (uint8_t*)buf[25-1], 1);
+    // memcpy((uint8_t*)eip_value26, (uint8_t*)buf[26-1], 1);
+    // memcpy((uint8_t*)eip_value27, (uint8_t*)buf[27-1], 1);
+    // eip_value[0] = eip_value27;
+    // eip_value[1] = eip_value26;
+    // eip_value[2] = eip_value25;
+    // eip_value[3] = eip_value24;
+    // int32_t esp_value = MB_8 + (MB_4*(process_num+1)) - 4;
+    uint32_t* entry = (uint32_t*) (buf + 24);
+    int32_t esp_value = (int32_t) (MB_8*16) + MB_4;
+
     asm volatile 
     (
-        "pushl eip_value;"
-        "pushl USER_CS;"
+        "pushl %3;"
+        "pushl %2;"
         "pushfl;"
-        "pushl esp_value;"
-        "pushl USER_DS;"
+        "pushl %1;"
+        "pushl %0;"
         "iret;"
+        :
+        : "r" (/*eip_value*/ *entry), "r" (USER_CS), "r" (esp_value), "r" (USER_DS)
     );
 	return 0;
 }
@@ -246,7 +263,7 @@ int32_t close(int32_t fd)
 
 int32_t getargs(uint8_t* buf, int32_t nbytes)
 {
-    /* parse individual arguments */
+    /* parse individual arguments ??? */
 
 	return 0;
 }
@@ -258,25 +275,37 @@ int32_t vidmap(uint8_t** screen_start)
 
 int32_t set_handler(int32_t signum, void* handler_address)
 {
-	return 0;
+	return -1;
 }
 
 int32_t sigreturn(void)
 {
-	return 0;
+	return -1;
 }
 
 /* Helper Function */
-void change_process(int32_t new_process_num)
+void change_process(int32_t new_process_num, int32_t execute_halt_switch)
 {
     cli();
-    current_pcb = (pcb_t*)(MB_8 - (KB_8*(new_process_num+1)));
-    current_pcb->pid = new_process_num;
-    current_pcb->parent = process_num;
-    current_pcb->child = NULL;
 
+    current_pcb = (pcb_t*)(MB_8 - (KB_8*(new_process_num+1)));
+    switch(execute_halt_switch)
+    {
+        case 1: /* execute */
+            current_pcb->parent = process_num;
+            current_pcb->child = -1;
+            break;
+        case 2: /* halt */
+            current_pcb->parent = -1;
+            current_pcb->child = -1;
+            break;
+        case 3: /* switch */
+            break;
+    }
+    current_pcb->pid = new_process_num;
     process_num = new_process_num;
     process_page(process_num);
     tss.esp0 = MB_8 - (KB_8*process_num) - 4;
+
     sti();
 }

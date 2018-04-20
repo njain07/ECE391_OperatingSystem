@@ -45,8 +45,8 @@ int32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
     int i = 0;
     
     /* Boundary check */
-    if((nbytes < 0) || (nbytes > BUFFER_SIZE))
-        return -1;
+    // if((nbytes < 0) || (nbytes > BUFFER_SIZE))
+    //     return -1;
     
     /* spin until flag is up */
     while(enter != 1);
