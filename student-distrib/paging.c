@@ -80,8 +80,8 @@ void process_page(int32_t pid)
 void flush_TLB(void)
 {
 	asm volatile (
-		"movl %%eax, %%cr3;"
 		"movl %%cr3, %%eax;"
+		"movl %%eax, %%cr3;"
 		:
 		:
 		: "eax"

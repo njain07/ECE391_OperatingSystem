@@ -265,7 +265,7 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length
 		return -1;
 
 	if((offset+length)>=(inode_ptr->length)) {
-		printf("resizing length\n");
+		// printf("resizing length\n");
 		length = (inode_ptr->length) - offset;
 	}
 
@@ -283,6 +283,7 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length
 		read_from_block = (length_left > BLOCK_SIZE)? BLOCK_SIZE : length_left;
 		data_block_num = inode_ptr->data_blocks[data_block];
 
+		// calculating the pointer to the correct data block to read from
 		data_block_ptr = (uint8_t*) (fa + ((boot_block->num_inodes+1)*BLOCK_SIZE_ADDR) + (data_block_num*BLOCK_SIZE_ADDR));
 		if(data_block_ptr != NULL)
 		{
@@ -291,6 +292,9 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length
 		}
 		else
 		{
+			// if data_block_ptr is NULL then we return -1 if we haven't read anything; if we have read some
+			// number of bytes successfully before reaching a NULL data_block_ptr then we return that number of bytes
+			buf[bytes_read_successfully] = '\0';
 			bytes_read_successfully = (bytes_read_successfully==0)? -1 : bytes_read_successfully;
 			return bytes_read_successfully;
 		}

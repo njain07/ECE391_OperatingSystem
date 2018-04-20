@@ -14,6 +14,18 @@ void do_irq(int i){
 	}
 	else if (i < 32)
 	{
+		if(i == 14)
+		{
+			uint32_t page_fault_addr;
+			asm volatile 
+		    (
+		        "movl %%cr2, %0;"
+		        : "=r" (page_fault_addr)
+		        :
+		        : "ecx"
+		    );
+		    printf("the address was %x\n", page_fault_addr);
+		}
 		printf("The exception raised was :%s", error_messages[i]);
 		while(1);
 	}
