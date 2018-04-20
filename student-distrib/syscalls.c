@@ -15,7 +15,10 @@ int32_t process_num = -1;
 int32_t halt(uint8_t status)
 {
     if(current_pcb->parent == -1)
+    {
+        process_num = -1;
         execute((uint8_t*)"shell");
+    }
 
     int32_t old_process_num = process_num;
     int32_t esp_value = current_pcb->p_esp;
@@ -333,7 +336,7 @@ void change_process(int32_t new_process_num, int32_t execute_halt_switch)
     }
     current_pcb->pid = new_process_num;
     process_num = new_process_num;
-    printf("process_num: %d\n", process_num);
+    // printf("process_num: %d\n", process_num);
     process_page(process_num);
     tss.esp0 = MB_8 - (KB_8*process_num) - 4;
 
