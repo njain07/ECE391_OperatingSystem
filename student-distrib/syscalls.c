@@ -320,9 +320,20 @@ void change_process(int32_t new_process_num, int32_t execute_halt_switch)
     cli();
 
     current_pcb = (pcb_t*)(MB_8 - (KB_8*(new_process_num+1)));
-    current_pcb->parent = process_num;
+    switch(execute_halt_switch)
+    {
+        case 1:
+            current_pcb->parent = process_num;
+            break;
+        case 2:
+            current_pcb->parent = -1;
+            break;
+        case 3:
+            break;
+    }
     current_pcb->pid = new_process_num;
     process_num = new_process_num;
+    printf("process_num: %d\n", process_num);
     process_page(process_num);
     tss.esp0 = MB_8 - (KB_8*process_num) - 4;
 
