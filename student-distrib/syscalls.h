@@ -17,7 +17,7 @@
 extern int32_t process_num;
 pcb_t* current_pcb;
 
-int32_t halt(uint8_t* status);
+int32_t halt(uint8_t status);
 int32_t execute(const uint8_t* command);
 
 int32_t read(int32_t fd, void* buf, int32_t nbytes);

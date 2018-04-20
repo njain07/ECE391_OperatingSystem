@@ -57,13 +57,12 @@ int32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
     for(i=0; i < buffer_index; i++)
     {
         temp_buf[i] = buffer[i];
-        nbytes++;
     }
     
     clear_buffer();
     enter = 0;
     
-    return nbytes;
+    return i;
 
 }
 /*

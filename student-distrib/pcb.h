@@ -47,9 +47,9 @@ typedef struct pcb_t
 	uint32_t page_addr;		// physical address of page
 
 	/* for halt syscall */
-	uint32_t p_ebp;			// process ebp
-	uint32_t p_esp;			// process esp
-	uint32_t p_eip;			// process eip
+	uint32_t p_ebp;			// parent_ebp
+	uint32_t p_esp;			// parent_esp
+	uint32_t p_eip;			// parent_eip
 	
 	//maybe add kernel stack?
     
