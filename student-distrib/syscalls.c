@@ -76,19 +76,19 @@ int32_t execute(const uint8_t* command)
     dentry_t exec_file_dentry;
     retval = read_dentry_by_name(program, &exec_file_dentry);
     if(retval == -1) {
-        printf("fail 1\n");
+        // printf("fail 1\n");
         return FAIL;
     }
 
     uint8_t elf_buf[ELF_BYTES];
     retval = read_data(exec_file_dentry.inode_num, 0, elf_buf, ELF_BYTES);
     if(retval != ELF_BYTES) {
-        printf("fail 2\n");
+        // printf("fail 2\n");
         return FAIL;
     }
 
     if((elf_buf[0]!=DEL) || (elf_buf[1]!=E) || (elf_buf[2]!=L) || (elf_buf[3]!=F)) {
-        printf("fail 3\n");
+        // printf("fail 3\n");
         return FAIL;
     }
 
