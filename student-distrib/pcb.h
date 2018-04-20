@@ -51,6 +51,6 @@ typedef struct pcb_t
 	//maybe add kernel stack?
 } pcb_t;
 
-extern pcb_t current_pcb;
+extern pcb_t* current_pcb;
 
 #endif
