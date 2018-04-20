@@ -7,6 +7,7 @@
 #define FOUR_MB ONE_MB*4
 #define MB_128 0x08000000 
 #define SHIFT12 12
+#define EIGHT_MB FOUR_MB*2
 
 #define USER (?)
 #define S_RW_PRESENT 0x00000003 // attributes: supervisor level, read/write, present
@@ -27,4 +28,6 @@ void paging_init();
 //void create4KBpage();
 //void enable_4MB_Paging();
 void enable_paging();
+void process_page(int32_t pid);
+void flush_TLB(void);
 #endif

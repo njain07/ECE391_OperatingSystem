@@ -30,11 +30,11 @@ typedef struct file_descriptor_struct
 	int32_t flags;			//marks file descriptor as "in-use" (=1) etc.
 } file_descriptor_struct;	//fd_t
 
-// file_descriptor_struct file_array[MAX_FD_STRUCT_SIZE];
-
 typedef struct pcb_t
 {
 	file_descriptor_struct file_array[MAX_FD_STRUCT_SIZE];
+	uint8_t* program;
+	uint8_t* arguments;
 
 	uint32_t pid;			// process id
 	uint32_t parent;		// parent process id

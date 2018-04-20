@@ -1,7 +1,7 @@
 #include "filesys.h"
 
 /*
- * Author: Nikita Jain and Vismayak Mohanarajan
+ * Authors: Nikita Jain and Vismayak Mohanarajan
  * Reference materials: MP3 Documentation
  * Filename: filesys.c
  * History:
