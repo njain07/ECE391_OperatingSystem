@@ -2,6 +2,8 @@
 
 #define    SUCCESS             0
 #define    FAIL               -1
+#define    SIGNUM_MAX          4
+#define    SIGNUM_MIN          0
 
 int32_t halt(uint8_t* status)
 {
@@ -166,13 +168,60 @@ int32_t vidmap(uint8_t** screen_start)
 	return 0;
 }
 
-int32_t set_handler(int32_t signum, void* handler_address)
-{
-	return 0;
+
+/*  int32_t set_handler(int32_t signum, void* handler_address)
+ *  DESCRIPTION:
+ *      set the signal handler function depending on the parameter, signum.
+ *  INPUTS:
+ *             int32_t signum: signal number
+ *             void *handler_address: pointer to the address of handler function
+ *  OUTPUS:
+ *      None
+ *  RETURN VALUE:
+ *      success: 0   /   fail: -1
+ */
+int32_t set_handler(int32_t signum, void* handler_address){
+    
+    /* local flag variable */
+    int32_t flags;
+    
+    /* Sanity Check#1; is signum in boundary? */
+    if( (signum < SIGNUM_MIN) || (signum > SIGNUM_MAX) ) return FAIL;
+    
+    /* critical section starts */
+    cli_and_save(flags);
+    
+    /* if handler_addreess is NULL, default action should be taken */
+    if (handler_address == NULL)
+        current_pcb->signal_acttion[signum] = default_signal_handlers[signum]; // HD
+    else
+        current_pcb->signal_action[signum] = handler_address;
+    
+    cli_and_restore(flags);
+    
+    return SUCCESS;
 }
 
-int32_t sigreturn(void)
-{
-	return 0;
+
+/*  int32_t sigreturn(void)
+ *  DESCRIPTION:
+ *      copy the hardware context on the user-level stack back on to the processor
+ *  INPUTS:
+ *      None
+ *  OUTPUS:
+ *      None
+ *  RETURN VALUE:
+ *      success: 0   /   fail: -1
+ */
+
+int32_t sigreturn(void){
+    /* to find the hardware context, you will need to know the user-level value of ESP(will be saved by your syscall handler) as well as exact setup of the user-level stack frame. */
+    
+    /* overwrite the kernel's copy of the process's hardware context that was saved on the kernel stack */
+    
+    
+    
+    
+	return SUCCESS;
 }
 
