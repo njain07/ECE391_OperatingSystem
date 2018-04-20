@@ -12,21 +12,37 @@
 int32_t process_num = -1;
 // current_pcb = NULL;
 
-int32_t halt(uint8_t* status)
+int32_t halt(uint8_t status)
 {
+    if(current_pcb->parent == -1)
+        execute((uint8_t*)"shell");
+
+    int32_t old_process_num = process_num;
+    int32_t esp_value = current_pcb->p_esp;
+    int32_t ebp_value = current_pcb->p_ebp;
+
     /* STEP 1: restore parent data in PCB */
     /* STEP 2: restore parent paging */
     if(current_pcb->parent != -1)
         change_process(current_pcb->parent, 2);
 
     /* STEP 3: close relevant fds */
+    pcb_t* parent_pcb;
+    parent_pcb = (pcb_t*)(MB_8 - (KB_8*(old_process_num+1)));
     int32_t i;
     for(i=0; i<FD_SIZE; i++)
-        current_pcb->file_array[i].flags = 0;
+        parent_pcb->file_array[i].flags = 0;
 
     /* STEP 4: jump to execute return */
-
-    return 0;
+    asm volatile 
+    (
+        "movl %0, %%esp;"
+        "movl %1, %%ebp;"
+        "jmp halt_return;"
+        : 
+        : "r" (esp_value), "r" (ebp_value)
+    );
+    return -1;
 }
 
 int32_t execute(const uint8_t* command)
@@ -56,22 +72,27 @@ int32_t execute(const uint8_t* command)
     int32_t retval;
     dentry_t exec_file_dentry;
     retval = read_dentry_by_name(program, &exec_file_dentry);
-    if(retval == -1)
+    if(retval == -1) {
+        printf("fail 1\n");
         return FAIL;
+    }
 
     uint8_t elf_buf[ELF_BYTES];
     retval = read_data(exec_file_dentry.inode_num, 0, elf_buf, ELF_BYTES);
-    if(retval != ELF_BYTES)
+    if(retval != ELF_BYTES) {
+        printf("fail 2\n");
         return FAIL;
+    }
 
-    if((elf_buf[0]!=DEL) || (elf_buf[1]!=E) || (elf_buf[2]!=L) || (elf_buf[3]!=F))
+    if((elf_buf[0]!=DEL) || (elf_buf[1]!=E) || (elf_buf[2]!=L) || (elf_buf[3]!=F)) {
+        printf("fail 3\n");
         return FAIL;
+    }
 
     /* STEP 3: set up paging */ 
     /* STEP 5: create PCB */
     /* STEP 6: prepare for context switch */
-    process_num++;
-    change_process(process_num, 1);
+    change_process((process_num+1), 1);
 
     /* STEP 4: load file into memory */
     // uint8_t* buf = (uint8_t*)(MB_8 + (MB_4*process_num));
@@ -89,6 +110,14 @@ int32_t execute(const uint8_t* command)
 
     for(i=2; i<FD_SIZE; i++)
         current_pcb->file_array[i].flags = 0;
+
+    // save esp and ebp inside current_pcb
+    asm volatile 
+    (
+        "movl %%esp, %0;"
+        "movl %%ebp, %1;" 
+        : "=g" (current_pcb->p_esp), "=g" (current_pcb->p_ebp)
+    );
 
     /* STEP 7: fake IRET */
     //do memcpy for bytes 24-27; little-endian format (shift manually)
@@ -113,9 +142,11 @@ int32_t execute(const uint8_t* command)
         "pushl %1;"
         "pushl %0;"
         "iret;"
+        "halt_return:"
         :
         : "r" (/*eip_value*/ *entry), "r" (USER_CS), "r" (esp_value), "r" (USER_DS)
     );
+
 	return 0;
 }
 
@@ -289,19 +320,7 @@ void change_process(int32_t new_process_num, int32_t execute_halt_switch)
     cli();
 
     current_pcb = (pcb_t*)(MB_8 - (KB_8*(new_process_num+1)));
-    switch(execute_halt_switch)
-    {
-        case 1: /* execute */
-            current_pcb->parent = process_num;
-            current_pcb->child = -1;
-            break;
-        case 2: /* halt */
-            current_pcb->parent = -1;
-            current_pcb->child = -1;
-            break;
-        case 3: /* switch */
-            break;
-    }
+    current_pcb->parent = process_num;
     current_pcb->pid = new_process_num;
     process_num = new_process_num;
     process_page(process_num);

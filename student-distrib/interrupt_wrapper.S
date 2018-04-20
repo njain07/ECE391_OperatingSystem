@@ -156,7 +156,7 @@ common_interrupt:
 
  #  CP 3 
 interrupt_sys:
-	pushal 
+	# pushal 
 
 	push	%es
 	push	%fs
@@ -190,7 +190,7 @@ POP:
 	pop		%fs
 	pop		%es
 
-	popal
+	# popal # pop everything except eax, which has the return value 
 	iret
 
 jmp_table:
