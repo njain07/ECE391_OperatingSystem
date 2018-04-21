@@ -302,12 +302,31 @@ int32_t close(int32_t fd)
     return SUCCESS;
 }
 
-
+/*  int getargs(uint8_t* buf, int32_t nbytes)
+ *  DESCRIPTION:
+ *     Read the program's command line argument and copy into a user-level buffer
+ *    INPUTS:
+ *      uint8_t* buf: buffer to hold data(command line argument)
+ *      int32_t nbytes: size of data(command line argument)
+ *    OUTPUTS:
+ *      none
+ *    RETURN VALUE:
+ *      success: 0   /   fail: -1
+ */
 
 int32_t getargs(uint8_t* buf, int32_t nbytes)
 {
     /* parse individual arguments ??? */
-
+    
+    /* local variable for for loop in copy stage */
+    int i;
+    
+    /* Sanity Check#1: NULL pointer or ZERO bytes */
+    if( (buf == NULL) || (nbytes == 0) ) return FAIL;
+    
+    /* Sanity Check#2: if the the command line argument array is empty */
+    if (command_line_argument[0] == NULL) return FAIL;
+    
 	return 0;
 }
 
