@@ -244,16 +244,10 @@ void putc(uint8_t c) {
         }
     }
     // original putc 
-    if(c == '\n' || c == '\r') 
-    {
-        if(screen_y == (NUM_ROWS-1)) 
-            scrolling();
-        else
-            screen_y++;
-        screen_x = 0;  
-    }
-    else 
-    {
+    if(c == '\n' || c == '\r') {
+        screen_y++;
+        screen_x = 0;
+    } else {
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
         screen_x++;
