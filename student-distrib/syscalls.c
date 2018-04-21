@@ -10,7 +10,6 @@
 #define ELF_BYTES   4
 
 int32_t process_num = -1;
-// current_pcb = NULL;
 
 int32_t halt(uint8_t status)
 {
