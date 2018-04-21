@@ -10,7 +10,6 @@
 #define ELF_BYTES   4
 
 int32_t process_num = -1;
-// current_pcb = NULL;
 
 <<<<<<< HEAD
 uint8_t
@@ -71,11 +70,11 @@ int32_t execute(const uint8_t* command)
 
     while(i<(strlen((int8_t*)command)))
     {
-        arguments[i] = command[i];
+        arguments[i-strlen((int8_t*)program)-1] = command[i];
         i++;
         
     }
-    arguments[i] = '\0'; 
+    arguments[i-strlen((int8_t*)program)-1] = '\0'; 
 
     /* STEP 2: check file validity (DEL ELF at beginning of executable files) */
     int32_t retval;
@@ -102,6 +101,8 @@ int32_t execute(const uint8_t* command)
     /* STEP 5: create PCB */
     /* STEP 6: prepare for context switch */
     change_process((process_num+1), 1);
+    current_pcb->program = program;
+    current_pcb->arguments = arguments;
 
     /* STEP 4: load file into memory */
     // uint8_t* buf = (uint8_t*)(MB_8 + (MB_4*process_num));
@@ -140,7 +141,7 @@ int32_t execute(const uint8_t* command)
     // eip_value[2] = eip_value25;
     // eip_value[3] = eip_value24;
     // int32_t esp_value = MB_8 + (MB_4*(process_num+1)) - 4;
-    uint32_t* entry = (uint32_t*) (buf + 24);
+    uint32_t* eip_value = (uint32_t*) (buf + 24);
     int32_t esp_value = (int32_t) (MB_8*16) + MB_4;
 
     asm volatile 
@@ -153,7 +154,7 @@ int32_t execute(const uint8_t* command)
         "iret;"
         "halt_return:"
         :
-        : "r" (/*eip_value*/ *entry), "r" (USER_CS), "r" (esp_value), "r" (USER_DS)
+        : "r" (*eip_value), "r" (USER_CS), "r" (esp_value), "r" (USER_DS)
     );
 
 	return 0;
@@ -174,7 +175,7 @@ int32_t read(int32_t fd, void* buf, int32_t nbytes)
     if(current_pcb->file_array[fd].flags == 0)
         return FAIL;
 
-    int32_t bytes_read = (*current_pcb->file_array[fd].file_jmp_tbl->read)(fd, buf, nbytes);
+    int32_t bytes_read = (current_pcb->file_array[fd].file_jmp_tbl->read)(fd, buf, nbytes);
 	return bytes_read;
 }
 
@@ -200,7 +201,7 @@ int32_t write(int32_t fd, const void* buf, int32_t nbytes)
     if(current_pcb->file_array[fd].flags == 0)
         return FAIL;
 
-    int32_t bytes_written = (*current_pcb->file_array[fd].file_jmp_tbl->write)(fd, buf, nbytes);
+    int32_t bytes_written = (current_pcb->file_array[fd].file_jmp_tbl->write)(fd, buf, nbytes);
 	return bytes_written;
 }
 
@@ -268,7 +269,7 @@ int32_t open(const uint8_t* filename)
             current_pcb->file_array[fd].file_jmp_tbl = &rtc_ops;
     }
     
-    (*current_pcb->file_array[fd].file_jmp_tbl->open)(filename);
+    (current_pcb->file_array[fd].file_jmp_tbl->open)(filename);
     return fd;
 }
 
@@ -293,7 +294,7 @@ int32_t close(int32_t fd)
     	return FAIL;
 
     /* closing file */
-    (*current_pcb->file_array[fd].file_jmp_tbl->close)(fd);
+    (current_pcb->file_array[fd].file_jmp_tbl->close)(fd);
     
     /* setting the file to not in-use */
     current_pcb->file_array[fd].flags = 0;
@@ -312,6 +313,7 @@ int32_t getargs(uint8_t* buf, int32_t nbytes)
 
 int32_t vidmap(uint8_t** screen_start)
 {
+
 	return 0;
 }
 
@@ -331,18 +333,19 @@ void change_process(int32_t new_process_num, int32_t execute_halt_switch)
     cli();
 
     current_pcb = (pcb_t*)(MB_8 - (KB_8*(new_process_num+1)));
+    current_pcb->pid = new_process_num;
+    // current_pcb->parent = process_num;
     switch(execute_halt_switch)
     {
         case 1:
             current_pcb->parent = process_num;
             break;
         case 2:
-            current_pcb->parent = -1;
+            // current_pcb->parent = -1;
             break;
         case 3:
             break;
     }
-    current_pcb->pid = new_process_num;
     process_num = new_process_num;
     // printf("process_num: %d\n", process_num);
     process_page(process_num);

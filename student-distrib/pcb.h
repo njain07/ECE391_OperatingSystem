@@ -39,9 +39,9 @@ typedef struct pcb_t
 	uint8_t* program;
 	uint8_t* arguments;
 
-	uint32_t pid;			// process id
-	uint32_t parent;		// parent process id
-	uint32_t child;			// child process id
+	int32_t pid;			// process id
+	int32_t parent;		// parent process id
+	int32_t child;			// child process id
 
 	uint32_t p_start_addr;	// process starting address
 	uint32_t page_addr;		// physical address of page
