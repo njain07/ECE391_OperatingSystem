@@ -241,7 +241,7 @@ void launch_tests(){
 	// terminal_test();
 
 	// filesys_list_of_files();
-	// filesys_file_content(10);
+	filesys_file_content(11);
 	// filesys_read_dentry_by_name((uint8_t*)"verylargetextwithverylongname.tx");
 
 	//checkpoint 3

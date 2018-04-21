@@ -71,4 +71,60 @@ Checkpoint 2:
 
 Checkpoint 3:
 
-1) 
+1) page faulting before we reached execute
+	Problem: we had a check for the length of the buffer in terminal_read which was unnecessarily causing it to fail
+	Fix: removed the check
+
+2) shell went into an infinite loop printing the prompt
+	Problem: terminal_read returned the wrong value
+	Fix: fixed the return value of terminal_read
+
+3) page faulting in execute
+	Problem: esp_value and eip_values were accessing the user memory instead of the virtual address
+	Fix: made them access the correct addresses
+
+4) page faulting in execute
+	Problem: steps were out of order
+	Fix: put the steps in order
+
+5) page faulting at the fake IRET
+	Problem: was pushing stuff onto the stack backwards
+	Fix: pushed them in the correct order
+
+6) for all commands the shell printed "not a command"
+	Problem: command was not being read properly
+	Fix: added a check for the '\0' character (earlier I checked only for a space)
+
+7) processes were not halting properly
+	Problem: I closed the fd's of the current process instead of the parent process on accident
+	Fix: closed the fd's of the parent process instead
+
+8) process number was incorrect
+	Problem: I had called change_process with process_num++ in execute
+	Fix: called it with process_num+1
+
+9) parent process number being stored in the PCB was incorrect
+	Problem: stored parent process number as uint32_t instead of int32_t (initial shell process has parent of -1)
+	Fix: changed data type to int32_t
+
+Checkpoint 4:
+
+1) arguments not being read correctly
+	Problem: indexing error
+	Fix: fixed the indexing error
+
+2) page faulting in ls
+	Problem: didn't allocate memory for dentry (used dentry_t* instead of dentry_t) so stuff was getting overwritten in the function stack with a null address somewhere
+	Fix: used dentry_t
+
+3) hello not entering after it says "Hello, person" (prompt is printed on the same line)
+	Problem: we didn't append a '/n' at the end of the terminal buffer
+	Fix: appended '/n'
+
+4) page faulting in ls after printing verylargetextwithverylongname.t(garbage)(smiley face)
+	Problem: incorrectly handling verylargetextwithverylongname.txt
+	Fix: indexing error in read_dentry_by_index
+
+5) pingpong not working 
+	Problem: 
+	Fix: 

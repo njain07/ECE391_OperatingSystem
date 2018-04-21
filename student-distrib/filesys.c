@@ -119,17 +119,21 @@ int32_t file_close(int32_t fd)
 int32_t dir_read(int32_t fd, void* buf, int32_t nbytes)
 {
 	// using boot block index , fill buf with only one filename
-	dentry_t* dentry;
-	uint32_t boot_block_index;
-	boot_block_index = find_dentry_by_fd((uint32_t)fd);
-	int32_t retval = read_dentry_by_index(boot_block_index, dentry);
+	dentry_t dentry = {0};
+	uint32_t index;
+	// boot_block_index = find_dentry_by_fd((uint32_t)fd);
+	index = current_pcb->file_array[fd].file_pos;
+	int32_t retval = read_dentry_by_index(index, &dentry);
+	current_pcb->file_array[fd].file_pos++;
 	if(retval == -1)
-		return -1;
+		return 0;
 	else
 	{
 		uint32_t file_name_size;
-		file_name_size = strlen((int8_t*)dentry->file_name);
-		strncpy((int8_t*)buf, (int8_t*)dentry->file_name, file_name_size);
+		file_name_size = strlen((int8_t*)dentry.file_name);
+		if(file_name_size>32)
+			file_name_size = 32;
+		strncpy((int8_t*)buf, (int8_t*)dentry.file_name, file_name_size);
 		return file_name_size;
 	}
 }
@@ -157,8 +161,8 @@ int32_t dir_write(int32_t fd, const void* buf, int32_t nbytes)
  */
 int32_t dir_open(const uint8_t* filename)
 {
-	dentry_t* dentry;
-	read_dentry_by_name(filename, dentry);
+	dentry_t dentry;
+	read_dentry_by_name(filename, &dentry);
 	return 0;
 }
 
@@ -198,7 +202,7 @@ int32_t read_dentry_by_name(const uint8_t* fname, dentry_t* dentry)
 			if(strncmp((int8_t*)fname, (int8_t*)boot_block->dentries[index].file_name, DENTRY_FILE_NAME_SIZE-1) == 0)
 			{
 				strncpy((int8_t*)dentry->file_name, (int8_t*)boot_block->dentries[index].file_name, DENTRY_FILE_NAME_SIZE);
-				// dentry->file_name[DENTRY_FILE_NAME_SIZE] = '\0';
+				dentry->file_name[DENTRY_FILE_NAME_SIZE] = '\0';
 				dentry->file_type = boot_block->dentries[index].file_type;
 				dentry->inode_num = boot_block->dentries[index].inode_num;
 				retval = 0;
@@ -225,7 +229,7 @@ int32_t read_dentry_by_index(uint32_t index, dentry_t* dentry)
 	if(index < 0 || index > (num_dentries-1) || dentry == NULL)
 		return -1;
 
-	strncpy((int8_t*)dentry->file_name, (int8_t*)boot_block->dentries[index].file_name, DENTRY_FILE_NAME_SIZE-1);
+	strncpy((int8_t*)dentry->file_name, (int8_t*)boot_block->dentries[index].file_name, DENTRY_FILE_NAME_SIZE);
 	dentry->file_name[DENTRY_FILE_NAME_SIZE] = '\0';
 	dentry->file_type = boot_block->dentries[index].file_type;
 	dentry->inode_num = boot_block->dentries[index].inode_num;
@@ -317,12 +321,12 @@ uint32_t find_dentry_by_fd(uint32_t fd)
 	
 	int32_t retval;
 	uint32_t dentry_index = 0;
-	dentry_t* dentry;
-	dentry->inode_num = -1;
+	dentry_t dentry;
+	dentry.inode_num = -1;
 	
-	while(dentry->inode_num != inode_index)
+	while(dentry.inode_num != inode_index)
 	{
-		retval = read_dentry_by_index(dentry_index, dentry);
+		retval = read_dentry_by_index(dentry_index, &dentry);
 		dentry_index++;
 
 		if((dentry_index > 62) || (retval == -1))

@@ -58,7 +58,8 @@ int32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
     {
         temp_buf[i] = buffer[i];
     }
-    
+    temp_buf[i] = '\n';
+    i++;
     clear_buffer();
     enter = 0;
     
