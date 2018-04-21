@@ -119,7 +119,7 @@ int32_t file_close(int32_t fd)
 int32_t dir_read(int32_t fd, void* buf, int32_t nbytes)
 {
 	// using boot block index , fill buf with only one filename
-	dentry_t dentry = {0};
+	dentry_t dentry = {{0}};
 	uint32_t index;
 	// boot_block_index = find_dentry_by_fd((uint32_t)fd);
 	index = current_pcb->file_array[fd].file_pos;

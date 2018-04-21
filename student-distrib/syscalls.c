@@ -10,6 +10,7 @@
 #define ELF_BYTES   4
 
 int32_t process_num = -1;
+uint8_t halt_status = 0;
 
 <<<<<<< HEAD
 uint8_t
@@ -40,6 +41,8 @@ int32_t halt(uint8_t status)
     int32_t i;
     for(i=0; i<FD_SIZE; i++)
         parent_pcb->file_array[i].flags = 0;
+
+    halt_status = status;
 
     /* STEP 4: jump to execute return */
     asm volatile 
@@ -157,7 +160,7 @@ int32_t execute(const uint8_t* command)
         : "r" (*eip_value), "r" (USER_CS), "r" (esp_value), "r" (USER_DS)
     );
 
-	return 0;
+	return halt_status;
 }
 
 int32_t read(int32_t fd, void* buf, int32_t nbytes)

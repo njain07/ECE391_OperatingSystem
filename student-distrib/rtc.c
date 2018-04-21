@@ -61,7 +61,7 @@ void rtc_interrupt_handler(){
     // cli();
     outb(RTC_STATUS_REG_C, RTC_REG_NUM_PORT);            // select Register C, read from register C
     inb(RTC_DATA_PORT);                                  // just throw away contents
-    putc('a');
+    // putc('a');
 
     send_eoi(RTC_IRQ);                                   // done int, send EOI to IRQ8
     
