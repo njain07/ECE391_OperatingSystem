@@ -121,10 +121,16 @@ Checkpoint 4:
 	Problem: we didn't append a '/n' at the end of the terminal buffer
 	Fix: appended '/n'
 
-4) page faulting in ls after printing verylargetextwithverylongname.t(garbage)(smiley face)
+4) page faulting in ls after printing verylargetextwithverylongname.t(Q)(smiley face)
 	Problem: incorrectly handling verylargetextwithverylongname.txt
 	Fix: indexing error in read_dentry_by_index
 
 5) pingpong not working 
-	Problem: 
+	Problem: RTC interrupts were turned off, 
 	Fix: 
+
+6) page faulting or getting a general protection error when we fill up most of the buffer and press enter
+	Problem:
+	Fix:
+
+7) 

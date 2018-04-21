@@ -302,7 +302,10 @@ int32_t close(int32_t fd)
 int32_t getargs(uint8_t* buf, int32_t nbytes)
 {
     /* parse individual arguments ??? */
+    // if((buf == NULL) || (strlen(current_pcb->arguments) > nbytes))
+    //     return FAIL;
 
+    // strcpy((int8_t*)buf, (int8_t*)current_pcb->arguments);
 	return 0;
 }
 
