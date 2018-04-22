@@ -79,8 +79,8 @@ int32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes)
     int i = 0;
     
     /* Boundary check */
-    if((nbytes < 0) || (nbytes > BUFFER_SIZE))
-        return -1;
+    // if((nbytes < 0) || (nbytes > BUFFER_SIZE))
+    //     return -1;
     
     char* temp_buf = (char*) buf;
 

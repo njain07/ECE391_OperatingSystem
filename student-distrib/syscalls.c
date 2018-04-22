@@ -59,8 +59,8 @@ int32_t execute(const uint8_t* command)
         return FAIL;
 
     /* STEP 1: parse arguments */
-    uint8_t program[32];
-    uint8_t arguments[96];
+    uint8_t program[32] = "\0";
+    uint8_t arguments[96] = "\0";
     uint32_t i = 0;
 
     while(command[i] != ' ' && command[i] != '\0')

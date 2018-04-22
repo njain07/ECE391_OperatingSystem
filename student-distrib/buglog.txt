@@ -72,7 +72,7 @@ Checkpoint 2:
 Checkpoint 3:
 
 1) page faulting before we reached execute
-	Problem: we had a check for the length of the buffer in terminal_read which was unnecessarily causing it to fail
+	Problem: we had a check for the length of the buffer in terminal_read which was unnecessary, causing it to fail
 	Fix: removed the check
 
 2) shell went into an infinite loop printing the prompt
@@ -142,8 +142,8 @@ Checkpoint 4:
 	Fix: changed memcpy to strncpy
 
 9) cat: program terminated abnormally
-	Problem:
-	Fix:
+	Problem: we had a check for the length of the buffer in terminal_write which was unnecessary, causing it to fail
+	Fix: removed the check
 
 10) grep: going in an infinite loop after finding the first instance in a file
 	Problem: file_read is not keeping track of the offset so I kept reading the first few bytes of the same file
@@ -154,13 +154,16 @@ Checkpoint 4:
 	Fix:
 
 11) syserr: failing Null pointer, Kernel pointer, err_vidmap
-	Problem:
-	Fix:
+	Problem: hadn't written vidmap
+	Fix: wrote vidmap
 
 12) syserr: program terminated abnormally
 	Problem:
 	Fix:
 
+13) cat pausing in infinite loop after printing some contents of executable files
+	Problem:
+	Fix:
 
 
 
