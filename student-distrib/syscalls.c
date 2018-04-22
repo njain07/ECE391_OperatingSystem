@@ -39,6 +39,7 @@ int32_t halt(uint8_t status)
         parent_pcb->file_array[i].flags = 0;
 
     halt_status = status;
+    // printf("%d ", halt_status);
 
     /* STEP 4: jump to execute return */
     asm volatile 
@@ -54,6 +55,9 @@ int32_t halt(uint8_t status)
 
 int32_t execute(const uint8_t* command)
 {
+    if((command == NULL) || (*command == NULL))
+        return FAIL;
+
     /* STEP 1: parse arguments */
     uint8_t program[32];
     uint8_t arguments[96];
@@ -351,8 +355,15 @@ int32_t getargs(uint8_t* buf, int32_t nbytes)
 
 int32_t vidmap(uint8_t** screen_start)
 {
+    if((screen_start == NULL) || (*screen_start == NULL))
+        return FAIL;
 
-	return 0;
+    if(((uint32_t)screen_start < MB_128) || ((uint32_t)screen_start > MB_132))
+        return FAIL;
+
+    vidmap_page(screen_start);
+    *screen_start = (uint8_t*)MB_132;
+    return MB_132;
 }
 
 int32_t set_handler(int32_t signum, void* handler_address)

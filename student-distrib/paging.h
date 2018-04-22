@@ -6,7 +6,9 @@
 #define ONE_MB ONE_KB*ONE_KB
 #define FOUR_MB ONE_MB*4
 #define MB_128 0x08000000 
+#define MB_132 0x08400000
 #define SHIFT12 12
+#define SHIFT22 22
 #define EIGHT_MB FOUR_MB*2
 
 #define USER (?)
@@ -20,7 +22,7 @@
 // alignment
 int first_page_table[ONE_KB] __attribute__((aligned (FOUR_KB)));
 int page_directory[ONE_KB] __attribute__((aligned (FOUR_KB)));
-//int video_memory[ONE_KB] __attribute__((aligned (FOUR_KB)));
+int video_memory[ONE_KB] __attribute__((aligned (FOUR_KB)));
 
 
 void paging_init();
@@ -29,5 +31,6 @@ void paging_init();
 //void enable_4MB_Paging();
 void enable_paging();
 void process_page(int32_t pid);
+void vidmap_page(uint8_t** screen_start);
 void flush_TLB(void);
 #endif

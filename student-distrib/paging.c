@@ -73,7 +73,14 @@ void enable_paging()
 void process_page(int32_t pid)
 {
 	int32_t user_loc = EIGHT_MB + (pid * FOUR_MB);
-	page_directory[32]= user_loc | 0x87; // user, present, read, write, size
+	page_directory[32] = user_loc | 0x87; // user, present, read, write, size
+	flush_TLB();
+}
+
+void vidmap_page(uint8_t** screen_start)
+{
+	video_memory[(MB_132 >> SHIFT12) & 0xFFF] = VIDEO_MEM | U_W_PRESENT;
+	page_directory[MB_132 >> SHIFT22] = (uint32_t)video_memory | U_W_PRESENT;
 	flush_TLB();
 }
 
@@ -87,18 +94,4 @@ void flush_TLB(void)
 		: "eax"
 	);
 }
-
-//  enable_4MB_Paging
-//  * Inputs: none
-//  * Return Value: None
-//  * Function: sets bit 4 of register cr4 to enable 4MB page sizes for the kernel
- 
-// void enable_4MB_Paging()
-// {
-//     asm volatile (
-//     	:
-//         :
-//         : "eax"
-//     );
-// }
 
