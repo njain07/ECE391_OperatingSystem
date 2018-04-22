@@ -9,6 +9,8 @@
 #define F   0x46
 #define ELF_BYTES   4
 
+#define EMPTY_CHAR '\0'
+
 int32_t process_num = -1;
 uint8_t halt_status = 0;
 
@@ -312,23 +314,31 @@ int32_t close(int32_t fd)
  */
 int32_t getargs(uint8_t* buf, int32_t nbytes)
 {
-    /* parse individual arguments ??? */
+    /* local variable for for loop in copy stage */
+    int i;
     
- //    /* local variable for for loop in copy stage */
- //    int i;
+    uint8_t arg_size;
     
- //    /* Sanity Check#1: NULL pointer or ZERO bytes */
- //    if( (buf == NULL) || (nbytes == 0) ) return FAIL;
+    /* Sanity Check#1: NULL pointer or ZERO bytes */
+    if( (buf == NULL) || (nbytes == 0) ) return FAIL;
     
- //    /* Sanity Check#2: if the the command line argument array is empty */
- //    if (command_line_argument[0] == NULL) return FAIL;
-
-
-    if((buf == NULL) || (current_pcb->arguments == NULL))
-        return FAIL;
-
-    strncpy((int8_t*)buf, (int8_t*)current_pcb->arguments, nbytes);
-	return 0;
+    /* Sanity Check#2: if the the command line argument array is empty */
+    if (current_pcb->arguments == NULL) return FAIL;
+    
+    /* use arg size to get the buffer size */
+    arg_size = strlen(current_pcb->arguments);
+    
+    /* Sanity Check#3: if nbytes is short */
+    if (arg_size > nbytes) return FAIL;
+    
+    /* preset before using it */
+    for (i = 0; i< nbytes; i++)
+        buf[i] = EMPTY_CHAR;
+    
+    /* Copy nbytes to buffer */
+    strncpy(buf, current_pcb->arguments, nbytes);
+    
+    return SUCCESS;
 }
 
 int32_t vidmap(uint8_t** screen_start)
