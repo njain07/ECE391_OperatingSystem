@@ -245,19 +245,6 @@ int32_t puts(int8_t* s) {
  * Return Value: void
  *  Function: Output a character to the console */
 void putc(uint8_t c) {
-    // check if last letter of line 
-     if(screen_x == 79) {
-        if(screen_y == (NUM_ROWS-1)) 
-        {
-            scrolling();
-            screen_x = 0;
-        }
-        else
-        {
-            screen_x = 0;
-            screen_y++;
-        }
-    }
     // original putc 
     if(c == '\n' || c == '\r') 
     {
@@ -266,6 +253,20 @@ void putc(uint8_t c) {
         else
             screen_y++;
         screen_x = 0;  
+    }
+    // check if last letter of line
+    else if(screen_x == 79) 
+    {
+        if(screen_y == (NUM_ROWS-1)) 
+        {
+            scrolling();
+            screen_x = 0;
+        }
+        else
+        {
+            screen_x = 0;
+            screen_y++;
+        }
     }
     else 
     {
