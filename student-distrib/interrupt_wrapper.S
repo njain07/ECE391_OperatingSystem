@@ -172,7 +172,7 @@ interrupt_sys:
 	cmpl	$0, %eax	
 	jl 		ERROR
 
-	cmpl	$5, %eax	#change to 9 for cp4
+	cmpl	$7, %eax	#change to 9 for cp4
 	jg		ERROR
 
 	call 	*jmp_table( ,%eax, 4)
@@ -194,5 +194,5 @@ POP:
 	iret
 
 jmp_table:
-	.long halt, execute, read, write, open, close #, getargs, vidmap, set_handler, sigreturn 
+	.long halt, execute, read, write, open, close , getargs, vidmap #, set_handler, sigreturn 
 
