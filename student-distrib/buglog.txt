@@ -109,28 +109,54 @@ Checkpoint 3:
 
 Checkpoint 4:
 
-1) arguments not being read correctly
+1) arguments not being read correctly into current_pcb struct
 	Problem: indexing error
 	Fix: fixed the indexing error
 
-2) page faulting in ls
+2) ls: page faulting
 	Problem: didn't allocate memory for dentry (used dentry_t* instead of dentry_t) so stuff was getting overwritten in the function stack with a null address somewhere
 	Fix: used dentry_t
 
-3) hello not entering after it says "Hello, person" (prompt is printed on the same line)
+3) hello: not entering after it says "Hello, person" (prompt is printed on the same line)
 	Problem: we didn't append a '/n' at the end of the terminal buffer
 	Fix: appended '/n'
 
-4) page faulting in ls after printing verylargetextwithverylongname.t(Q)(smiley face)
+4) ls: page faulting after printing verylargetextwithverylongname.t(Q)(smiley face)
 	Problem: incorrectly handling verylargetextwithverylongname.txt
 	Fix: indexing error in read_dentry_by_index
 
-5) pingpong not working 
-	Problem: RTC interrupts were turned off, 
-	Fix: 
+5) pingpong: not working 
+	Problem: RTC interrupts were turned off, and scrolling was being called too frequently
+	Fix: turned on RTC interrupts and added an else-if statement to fix scrolling
 
 6) page faulting or getting a general protection error when we fill up most of the buffer and press enter
 	Problem:
 	Fix:
 
-7) 
+7) cat: could not read arguments
+	Problem: file_open initialized a dentry pointer instead of a dentry struct so it didn't get filled properly
+	Fix: initialized a dentry struct in file_open
+
+8) cat: could not read arguments
+	Problem: getargs used memcpy instead of strncpy
+	Fix: changed memcpy to strncpy
+
+9) cat: program terminated abnormally
+	Problem:
+	Fix:
+
+10) grep: going in an infinite loop after finding the first instance in a file
+	Problem:
+	Fix:
+
+11) syserr: failing Null pointer, Kernel pointer, err_vidmap
+	Problem:
+	Fix:
+
+12) syserr: program terminated abnormally
+	Problem:
+	Fix:
+
+
+
+

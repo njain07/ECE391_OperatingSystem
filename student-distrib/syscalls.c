@@ -310,7 +310,6 @@ int32_t close(int32_t fd)
  *    RETURN VALUE:
  *      success: 0   /   fail: -1
  */
-
 int32_t getargs(uint8_t* buf, int32_t nbytes)
 {
     /* parse individual arguments ??? */
@@ -328,9 +327,8 @@ int32_t getargs(uint8_t* buf, int32_t nbytes)
     if((buf == NULL) || (current_pcb->arguments == NULL))
         return FAIL;
 
-    memcpy((uint8_t*)buf, (uint8_t*)current_pcb->arguments, nbytes);
+    strncpy((int8_t*)buf, (int8_t*)current_pcb->arguments, nbytes);
 	return 0;
-
 }
 
 int32_t vidmap(uint8_t** screen_start)

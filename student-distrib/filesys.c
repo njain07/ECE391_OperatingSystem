@@ -90,8 +90,8 @@ int32_t file_write(int32_t fd, const void* buf, int32_t nbytes)
  */
 int32_t file_open(const uint8_t* filename)
 {
-	dentry_t* dentry;
-	read_dentry_by_name(filename, dentry);
+	dentry_t dentry;
+	read_dentry_by_name(filename, &dentry);
 	return 0;
 }
 
