@@ -314,30 +314,38 @@ int32_t close(int32_t fd)
  */
 int32_t getargs(uint8_t* buf, int32_t nbytes)
 {
+    // if((buf == NULL) || (current_pcb->arguments == NULL))
+    //     return FAIL;
+
+    // strncpy((int8_t*)buf, (int8_t*)current_pcb->arguments, nbytes);
+    // return 0;
+    
     /* local variable for for loop in copy stage */
     int i;
-    
     uint8_t arg_size;
     
     /* Sanity Check#1: NULL pointer or ZERO bytes */
-    if( (buf == NULL) || (nbytes == 0) ) return FAIL;
+    if((buf == NULL) || (nbytes == 0)) 
+        return FAIL;
     
     /* Sanity Check#2: if the the command line argument array is empty */
-    if (current_pcb->arguments == NULL) return FAIL;
+    if (current_pcb->arguments == NULL) 
+        return FAIL;
     
     /* use arg size to get the buffer size */
-    arg_size = strlen(current_pcb->arguments);
+    arg_size = strlen((int8_t*)current_pcb->arguments);
     
     /* Sanity Check#3: if nbytes is short */
-    if (arg_size > nbytes) return FAIL;
+    if (arg_size > nbytes) 
+        return FAIL;
     
     /* preset before using it */
-    for (i = 0; i< nbytes; i++)
+    for (i=0; i<nbytes; i++)
         buf[i] = EMPTY_CHAR;
     
     /* Copy nbytes to buffer */
-    strncpy(buf, current_pcb->arguments, nbytes);
-    
+    strncpy((int8_t*)buf, (int8_t*)current_pcb->arguments, nbytes);
+
     return SUCCESS;
 }
 

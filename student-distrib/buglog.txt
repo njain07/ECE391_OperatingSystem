@@ -127,7 +127,7 @@ Checkpoint 4:
 
 5) pingpong: not working 
 	Problem: RTC interrupts were turned off, and scrolling was being called too frequently
-	Fix: turned on RTC interrupts and added an else-if statement to fix scrolling
+	Fix: turned on RTC interrupts and added an else-if statement in putc to fix scrolling
 
 6) page faulting or getting a general protection error when we fill up most of the buffer and press enter
 	Problem:
@@ -146,6 +146,10 @@ Checkpoint 4:
 	Fix:
 
 10) grep: going in an infinite loop after finding the first instance in a file
+	Problem: file_read is not keeping track of the offset so I kept reading the first few bytes of the same file
+	Fix: incremented the offset
+
+11) grep: printing each instance from a file 3-4 times
 	Problem:
 	Fix:
 

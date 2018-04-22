@@ -40,7 +40,7 @@ typedef struct pcb_t
 	uint8_t* arguments;
 
 	int32_t pid;			// process id
-	int32_t parent;		// parent process id
+	int32_t parent;			// parent process id
 	int32_t child;			// child process id
 
 	uint32_t p_start_addr;	// process starting address
@@ -53,16 +53,15 @@ typedef struct pcb_t
 	
 	//maybe add kernel stack?
     
-    
     /* EDITED by HD */
     /* MP3 Document: signal handling info should go in the PCB, pending signals, masked signals, handler actions / addresses for each signal */
     
     /* SIGNAL PART for cp4 */
     /* array for signal action, total 5 we deal with */
-    int32_t* signal_action[SIGNUM_MAX_INDEX];
+    // int32_t* signal_action[SIGNUM_MAX_INDEX];
     
-    int32_t signal_mask;
-    int32_t signal_pending;
+    // int32_t signal_mask;
+    // int32_t signal_pending;
     
 } pcb_t;
 

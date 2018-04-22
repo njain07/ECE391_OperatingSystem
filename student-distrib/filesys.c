@@ -64,6 +64,10 @@ int32_t file_read(int32_t fd, void* buf, int32_t nbytes)
 	uint32_t offset = file.file_pos;
 	// uint8_t* temp_buf = (uint8_t*) buf;
 	retval = read_data(inode, offset, (uint8_t*) buf, nbytes);
+	// if(retval == 0)
+	// 	retval = nbytes;
+	
+	current_pcb->file_array[fd].file_pos+=retval;
 	return retval;
 }
 
