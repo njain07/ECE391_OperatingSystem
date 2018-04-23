@@ -211,13 +211,18 @@ int32_t read_dentry_by_index(uint32_t index, dentry_t* dentry)
 {
 	uint32_t num_dentries;
 	num_dentries = boot_block->num_dir;
-	if(index < 0 || index > (num_dentries-1) || dentry == NULL)
+	if(index < 0 || index > (num_dentries-1) || dentry == NULL || dentry == 0){
+		// printf("error");
 		return -1;
+	}
 
 	strncpy((int8_t*)dentry->file_name, (int8_t*)boot_block->dentries[index].file_name, DENTRY_FILE_NAME_SIZE);
 	dentry->file_name[DENTRY_FILE_NAME_SIZE] = '\0';
 	dentry->file_type = boot_block->dentries[index].file_type;
 	dentry->inode_num = boot_block->dentries[index].inode_num;
+	// printf("file name: %d\n", dentry->file_name);
+	// printf("file type: %d\n", dentry->file_type);
+	// printf("inode_num: %d\n", dentry->inode_num);
 	return 0;
 }
 
@@ -259,26 +264,27 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length
 	}
 
 	// loop through data blocks
-	uint32_t data_block, data_block_num, initial_offset, read_from_block, length_left, bytes_read_successfully;
+	uint32_t data_block, data_block_num, block_offset, read_from_block, length_left, bytes_read_successfully;
 	uint8_t* data_block_ptr, * buf_ptr;
 	data_block = offset / BLOCK_SIZE;
-	initial_offset = offset % BLOCK_SIZE;
+	block_offset = offset % BLOCK_SIZE;
 
 	length_left = length;
-	// printf("length_left: %d\n", length_left);
 	buf_ptr = buf;
 	bytes_read_successfully = 0;
 	while(length_left > 0)
 	{
-		read_from_block = (length_left > BLOCK_SIZE)? BLOCK_SIZE : length_left;
-		// printf("read_from_block: %d\n", read_from_block);
-		data_block_num = inode_ptr->data_blocks[data_block];
+		// determine how much to read from the current block
+		read_from_block = ((block_offset + length_left) > BLOCK_SIZE)? (BLOCK_SIZE - block_offset) : length_left;
 
 		// calculating the pointer to the correct data block to read from
+		data_block_num = inode_ptr->data_blocks[data_block];
 		data_block_ptr = (uint8_t*) (fa + ((boot_block->num_inodes+1)*BLOCK_SIZE_ADDR) + (data_block_num*BLOCK_SIZE_ADDR));
+		
+		// copying data from the filesystem to the buffer
 		if(data_block_ptr != NULL)
 		{
-			memcpy(buf_ptr, data_block_ptr, read_from_block);
+			memcpy(buf_ptr, (data_block_ptr + block_offset), read_from_block);
 			bytes_read_successfully += read_from_block;
 		}
 		else
@@ -292,7 +298,7 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length
 			
 		buf_ptr += read_from_block;
 		length_left = length_left - read_from_block;
-			// printf("length_left: %d\n", length_left);
+		block_offset = 0;
 		if(length_left > 0){
 			data_block++;
 		}

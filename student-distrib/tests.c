@@ -15,6 +15,7 @@ static inline void assertion_failure(){
 	asm volatile("int $15");
 }
 
+uint32_t FILESYS_ADDR;
 
 /* Checkpoint 1 tests */
 
@@ -220,20 +221,26 @@ void filesys_file_content(uint32_t dentry_index)
 {
 	// tests read_dentry_by_index and read_data
 	//loop across inodes to print files
-	dentry_t* dentry;
+	clear();
+	dentry_t dentry;
 	uint32_t inode_index, nbytes;
-	uint8_t buf[1025];
-	read_dentry_by_index(dentry_index, dentry);
-	if(dentry->file_type == 2)
+	inode_t* inode_ptr;
+	read_dentry_by_index(dentry_index, &dentry);
+	// printf("file type: %d\n", dentry.file_type );
+	int i;
+	if(dentry.file_type == 2)
 	{
-		clear();
-		inode_index = dentry->inode_num;
-		// nbytes = // how to find length of file?
-		nbytes = 1025;
+		uint8_t* fa = (uint8_t*)FILESYS_ADDR;
+		inode_ptr = (inode_t*) (fa + ((inode_index+1)*BLOCK_SIZE_ADDR));
+		printf("inode_ptr: %x", inode_ptr);
+		inode_index = dentry.inode_num;
+		printf("i reached here\n ");
+		nbytes = inode_ptr->length;
+		printf("file length: %d \n", nbytes);
+		uint8_t buf[nbytes];
 		read_data(inode_index, 0, buf, nbytes);
-		printf("%s\n", buf);
-		// write(1, buf, nbytes);
-		// printf("returned successfully\n");
+		for(i=0 ; i<nbytes; i++)
+			putc(buf[i]);
 	}
 	return;
 }
@@ -309,8 +316,8 @@ void launch_tests(){
 	// terminal_test();
 
 	// filesys_list_of_files();
-	filesys_file_content(16);
-	// filesys_read_dentry_by_name((uint8_t*)"verylargetextwithverylongname.tx");
+	filesys_file_content(10);
+	// filesys_read_dentry_by_name((uint8_t*)"hello");
 
 	//checkpoint 3
 	// open_close_syscall((uint8_t*)"hello");

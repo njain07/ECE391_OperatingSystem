@@ -149,14 +149,14 @@ Checkpoint 4:
 	Problem: hadn't written vidmap
 	Fix: wrote vidmap
 
-NEED TO BE FIXED:
+11) grep: printing each instance from a file 3-4 times
+	Problem: issue in read_data: not keeping track of offset
+	Fix: fixed edge cases with offset
 
-11) page faulting or getting a general protection error when we fill up most of the buffer and press enter
+	NEED TO BE FIXED:
+
+12) page faulting or getting a general protection error when we fill up most of the buffer and press enter
 	Problem: check for boundary conditions in the keyboard buffer
-	Fix:
-
-12) grep: printing each instance from a file 3-4 times
-	Problem: issue in read_data???????
 	Fix:
 
 13) cat pausing in infinite loop (waiting for user to press enter in terminal read) after printing 1024 bytes from large files
