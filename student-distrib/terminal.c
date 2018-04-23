@@ -38,16 +38,11 @@ void terminal_init(void)
  *   RETURN VALUE: the number of bytes read in the buffer.
  *   SIDE EFFECTS: fills the buffer with data.
  */
-
 int32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
 {
     
     int i = 0;
-    
-    /* Boundary check */
-    // if((nbytes < 0) || (nbytes > BUFFER_SIZE))
-    //     return -1;
-    
+
     /* spin until flag is up */
     while(enter != 1);
 
@@ -66,6 +61,7 @@ int32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
     return i;
 
 }
+
 /*
  * terminal_write
  *   DESCRIPTION: Based on the buffer we read off data and writes it on the screen.
@@ -77,10 +73,6 @@ int32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
 int32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes)
 {
     int i = 0;
-    
-    /* Boundary check */
-    // if((nbytes < 0) || (nbytes > BUFFER_SIZE))
-    //     return -1;
     
     char* temp_buf = (char*) buf;
 

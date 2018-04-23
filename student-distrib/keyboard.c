@@ -52,7 +52,15 @@ void keyboard_init(void) {
     enter = 0;
 }
 
-/* Read the actual character and return it */
+/*
+ * get_character
+ *   DESCRIPTION: read the actual character and return it
+ *   INPUTS: scancode
+ *   OUTPUTS: none
+ *   RETURN VALUE: returns actual character being pressed
+ *   SIDE EFFECTS: none
+ */
+
 char get_character(uint8_t scancode){
     // handles flags
     switch(scancode)
@@ -180,6 +188,14 @@ char get_character(uint8_t scancode){
 
 }
 
+/*
+ * keyboard_interrupt_handler
+ *   DESCRIPTION: initializes the keyboard port
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: none
+ *   SIDE EFFECTS: none
+ */
 void keyboard_interrupt_handler(void){
     
     uint8_t scancode = 0;
@@ -210,7 +226,14 @@ void keyboard_interrupt_handler(void){
 }
 
 
-/* clear the whole buffer  */
+/*
+ * clear_buffer
+ *   DESCRIPTION: clears the terminal buffer
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: none
+ *   SIDE EFFECTS: none
+ */
 void clear_buffer(void){
     int i;
 

@@ -14,6 +14,14 @@
 int32_t process_num = -1;
 uint8_t halt_status = 0;
 
+/*
+ * halt
+ *   DESCRIPTION: halts the running process
+ *   INPUTS: status -- what the process returned
+ *   OUTPUTS: none
+ *   RETURN VALUE: none
+ *   SIDE EFFECTS: jumps to the end of execute
+ */
 int32_t halt(uint8_t status)
 {
     if(current_pcb->parent == -1)
@@ -53,6 +61,14 @@ int32_t halt(uint8_t status)
     return -1;
 }
 
+/*
+ * execute
+ *   DESCRIPTION: executes the running process
+ *   INPUTS: command -- user input
+ *   OUTPUTS: none
+ *   RETURN VALUE: halt_status
+ *   SIDE EFFECTS: none
+ */
 int32_t execute(const uint8_t* command)
 {
     if((command == NULL) || (*command == NULL))
@@ -115,7 +131,6 @@ int32_t execute(const uint8_t* command)
     current_pcb->arguments = arguments;
 
     /* STEP 4: load file into memory */
-    // uint8_t* buf = (uint8_t*)(MB_8 + (MB_4*process_num));
     uint8_t* buf = (uint8_t*)0x08048000;
     uint8_t* fa = (uint8_t*)FILESYS_ADDR;
     inode_t* inode_ptr = (inode_t*) (fa + ((exec_file_dentry.inode_num+1)*BLOCK_SIZE_ADDR));
@@ -140,17 +155,6 @@ int32_t execute(const uint8_t* command)
     );
 
     /* STEP 7: fake IRET */
-    //do memcpy for bytes 24-27; little-endian format (shift manually)
-    // uint8_t* eip_value, eip_value24, eip_value25, eip_value26, eip_value27;
-    // memcpy((uint8_t*)eip_value24, (uint8_t*)buf[24-1], 1);
-    // memcpy((uint8_t*)eip_value25, (uint8_t*)buf[25-1], 1);
-    // memcpy((uint8_t*)eip_value26, (uint8_t*)buf[26-1], 1);
-    // memcpy((uint8_t*)eip_value27, (uint8_t*)buf[27-1], 1);
-    // eip_value[0] = eip_value27;
-    // eip_value[1] = eip_value26;
-    // eip_value[2] = eip_value25;
-    // eip_value[3] = eip_value24;
-    // int32_t esp_value = MB_8 + (MB_4*(process_num+1)) - 4;
     uint32_t* eip_value = (uint32_t*) (buf + 24);
     int32_t esp_value = (int32_t) (MB_8*16) + MB_4;
 
@@ -171,6 +175,16 @@ int32_t execute(const uint8_t* command)
 	return halt_status;
 }
 
+/*
+ * read
+ *   DESCRIPTION: reads files for the current process to run
+ *   INPUTS: fd -- file descriptor
+             buf -- buffer into which a file is read
+             nbytes -- the number of bytes to be read
+ *   OUTPUTS: none
+ *   RETURN VALUE: number of bytes read for success and -1 for failure
+ *   SIDE EFFECTS: none
+ */
 int32_t read(int32_t fd, void* buf, int32_t nbytes)
 {
     // keep track of file_pos in fd_array !!! NOT IMPLEMENTED YET
@@ -190,6 +204,16 @@ int32_t read(int32_t fd, void* buf, int32_t nbytes)
 	return bytes_read;
 }
 
+/*
+ * write
+ *   DESCRIPTION: writes to files for the current process to run
+ *   INPUTS: fd -- file descriptor
+             buf -- buffer into which a file is read
+             nbytes -- the number of bytes to be read
+ *   OUTPUTS: none
+ *   RETURN VALUE: number of bytes written for success and -1 for failure
+ *   SIDE EFFECTS: none
+ */
 int32_t write(int32_t fd, const void* buf, int32_t nbytes)
 {
     /* fd cannot be 0 because we cannot write to stdin */
@@ -216,15 +240,11 @@ int32_t write(int32_t fd, const void* buf, int32_t nbytes)
 	return bytes_written;
 }
 
-/*  int32_t open(const uint8_t *filename)
- *  DESCRIPTION:
- *      open the file; actually gives access to the file system
- *  INPUTS:
- *      const uint8_t* filename: pointer to the filename
- *  OUTPUTS:
- *      none
- *  RETURN VALUE:
- *      success: 0   /   fail: -1
+/*  open
+ *  DESCRIPTION: open the file; actually gives access to the file system
+ *  INPUTS: filename -- pointer to the filename
+ *  OUTPUTS: none
+ *  RETURN VALUE: the fd which has been opened for success and -1 for failure
  */
 int32_t open(const uint8_t* filename) 
 {    
@@ -284,15 +304,11 @@ int32_t open(const uint8_t* filename)
     return fd;
 }
 
-/*  int32_t close(int32_t fd)
- *  DESCRIPTION:
- *      close the specific file descriptor
- *  INPUTS:
- *      int8_t* fd - just like open's fd; index of file descriptor array
- *  OUTPUTS:
- *      none
- *  RETURN VALUE:
- *      success: 0   /   fail: -1
+/*  close
+ *  DESCRIPTION: close the specific file descriptor
+ *  INPUTS: fd -- file descriptor
+ *  OUTPUTS: none
+ *  RETURN VALUE: 0 for success and -1 for failure
  */
 int32_t close(int32_t fd)
 {
@@ -313,16 +329,12 @@ int32_t close(int32_t fd)
     return SUCCESS;
 }
 
-/*  int getargs(uint8_t* buf, int32_t nbytes)
- *  DESCRIPTION:
- *     Read the program's command line argument and copy into a user-level buffer
- *    INPUTS:
- *      uint8_t* buf: buffer to hold data(command line argument)
- *      int32_t nbytes: size of data(command line argument)
- *    OUTPUTS:
- *      none
- *    RETURN VALUE:
- *      success: 0   /   fail: -1
+/*  getargs
+ *  DESCRIPTION: Read the program's command line argument and copy into a user-level buffer
+ *    INPUTS: buf -- buffer to hold the argument being passed in from the command line
+ *            nbytes -- size of data
+ *    OUTPUTS: none
+ *    RETURN VALUE: 0 for success and -1 for failure
  */
 int32_t getargs(uint8_t* buf, int32_t nbytes)
 {
@@ -361,6 +373,12 @@ int32_t getargs(uint8_t* buf, int32_t nbytes)
     return SUCCESS;
 }
 
+/*  vidmap
+ *  DESCRIPTION: maps the user space to video memory
+ *    INPUTS: screen_start -- pointer to location of screen to start printing to
+ *    OUTPUTS: none
+ *    RETURN VALUE: address of video memory
+ */
 int32_t vidmap(uint8_t** screen_start)
 {
     if((screen_start == NULL) || (*screen_start == NULL))
@@ -374,17 +392,39 @@ int32_t vidmap(uint8_t** screen_start)
     return MB_132;
 }
 
+/*  set_handler
+ *  DESCRIPTION: used for signals (optional)
+ *    INPUTS: signum -- 
+ *            handler_address --
+ *    OUTPUTS: none
+ *    RETURN VALUE: -1 for failure
+ */
 int32_t set_handler(int32_t signum, void* handler_address)
 {
 	return -1;
 }
 
+/*  sigreturn
+ *  DESCRIPTION: used for signals (optional)
+ *    INPUTS: none
+ *    OUTPUTS: none
+ *    RETURN VALUE: -1 for failure
+ */
 int32_t sigreturn(void)
 {
 	return -1;
 }
 
 /* Helper Function */
+/*  change_process
+ *  DESCRIPTION: used in execute and halt to switch processes
+ *    INPUTS: new_process_num -- the pid to switch to
+ *            execute_halt_switch -- tells us which function is calling
+ *                                   change_process
+ *    OUTPUTS: none
+ *    RETURN VALUE: none
+ *    SIDE EFFECT: changes the process_num and current_pcb pointer
+ */
 void change_process(int32_t new_process_num, int32_t execute_halt_switch)
 {
     cli();

@@ -59,6 +59,14 @@ int idt_test(){
 // 		TEST_HEADER;
 // }
 
+/*
+ * fault_paging_test
+ *   DESCRIPTION: should page fault when testing paging
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: none
+ *   SIDE EFFECTS: none
+ */
 void fault_paging_test()
 {
 	int* a = (int*) 0x4000;
@@ -66,6 +74,15 @@ void fault_paging_test()
     *a = 0;
     *b = 0;
 }
+
+/*
+ * no_fault_paging_test
+ *   DESCRIPTION: should not page fault when testing paging
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: none
+ *   SIDE EFFECTS: none
+ */
 void no_fault_paging_test()
 {
 	TEST_HEADER;
@@ -96,6 +113,15 @@ void no_fault_paging_test()
 
 /* Checkpoint 2 tests */
 
+/*
+ * rtc_test
+ *   DESCRIPTION: should open the RTC (rtc_open prints 'a' 
+ 				  for every interrupt)
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: none
+ *   SIDE EFFECTS: none
+ */
 void rtc_test()
 {
     clear();
@@ -127,6 +153,14 @@ void rtc_test()
 //     }
 // }
 
+/*
+ * rtc_test3
+ *   DESCRIPTION: 
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: none
+ *   SIDE EFFECTS: none
+ */
 void rtc_test3()
 {
     rtc_interrupt_flag = 1;
@@ -149,6 +183,14 @@ void rtc_test3()
 // 	rtc_write(0, (void*)buf[4] ,4);
 // }
 
+/*
+ * terminal_test
+ *   DESCRIPTION: echos user input back to the screen
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: none
+ *   SIDE EFFECTS: none
+ */
 void terminal_test()
 {
 	int32_t n;
@@ -166,6 +208,14 @@ void filesys_list_of_files()
 	
 }
 
+/*
+ * filesys_file_content
+ *   DESCRIPTION: should print the contents of the file 
+ *   INPUTS: dentry_index of the corresponding file
+ *   OUTPUTS: none
+ *   RETURN VALUE: none
+ *   SIDE EFFECTS: none
+ */
 void filesys_file_content(uint32_t dentry_index)
 {
 	// tests read_dentry_by_index and read_data
@@ -188,6 +238,14 @@ void filesys_file_content(uint32_t dentry_index)
 	return;
 }
 
+/*
+ * filesys_read_dentry_by_name
+ *   DESCRIPTION: should print dentry information of the file
+ *   INPUTS: fname -- filename
+ *   OUTPUTS: none
+ *   RETURN VALUE: none
+ *   SIDE EFFECTS: none
+ */
 void filesys_read_dentry_by_name(uint8_t* fname)
 {
 	//tests file_open and dir_open
@@ -202,6 +260,14 @@ void filesys_read_dentry_by_name(uint8_t* fname)
 
 /* Checkpoint 3 tests */
 
+/*
+ * open_close_syscall
+ *   DESCRIPTION: should not produce any faults
+ *   INPUTS: filename
+ *   OUTPUTS: none
+ *   RETURN VALUE: none
+ *   SIDE EFFECTS: none
+ */
 void open_close_syscall(uint8_t* filename)
 {
 	int32_t fd; //, bytes_printed;

@@ -1,5 +1,14 @@
 #include "idt.h"
 
+/*
+ * do_irq
+ *   DESCRIPTION: 
+ *   INPUTS: i -- the vector number pushed by the assembly code
+ 				  using the pt_regs struct
+ *   OUTPUTS: none
+ *   RETURN VALUE: none
+ *   SIDE EFFECTS: none
+ */
 void do_irq(int i){
 	// get i to hold the vec num pushed by the assembly code
 	// using the pt_regs struct
@@ -31,6 +40,14 @@ void do_irq(int i){
 	}
 }
 
+/*
+ * init_idt
+ *   DESCRIPTION: initializes the IDT
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: none
+ *   SIDE EFFECTS: none
+ */
 void init_idt()
 {
 	int i;
