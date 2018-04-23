@@ -172,16 +172,18 @@ void filesys_file_content(uint32_t dentry_index)
 	//loop across inodes to print files
 	dentry_t* dentry;
 	uint32_t inode_index, nbytes;
-	uint8_t buf[50];
+	uint8_t buf[1024];
 	read_dentry_by_index(dentry_index, dentry);
 	if(dentry->file_type == 2)
 	{
 		clear();
 		inode_index = dentry->inode_num;
 		// nbytes = // how to find length of file?
-		nbytes = 50;
+		nbytes = 1024;
 		read_data(inode_index, 0, buf, nbytes);
 		printf("%s\n", buf);
+		write(1, buf, nbytes);
+		printf("returned successfully\n");
 	}
 	return;
 }
@@ -245,5 +247,5 @@ void launch_tests(){
 	// filesys_read_dentry_by_name((uint8_t*)"verylargetextwithverylongname.tx");
 
 	//checkpoint 3
-	open_close_syscall((uint8_t*)"hello");
+	// open_close_syscall((uint8_t*)"hello");
 }

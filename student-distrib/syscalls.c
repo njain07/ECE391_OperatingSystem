@@ -340,7 +340,7 @@ int32_t getargs(uint8_t* buf, int32_t nbytes)
     arg_size = strlen((int8_t*)current_pcb->arguments);
     
     /* Sanity Check#3: if nbytes is short */
-    if (arg_size > nbytes) 
+    if ((arg_size > nbytes) || (arg_size == 0)) 
         return FAIL;
     
     /* preset before using it */

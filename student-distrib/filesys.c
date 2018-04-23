@@ -23,27 +23,9 @@ extern void filesys_init()
 {
 	boot_block = (boot_block_t*) FILESYS_ADDR;
 	uint32_t* fa = (uint32_t*)FILESYS_ADDR;
-
-	// dentry_t d[NUM_DENTRIES]; 
-	// boot_block->dentries = d; 
-
+	
 	if(fa == NULL)
 		return;
-
-	// boot_block->num_dir = *(fa);
-	// boot_block->num_inodes = *(fa + FOUR_B);
-	// boot_block->num_dblocks = *(fa + EIGHT_B);
-	// boot_block->reserved = (uint32_t*)(fa + TWELVE_B);
-	// boot_block->dentries = (dentry_t*)(fa + (SF_B));
-
-	// int i;
-	// for(i=1; i<=NUM_DENTRIES; i++)
-	// {
-	// 	boot_block->dentries[i] = (dentry_t)(fa + (i*SF_B));
-	// }
-	
-
-
 }
 
 /* file_read
@@ -62,11 +44,11 @@ int32_t file_read(int32_t fd, void* buf, int32_t nbytes)
 
 	uint32_t inode = file.inode_num;
 	uint32_t offset = file.file_pos;
-	// uint8_t* temp_buf = (uint8_t*) buf;
+
 	retval = read_data(inode, offset, (uint8_t*) buf, nbytes);
-	// if(retval == 0)
-	// 	retval = nbytes;
-	
+	// printf("file_read retval: %d", retval);
+
+
 	current_pcb->file_array[fd].file_pos+=retval;
 	return retval;
 }
