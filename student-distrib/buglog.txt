@@ -129,41 +129,36 @@ Checkpoint 4:
 	Problem: RTC interrupts were turned off, and scrolling was being called too frequently
 	Fix: turned on RTC interrupts and added an else-if statement in putc to fix scrolling
 
-6) page faulting or getting a general protection error when we fill up most of the buffer and press enter
-	Problem:
-	Fix:
-
-7) cat: could not read arguments
+6) cat: could not read arguments
 	Problem: file_open initialized a dentry pointer instead of a dentry struct so it didn't get filled properly
 	Fix: initialized a dentry struct in file_open
 
-8) cat: could not read arguments
+7) cat: could not read arguments
 	Problem: getargs used memcpy instead of strncpy
 	Fix: changed memcpy to strncpy
 
-9) cat: program terminated abnormally
+8) cat: program terminated abnormally
 	Problem: we had a check for the length of the buffer in terminal_write which was unnecessary, causing it to fail
 	Fix: removed the check
 
-10) grep: going in an infinite loop after finding the first instance in a file
+9) grep: going in an infinite loop after finding the first instance in a file
 	Problem: file_read is not keeping track of the offset so I kept reading the first few bytes of the same file
 	Fix: incremented the offset
 
-11) grep: printing each instance from a file 3-4 times
-	Problem:
-	Fix:
-
-11) syserr: failing Null pointer, Kernel pointer, err_vidmap
+10) syserr: failing Null pointer, Kernel pointer, err_vidmap
 	Problem: hadn't written vidmap
 	Fix: wrote vidmap
 
-12) syserr: program terminated abnormally
-	Problem:
+NEED TO BE FIXED:
+
+11) page faulting or getting a general protection error when we fill up most of the buffer and press enter
+	Problem: check for boundary conditions in the keyboard buffer
 	Fix:
 
-13) cat pausing in infinite loop after printing some contents of executable files
-	Problem:
+12) grep: printing each instance from a file 3-4 times
+	Problem: issue in read_data???????
 	Fix:
 
-
-
+13) cat pausing in infinite loop (waiting for user to press enter in terminal read) after printing 1024 bytes from large files
+	Problem: ebp is not being restored to kernel (still in user space) and ebx also gets overwritten for the second call to read (fd = 0 so it goes into terminal read); possible stack corruption??? or should I save the ebp in the tss?????
+	Fix:

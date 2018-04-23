@@ -48,7 +48,6 @@ int32_t file_read(int32_t fd, void* buf, int32_t nbytes)
 	retval = read_data(inode, offset, (uint8_t*) buf, nbytes);
 	// printf("file_read retval: %d", retval);
 
-
 	current_pcb->file_array[fd].file_pos+=retval;
 	return retval;
 }
@@ -246,7 +245,7 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length
 
 	// check for valid offset
 	if(offset<0 || offset>(inode_ptr->length)){
-		printf("offset error\n");
+		// printf("offset error\n");
 		return -1;
 	}
 
@@ -266,11 +265,13 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length
 	initial_offset = offset % BLOCK_SIZE;
 
 	length_left = length;
+	// printf("length_left: %d\n", length_left);
 	buf_ptr = buf;
 	bytes_read_successfully = 0;
 	while(length_left > 0)
 	{
 		read_from_block = (length_left > BLOCK_SIZE)? BLOCK_SIZE : length_left;
+		// printf("read_from_block: %d\n", read_from_block);
 		data_block_num = inode_ptr->data_blocks[data_block];
 
 		// calculating the pointer to the correct data block to read from
@@ -291,8 +292,10 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length
 			
 		buf_ptr += read_from_block;
 		length_left = length_left - read_from_block;
-		if(length_left > 0)
+			// printf("length_left: %d\n", length_left);
+		if(length_left > 0){
 			data_block++;
+		}
 	}
 
 	buf[bytes_read_successfully] = '\0';

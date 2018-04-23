@@ -59,13 +59,20 @@ int32_t execute(const uint8_t* command)
         return FAIL;
 
     /* STEP 1: parse arguments */
-    uint8_t program[32] = "\0";
+    uint8_t spaces[22] = "\0";
+    uint8_t program[10] = "\0";
     uint8_t arguments[96] = "\0";
     uint32_t i = 0;
 
+    while(command[i] == ' ')
+    {
+        spaces[i] = command[i];
+        i++;
+    }
+
     while(command[i] != ' ' && command[i] != '\0')
     {
-        program[i] = command[i];
+        program[i-strlen((int8_t*)spaces)] = command[i];
         i++;
     }
     program[i] = '\0';
@@ -73,7 +80,7 @@ int32_t execute(const uint8_t* command)
 
     while(i<(strlen((int8_t*)command)))
     {
-        arguments[i-strlen((int8_t*)program)-1] = command[i];
+        arguments[i-1-strlen((int8_t*)program)-strlen((int8_t*)spaces)] = command[i];
         i++;
         
     }
@@ -154,6 +161,7 @@ int32_t execute(const uint8_t* command)
         "pushfl;"
         "pushl %1;"
         "pushl %0;"
+
         "iret;"
         "halt_return:"
         :
