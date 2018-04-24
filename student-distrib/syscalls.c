@@ -187,8 +187,6 @@ int32_t execute(const uint8_t* command)
  */
 int32_t read(int32_t fd, void* buf, int32_t nbytes)
 {
-    // keep track of file_pos in fd_array !!! NOT IMPLEMENTED YET
-
     /* fd cannot be 1 because we cannot read from stdout */
     if((fd < 0) || (fd == 1) || (fd > FD_MAX_INDEX))
         return FAIL;
@@ -381,15 +379,18 @@ int32_t getargs(uint8_t* buf, int32_t nbytes)
  */
 int32_t vidmap(uint8_t** screen_start)
 {
-    if((screen_start == NULL) || (*screen_start == NULL))
+    if(screen_start == NULL)
         return FAIL;
 
-    if(((uint32_t)screen_start < MB_128) || ((uint32_t)screen_start > MB_132))
-        return FAIL;
+   // if(((uint32_t)screen_start < MB_128) || ((uint32_t)screen_start >= MB_132))
+        //return FAIL;
 
     vidmap_page(screen_start);
     *screen_start = (uint8_t*)MB_132;
-    return MB_132;
+    printf("screen_start: %x\n", screen_start);
+    printf("*screen_start: %x\n", *screen_start);
+    printf("**screen_start: %x\n", **screen_start);
+    return (int32_t)*screen_start;
 }
 
 /*  set_handler

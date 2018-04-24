@@ -79,9 +79,11 @@ void process_page(int32_t pid)
 
 void vidmap_page(uint8_t** screen_start)
 {
-	video_memory[(MB_132 >> SHIFT12) & 0xFFF] = VIDEO_MEM | U_W_PRESENT;
-	page_directory[MB_132 >> SHIFT22] = (uint32_t)video_memory | U_W_PRESENT;
+
+	video_memory[??] = VIDEO_MEM | U_W_PRESENT;
+	page_directory[33] = (uint32_t)video_memory | U_W_PRESENT;
 	flush_TLB();
+
 }
 
 void flush_TLB(void)

@@ -158,10 +158,12 @@ common_interrupt:
 interrupt_sys:
 	# pushal 
 
-	push	%es
-	push	%fs
-	push	%gs
+	# calle-saved registers (C calling convention)
+	pushl	%ebx
+	pushl 	%edi
+	pushl 	%esi
 
+	# function arguments
 	pushl 	%edx
 	pushl 	%ecx
 	pushl 	%ebx
@@ -186,9 +188,9 @@ POP:
 	popl 	%ecx
 	popl 	%edx
 
-	pop 	%gs
-	pop		%fs
-	pop		%es
+	popl 	%esi
+	popl	%edi
+	popl	%ebx
 
 	# popal # pop everything except eax, which has the return value 
 	iret
