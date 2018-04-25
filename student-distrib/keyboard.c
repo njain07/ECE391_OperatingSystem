@@ -144,7 +144,7 @@ char get_character(uint8_t scancode){
 
     if(flags.ctrl == 1)
     {
-        //check for ctrl-l
+        // check for ctrl-l
         if(scancode == 0x26 || scancode == 0xA6)
         {
             clear();
@@ -153,7 +153,23 @@ char get_character(uint8_t scancode){
     }
 
     if(flags.alt == 1)
-        return 0;
+    {
+        // check for alt+F1 for terminal change
+        if(scancode == 0x3B)
+        {
+            terminal_switch();
+        }
+        // check for alt+F2 for terminal change
+        if(scancode == 0x3C)
+        {
+            terminal_switch();
+        }
+        // check for alt+F3 for terminal change
+        if(scancode == 0x3D)
+        {
+            terminal_switch();
+        }
+    }
 
     /* return corresponding character */
     

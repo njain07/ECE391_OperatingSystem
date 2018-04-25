@@ -159,6 +159,11 @@ Checkpoint 4:
 	Problem: check for boundary conditions in the keyboard buffer
 	Fix:
 
-13) cat pausing in infinite loop (waiting for user to press enter in terminal read) after printing 1024 bytes from large files
+13) cat: pausing in infinite loop (waiting for user to press enter in terminal read) after printing 1024 bytes from large files
 	Problem: ebp is not being restored to kernel (still in user space) and ebx also gets overwritten for the second call to read (fd = 0 so it goes into terminal read); possible stack corruption??? or should I save the ebp in the tss?????
 	Fix:
+
+14) fish: not working; just accepting keyboard interrupts to allow the user to type
+	Problem: 
+	Fix: 
+
