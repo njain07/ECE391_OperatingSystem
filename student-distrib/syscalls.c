@@ -396,9 +396,9 @@ int32_t vidmap(uint8_t** screen_start)
 
     vidmap_page(screen_start);
     *screen_start = (uint8_t*)MB_132;
-    printf("screen_start: %x\n", screen_start);
-    printf("*screen_start: %x\n", *screen_start);
-    printf("**screen_start: %x\n", **screen_start);
+    // printf("screen_start: %x\n", screen_start);
+    // printf("*screen_start: %x\n", *screen_start);
+    // printf("**screen_start: %x\n", **screen_start);
     return (int32_t)*screen_start;
 }
 
