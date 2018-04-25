@@ -126,9 +126,18 @@ int32_t execute(const uint8_t* command)
     /* STEP 3: set up paging */ 
     /* STEP 5: create PCB */
     /* STEP 6: prepare for context switch */
-    change_process((process_num+1), 1);
-    current_pcb->program = program;
-    current_pcb->arguments = arguments;
+    if(process_num < 10)
+    {
+	    change_process((process_num+1), 1);
+	    current_pcb->program = program;
+	    current_pcb->arguments = arguments;
+    }
+    else
+    {
+    	printf("Cannot start more processes.\n");
+    	return FAIL;
+    }	
+
 
     /* STEP 4: load file into memory */
     uint8_t* buf = (uint8_t*)0x08048000;
