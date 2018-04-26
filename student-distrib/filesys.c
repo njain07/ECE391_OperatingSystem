@@ -239,6 +239,9 @@ int32_t read_dentry_by_index(uint32_t index, dentry_t* dentry)
  */
 int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length)
 {
+	uint32_t orig_length;
+	orig_length = length;
+
 	// check for valid inode
 	if(inode<0 || inode>=(boot_block->num_inodes))
 		return -1;
@@ -271,6 +274,7 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length
 	block_offset = offset % BLOCK_SIZE;
 
 	length_left = length;
+	// printf("length: %d\n", length);
 	buf_ptr = buf;
 	bytes_read_successfully = 0;
 	while(length_left > 0)
@@ -285,9 +289,11 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length
 		// copying data from the filesystem to the buffer
 		if(data_block_ptr != NULL)
 		{
-			if(read_from_block>1024){
-				printf("HERE\n");
-			}
+			// if(read_from_block>1024)
+			// {
+				// printf("read_from_block: %d\n", read_from_block);
+			// }
+
 			memcpy(buf_ptr, (data_block_ptr + block_offset), read_from_block);
 			// *(buf_ptr+i) =  *(data_block_ptr + block_offset + i);
 			bytes_read_successfully += read_from_block;
@@ -296,20 +302,23 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length
 		{
 			// if data_block_ptr is NULL then we return -1 if we haven't read anything; if we have read some
 			// number of bytes successfully before reaching a NULL data_block_ptr then we return that number of bytes
-			buf[bytes_read_successfully] = '\0';
+			// buf[bytes_read_successfully] = '\0';
 			bytes_read_successfully = (bytes_read_successfully==0)? -1 : bytes_read_successfully;
 			return bytes_read_successfully;
 		}
 			
 		buf_ptr += read_from_block;
 		length_left = length_left - read_from_block;
-		block_offset = (block_offset > BLOCK_SIZE)? (BLOCK_SIZE - block_offset) : 0;
+		block_offset = 0;
 		if(length_left > 0){
 			data_block++;
 		}
 	}
 
-	buf[bytes_read_successfully] = '\0';
+
+	// printf("bytes_read_successfully: %d\n", bytes_read_successfully);
+	if(bytes_read_successfully < orig_length)
+		buf[bytes_read_successfully] = '\0';
 	return bytes_read_successfully;
 }
 
