@@ -158,10 +158,19 @@ common_interrupt:
 interrupt_sys:
 	# pushal 
 
-	# calle-saved registers (C calling convention)
-	pushl	%ebx
-	pushl 	%edi
+	# callee-saved registers (C calling convention)
+	# pushl	%ebx
+	# pushl 	%edi
+	# pushl 	%esi
+
+	# pushl 	%eax
+	pushl 	%ebx
+	pushl 	%ecx
+	pushl 	%edx
+	pushl 	%ebp
+	pushl 	%esp
 	pushl 	%esi
+	pushl 	%edi
 
 	# function arguments
 	pushl 	%edx
@@ -184,13 +193,23 @@ ERROR:
 	movl	$-1, %eax
 
 POP:
-	popl 	%ebx
-	popl 	%ecx
-	popl 	%edx
+	# popl 	%ebx
+	# popl 	%ecx
+	# popl 	%edx
 
+	addl	$12, %esp
+
+	popl 	%edi
 	popl 	%esi
-	popl	%edi
-	popl	%ebx
+	popl 	%esp
+	popl 	%ebp
+	popl 	%edx
+	popl 	%ecx
+	popl 	%ebx
+
+	# popl 	%esi
+	# popl	%edi
+	# popl	%ebx
 
 	# popal # pop everything except eax, which has the return value 
 	iret

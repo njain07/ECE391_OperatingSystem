@@ -82,7 +82,7 @@ void vidmap_page(uint8_t** screen_start)
 
 	video_memory[0] = VIDEO_MEM | U_W_PRESENT;
 	page_directory[33] = (uint32_t)video_memory | U_W_PRESENT;
-	flush_TLB();
+	// flush_TLB();
 
 }
 

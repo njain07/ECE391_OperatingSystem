@@ -263,6 +263,7 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length
 		length = (inode_ptr->length) - offset;
 	}
 
+
 	// loop through data blocks
 	uint32_t data_block, data_block_num, block_offset, read_from_block, length_left, bytes_read_successfully;
 	uint8_t* data_block_ptr, * buf_ptr;
@@ -284,7 +285,11 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length
 		// copying data from the filesystem to the buffer
 		if(data_block_ptr != NULL)
 		{
+			if(read_from_block>1024){
+				printf("HERE\n");
+			}
 			memcpy(buf_ptr, (data_block_ptr + block_offset), read_from_block);
+			// *(buf_ptr+i) =  *(data_block_ptr + block_offset + i);
 			bytes_read_successfully += read_from_block;
 		}
 		else
@@ -298,7 +303,7 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length
 			
 		buf_ptr += read_from_block;
 		length_left = length_left - read_from_block;
-		block_offset = 0;
+		block_offset = (block_offset > BLOCK_SIZE)? (BLOCK_SIZE - block_offset) : 0;
 		if(length_left > 0){
 			data_block++;
 		}

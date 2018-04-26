@@ -157,17 +157,17 @@ char get_character(uint8_t scancode){
         // check for alt+F1 for terminal change
         if(scancode == 0x3B)
         {
-            terminal_switch();
+            // terminal_switch();
         }
         // check for alt+F2 for terminal change
         if(scancode == 0x3C)
         {
-            terminal_switch();
+            // terminal_switch();
         }
         // check for alt+F3 for terminal change
         if(scancode == 0x3D)
         {
-            terminal_switch();
+            // terminal_switch();
         }
     }
 
