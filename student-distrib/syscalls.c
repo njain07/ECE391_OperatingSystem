@@ -75,32 +75,37 @@ int32_t execute(const uint8_t* command)
         return FAIL;
 
     /* STEP 1: parse arguments */
-    uint8_t spaces[22] = "\0";
+    uint8_t spaces = 0;
     uint8_t program[10] = "\0";
     uint8_t arguments[96] = "\0";
     uint32_t i = 0;
 
     while(command[i] == ' ')
     {
-        spaces[i] = command[i];
+        spaces++;
         i++;
     }
 
     while(command[i] != ' ' && command[i] != '\0')
     {
-        program[i-strlen((int8_t*)spaces)] = command[i];
+        program[i-spaces] = command[i];
         i++;
     }
     program[i] = '\0';
-    i++;    // skips the ' ' between the program and arguments
+
+    while(command[i] == ' ')
+    {
+        spaces++;
+        i++;
+    }
 
     while(i<(strlen((int8_t*)command)))
     {
-        arguments[i-1-strlen((int8_t*)program)-strlen((int8_t*)spaces)] = command[i];
+        arguments[i-strlen((int8_t*)program)-spaces] = command[i];
         i++;
         
     }
-    arguments[i-strlen((int8_t*)program)-1] = '\0'; 
+    arguments[i-strlen((int8_t*)program)-spaces] = '\0'; 
 
     /* STEP 2: check file validity (DEL ELF at beginning of executable files) */
     int32_t retval;
@@ -440,8 +445,9 @@ void terminal_switch(int32_t new_terminal_num)
 {
     cli();
 
-    terminal_vidmem();
+    terminal_vidmem(terminal_num, new_terminal_num);
     terminal_num = new_terminal_num;
+    // use lazy allocation 
     change_process(, 3);
 
     sti();
@@ -470,7 +476,6 @@ void change_process(int32_t new_process_num, int32_t execute_halt_switch)
         case 2:
             break;
         case 3:
-
             break;
     }
     process_num = new_process_num;

@@ -41,10 +41,10 @@ typedef struct pcb_t
 
 	int32_t pid;			// process id
 	int32_t parent;			// parent process id
-	int32_t child;			// child process id
+	// int32_t child;			// child process id
 
-	uint32_t p_start_addr;	// process starting address
-	uint32_t page_addr;		// physical address of page
+	// uint32_t p_start_addr;	// process starting address
+	// uint32_t page_addr;		// physical address of page
 
 	/* for halt syscall */
 	uint32_t p_ebp;			// parent_ebp

@@ -24,7 +24,8 @@ void paging_init()
 	 * map the pages in the page table to the beginning of memory
 	 * with the correct attributes. */
 	int i;
-	for(i=0; i<ONE_KB; i++) {
+	for(i=0; i<ONE_KB; i++) 
+	{
 		page_directory[i] = NOT_PRESENT;
 		first_page_table[i] = (i*FOUR_KB) | NOT_PRESENT;
 	}
@@ -34,11 +35,13 @@ void paging_init()
 
 	/* Setting video memory attributes */
 	first_page_table[VIDEO_MEM >> SHIFT12] = VIDEO_MEM | S_RW_PRESENT;
-	//page_directory[1]= FOUR_MB | S_RW_PRESENT ;
 	page_directory[1]= FOUR_MB | 0x83; // supervisor, present, read, write, size
 
-	//enable_4MB_Paging();
 	enable_paging();
+
+	terminal_vidmem_array[0] = terminal1;
+	terminal_vidmem_array[1] = terminal2;
+	terminal_vidmem_array[2] = terminal3;
 }
 
 /*
@@ -73,23 +76,23 @@ void enable_paging()
 void process_page(int32_t pid)
 {
 	int32_t user_loc = EIGHT_MB + (pid * FOUR_MB);
-	page_directory[32] = user_loc | 0x87; // user, present, read, write, size
+	page_directory[32] = user_loc | U_W_PRESENT; // 0x87 user, present, read, write, size
 	flush_TLB();
 }
 
 void vidmap_page(uint8_t** screen_start)
 {
-
-	video_memory[0] = VIDEO_MEM | 0x07; //U_W_PRESENT;
-	page_directory[33] = (uint32_t)video_memory | 0x07; //U_W_PRESENT;
+	video_memory[0] = VIDEO_MEM | U_RW_PRESENT;
+	page_directory[33] = (uint32_t)video_memory | U_RW_PRESENT;
 	flush_TLB();
-
 }
 
-void terminal_vidmem()
+void terminal_vidmem(int32_t terminal_num, int32_t new_terminal_num)
 {
 	// memcpy current terminal_num video memory into video_memory_array
+	memcpy((int*)VIDEO_MEM, (int*)video_memory_array[terminal_num-1], FOUR_KB);
     // memcpy new terminal_num video memory from video_memory_array
+    memcpy((int*)video_memory_array[new_terminal_num-1], (int*)VIDEO_MEM, FOUR_KB);
 }
 
 void flush_TLB(void)

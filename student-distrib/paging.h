@@ -11,10 +11,11 @@
 #define SHIFT22 22
 #define EIGHT_MB FOUR_MB*2
 
-#define USER (?)
+// #define USER (?)
 #define S_RW_PRESENT 0x00000003 // attributes: supervisor level, read/write, present
 #define NOT_PRESENT 0x00000002
 #define U_W_PRESENT 0x00000087 // attributes: user level, write, present
+#define U_RW_PRESENT 0x00000007 // not sure what the attributes are; used in vidmap_page
 
 #define KERNEL_VIRTUAL_ADDR 0x400000
 #define VIDEO_MEM 0xB8000
@@ -25,6 +26,7 @@ int page_directory[ONE_KB] __attribute__((aligned (FOUR_KB)));
 int video_memory[ONE_KB] __attribute__((aligned (FOUR_KB)));
 
 /* saving each terminal video memory */
+int* terminal_vidmem_array[3];
 int terminal1[ONE_KB] __attribute__((aligned (FOUR_KB)));
 int terminal2[ONE_KB] __attribute__((aligned (FOUR_KB)));
 int terminal3[ONE_KB] __attribute__((aligned (FOUR_KB)));
@@ -36,5 +38,6 @@ void paging_init();
 void enable_paging();
 void process_page(int32_t pid);
 void vidmap_page(uint8_t** screen_start);
+void terminal_vidmem(int32_t terminal_num, int32_t new_terminal_num);
 void flush_TLB(void);
 #endif
