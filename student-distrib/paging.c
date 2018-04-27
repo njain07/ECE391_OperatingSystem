@@ -86,6 +86,12 @@ void vidmap_page(uint8_t** screen_start)
 
 }
 
+void terminal_vidmem()
+{
+	// memcpy current terminal_num video memory into video_memory_array
+    // memcpy new terminal_num video memory from video_memory_array
+}
+
 void flush_TLB(void)
 {
 	asm volatile (

@@ -24,6 +24,10 @@ int first_page_table[ONE_KB] __attribute__((aligned (FOUR_KB)));
 int page_directory[ONE_KB] __attribute__((aligned (FOUR_KB)));
 int video_memory[ONE_KB] __attribute__((aligned (FOUR_KB)));
 
+/* saving each terminal video memory */
+int terminal1[ONE_KB] __attribute__((aligned (FOUR_KB)));
+int terminal2[ONE_KB] __attribute__((aligned (FOUR_KB)));
+int terminal3[ONE_KB] __attribute__((aligned (FOUR_KB)));
 
 void paging_init();
 //void create4MBpage();

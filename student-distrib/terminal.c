@@ -25,8 +25,6 @@
 void terminal_init(void)
 {
     keyboard_init();
-    b_index = 0;
-    read_index = 0;
 }
 
 /*

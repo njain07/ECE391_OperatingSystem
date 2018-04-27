@@ -12,6 +12,7 @@
 #define EMPTY_CHAR '\0'
 
 int32_t process_num = -1;
+int32_t terminal_num = 1;
 uint8_t halt_status = 0;
 
 /*
@@ -47,7 +48,6 @@ int32_t halt(uint8_t status)
         parent_pcb->file_array[i].flags = 0;
 
     halt_status = status;
-    // printf("%d ", halt_status);
 
     /* STEP 4: jump to execute return */
     asm volatile 
@@ -126,7 +126,7 @@ int32_t execute(const uint8_t* command)
     /* STEP 3: set up paging */ 
     /* STEP 5: create PCB */
     /* STEP 6: prepare for context switch */
-    if(process_num < 10)
+    if(process_num < 6)
     {
 	    change_process((process_num+1), 1);
 	    current_pcb->program = program;
@@ -425,7 +425,28 @@ int32_t sigreturn(void)
 	return -1;
 }
 
-/* Helper Function */
+/* Helper Functions */
+
+/*  change_process
+ *  DESCRIPTION: used in execute and halt to switch processes
+ *    INPUTS: new_process_num -- the pid to switch to
+ *            execute_halt_switch -- tells us which function is calling
+ *                                   change_process
+ *    OUTPUTS: none
+ *    RETURN VALUE: none
+ *    SIDE EFFECT: changes the process_num and current_pcb pointer
+ */
+void terminal_switch(int32_t new_terminal_num)
+{
+    cli();
+
+    terminal_vidmem();
+    terminal_num = new_terminal_num;
+    change_process(, 3);
+
+    sti();
+}
+
 /*  change_process
  *  DESCRIPTION: used in execute and halt to switch processes
  *    INPUTS: new_process_num -- the pid to switch to
@@ -441,20 +462,18 @@ void change_process(int32_t new_process_num, int32_t execute_halt_switch)
 
     current_pcb = (pcb_t*)(MB_8 - (KB_8*(new_process_num+1)));
     current_pcb->pid = new_process_num;
-    // current_pcb->parent = process_num;
     switch(execute_halt_switch)
     {
         case 1:
             current_pcb->parent = process_num;
             break;
         case 2:
-            // current_pcb->parent = -1;
             break;
         case 3:
+
             break;
     }
     process_num = new_process_num;
-    // printf("process_num: %d\n", process_num);
     process_page(process_num);
     tss.esp0 = MB_8 - (KB_8*process_num) - 4;
 

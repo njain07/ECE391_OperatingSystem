@@ -157,17 +157,17 @@ char get_character(uint8_t scancode){
         // check for alt+F1 for terminal change
         if(scancode == 0x3B)
         {
-            // terminal_switch();
+            terminal_switch(1);
         }
         // check for alt+F2 for terminal change
         if(scancode == 0x3C)
         {
-            // terminal_switch();
+            terminal_switch(2);
         }
         // check for alt+F3 for terminal change
         if(scancode == 0x3D)
         {
-            // terminal_switch();
+            terminal_switch(3);
         }
     }
 
@@ -227,13 +227,40 @@ void keyboard_interrupt_handler(void){
         /* interpret the character */
         print_char = get_character(scancode);
         
-        /* putting into keyboard buffer */
-        if((buffer_index < BUFFER_SIZE-1) && (print_char != 0))
+        /* putting into keyboard buffer 1*/
+        if(terminal_num == 1)
         {
-            buffer[buffer_index] = print_char;
-            buffer_index++;
-            /* echo to the screen */
-            putc(print_char);
+            if((buffer_index1 < BUFFER_SIZE-1) && (print_char != 0))
+            {
+                buffer1[buffer_index1] = print_char;
+                buffer_index1++;
+                /* echo to the screen */
+                putc(print_char);
+            }
+        }
+
+        /* putting into keyboard buffer 2*/
+        if(terminal_num == 2)
+        {
+            if((buffer_index2 < BUFFER_SIZE-1) && (print_char != 0))
+            {
+                buffer2[buffer_index2] = print_char;
+                buffer_index2++;
+                /* echo to the screen */
+                putc(print_char);
+            }
+        }
+
+        /* putting into keyboard buffer 3*/
+        if(terminal_num == 3)
+        {
+            if((buffer_index3 < BUFFER_SIZE-1) && (print_char != 0))
+            {
+                buffer3[buffer_index3] = print_char;
+                buffer_index3++;
+                /* echo to the screen */
+                putc(print_char);
+            }
         }
     }
 

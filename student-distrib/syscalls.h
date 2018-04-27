@@ -15,6 +15,7 @@
 #define MB_8		0x800000
 
 extern int32_t process_num;
+extern int32_t terminal_num;
 pcb_t* current_pcb;
 
 int32_t halt(uint8_t status);
@@ -30,6 +31,8 @@ int32_t vidmap(uint8_t** screen_start);
 int32_t set_handler(int32_t signum, void* handler_address);
 int32_t sigreturn(void);
 
+/* Helper Functions */
 void change_process(int32_t new_process_num, int32_t execute_halt_switch);
-
+void terminal_switch(uint8_t terminal_id); /* Switch to the next terminal */
+	
 #endif
