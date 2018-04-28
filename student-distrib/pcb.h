@@ -28,9 +28,9 @@ extern file_ops_t terminal_ops;
 typedef struct file_descriptor_struct
 {
 	file_ops_t* file_jmp_tbl;	//file operations jump table
-	int32_t inode_num;		//only valid for data files; should be 0 for directories and RTC device file
-	int32_t file_pos;		//keeps track of where the user is currently reading from the file
-	int32_t flags;			//marks file descriptor as "in-use" (=1) etc.
+	int32_t inode_num;			//only valid for data files; should be 0 for directories and RTC device file
+	int32_t file_pos;			//keeps track of where the user is currently reading from the file
+	int32_t flags;				//marks file descriptor as "in-use" (=1) etc.
 } file_descriptor_struct;	//fd_t
 
 typedef struct pcb_t
@@ -41,10 +41,8 @@ typedef struct pcb_t
 
 	int32_t pid;			// process id
 	int32_t parent;			// parent process id
-	// int32_t child;			// child process id
-
-	// uint32_t p_start_addr;	// process starting address
-	// uint32_t page_addr;		// physical address of page
+	int32_t terminal;		// which terminal the process is running in
+	int32_t terminal_idx;	// the process index in the terminal_array
 
 	/* for halt syscall */
 	uint32_t p_ebp;			// parent_ebp
@@ -52,19 +50,6 @@ typedef struct pcb_t
 
 	uint32_t c_ebp;			// current_ebp
 	uint32_t c_esp;			// current_esp
-	// uint32_t p_eip;			// parent_eip
-	
-	//maybe add kernel stack?
-    
-    /* EDITED by HD */
-    /* MP3 Document: signal handling info should go in the PCB, pending signals, masked signals, handler actions / addresses for each signal */
-    
-    /* SIGNAL PART for cp4 */
-    /* array for signal action, total 5 we deal with */
-    // int32_t* signal_action[SIGNUM_MAX_INDEX];
-    
-    // int32_t signal_mask;
-    // int32_t signal_pending;
     
 } pcb_t;
 

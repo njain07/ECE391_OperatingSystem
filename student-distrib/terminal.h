@@ -21,6 +21,7 @@
 #include "lib.h"
 #include "lib.h"
 #include "keyboard.h"
+#include "syscalls.h"
 
 
 #define  BUFFER_SIZE    128
@@ -47,6 +48,7 @@ typedef struct terminals{
     
 }*/
 
+int32_t terminal_num;
 
 /* initialize terminal */
 void terminal_init(void);

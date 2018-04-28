@@ -16,9 +16,12 @@
 
 extern int32_t process_num;
 extern int32_t terminal_num;
-int32_t terminal1_array[6];
-int32_t terminal2_array[5];
-int32_t terminal3_array[5];
+
+extern int32_t terminal1_array[];
+extern int32_t terminal2_array[];
+extern int32_t terminal3_array[];
+
+exterm uint8_t initialized_terminals[];
 
 int32_t halt(uint8_t status);
 int32_t execute(const uint8_t* command);
@@ -37,7 +40,8 @@ int32_t sigreturn(void);
 void change_process(int32_t new_process_num, int32_t execute_halt_switch);
 void terminal_switch(int32_t new_terminal_num); /* Switch to the next terminal */
 
-int32_t push(int32_t* terminal_array);
-int32_t pop(int32_t* terminal_array);
+void push(int32_t terminal_num, int32_t new_process_num);
+int32_t pop(int32_t terminal_num);
+int32_t top(int32_t terminal_num);
 	
 #endif

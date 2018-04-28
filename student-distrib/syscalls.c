@@ -16,9 +16,11 @@ int32_t terminal_num = 1;
 uint8_t halt_status = 0;
 pcb_t* current_pcb;
 
-terminal1_array = [-1, -1, -1, -1, -1, -1];
-terminal2_array = [-1, -1, -1, -1, -1];
-terminal3_array = [-1, -1, -1, -1, -1];
+int32_t terminal1_array[] = {-1, -1, -1, -1, -1, -1};
+int32_t terminal2_array[] = {-1, -1, -1, -1, -1};
+int32_t terminal3_array[] = {-1, -1, -1, -1, -1};
+
+uint8_t initialized_terminals[] = {0, 0, 0};
 
 /*
  * halt
@@ -42,8 +44,17 @@ int32_t halt(uint8_t status)
 
     /* STEP 1: restore parent data in PCB */
     /* STEP 2: restore parent paging */
-    if(current_pcb->parent != -1)
-        change_process(current_pcb->parent, 2);
+    if((terminal1_array[0] != current_pcb->pid) && (terminal2_array[0] != current_pcb->pid) && (terminal3_array[0] != current_pcb->pid))
+    {
+        curr_pid = top_pid(terminal_num);
+
+        if(terminal_num == 1)
+            change_process(terminal1_array[curr_pid-1], 2);
+        else if(terminal_num == 2)
+            change_process(terminal2_array[curr_pid-1], 2);
+        else if(terminal_num == 3)
+            change_process(terminal3_array[curr_pid-1], 2);
+    }
 
     // update the terminal arrays
     pop(terminal_num);
@@ -154,6 +165,8 @@ int32_t execute(const uint8_t* command)
 
 	    current_pcb->program = program;
 	    current_pcb->arguments = arguments;
+        current_pcb->terminal = terminal_num;
+        current_pcb->terminal_idx = top_pid(terminal_num);
     }
     else
     {
@@ -470,7 +483,7 @@ void terminal_switch(int32_t new_terminal_num)
     /* update the terminal_num */
     terminal_num = new_terminal_num;
     /* use lazy allocation to change the process stack and the current_pcb, among other things */
-    change_process(0, 3);
+    change_process((process_num+1), 3);
 
     sti();
 }
@@ -496,13 +509,31 @@ void change_process(int32_t new_process_num, int32_t execute_halt_switch)
     switch(execute_halt_switch)
     {
         case 1: /* execute */
-            current_pcb->parent = process_num;
+            if(current_pcb->terminal_idx == 0)
+            {
+                current_pcb->parent = -1;
+                break;
+            }
+
+            if(terminal_num == 1)
+                current_pcb->parent = terminal1_array[old_pcb->terminal_idx - 1];
+            else if(terminal_num == 2)
+                current_pcb->parent = terminal2_array[old_pcb->terminal_idx - 1];
+            else if(terminal_num == 3)
+                current_pcb->parent = terminal3_array[old_pcb->terminal_idx - 1];
             break;
 
         case 2: /* halt */
             break;
 
         case 3: /* switching processes */
+            /* initialize shell if it hasn't been initialized yet */
+            if(!initialized_terminals[terminal_num-1])
+            {
+                execute("shell");
+                initialized_terminals[terminal_num-1] = 1;
+            }
+
             /* save the esp and ebp of the process we are switching from */
             asm volatile 
             (
@@ -532,34 +563,47 @@ void change_process(int32_t new_process_num, int32_t execute_halt_switch)
     sti();
 }
 
+/*  push
+ *  DESCRIPTION: adds a process_num to a terminal_array
+ *    INPUTS: terminal_num -- the number of the terminal to which we add the process
+ *            new_process_num -- the process to be appended
+ *    OUTPUTS: none
+ *    RETURN VALUE: none
+ */
 void push(int32_t terminal_num, int32_t new_process_num)
 {
 	int i = 0;
 
 	if(terminal_num == 1)
 	{
-		while((terminal_array1[i] != -1) && (i < 6))
+		while((terminal1_array[i] != -1) && (i < 6))
 			i++;
-		terminal_array1[i] = new_process_num;		
+		terminal1_array[i] = new_process_num;		
 	}
 
 	else if(terminal_num == 2)
 	{
-		while((terminal_array2[i] != -1) && (i < 5))
+		while((terminal2_array[i] != -1) && (i < 5))
 			i++;
-		terminal_array2[i] = new_process_num;		
+		terminal2_array[i] = new_process_num;		
 	}
 
 	else if(terminal_num == 3)
 	{
-		while((terminal_array3[i] != -1) && (i < 5))
+		while((terminal3_array[i] != -1) && (i < 5))
 			i++;
-		terminal_array3[i] = new_process_num;		
+		terminal3_array[i] = new_process_num;		
 	}
 
 	return;
 }
 
+/*  pop
+ *  DESCRIPTION: deletes a process from a terminal_array
+ *    INPUTS: terminal_num -- the number of the terminal from which we delete the process
+ *    OUTPUTS: none
+ *    RETURN VALUE: the process_num which was removed
+ */
 int32_t pop(int32_t terminal_num)
 {
 	int32_t retval = NULL;
@@ -570,11 +614,11 @@ int32_t pop(int32_t terminal_num)
 		if(terminal1_array[0] == -1)
 			return NULL;
 
-		while((terminal_array1[i] != -1) && (i < 6))
+		while((terminal1_array[i] != -1) && (i < 6))
 			i++;
 
 		retval = terminal1_array[i-1];
-		terminal_array1[i-1] = -1;		
+		terminal1_array[i-1] = -1;		
 	}
 
 	else if(terminal_num == 2)
@@ -582,11 +626,11 @@ int32_t pop(int32_t terminal_num)
 		if(terminal2_array[0] == -1)
 			return NULL;
 
-		while((terminal_array2[i] != -1) && (i < 5))
+		while((terminal2_array[i] != -1) && (i < 5))
 			i++;
 
 		retval = terminal2_array[i-1];
-		terminal_array2[i-1] = -1;		
+		terminal2_array[i-1] = -1;		
 	}
 
 	else if(terminal_num == 3)
@@ -594,16 +638,22 @@ int32_t pop(int32_t terminal_num)
 		if(terminal3_array[0] == -1)
 			return NULL;
 
-		while((terminal_array3[i] != -1) && (i < 5))
+		while((terminal3_array[i] != -1) && (i < 5))
 			i++;
 
 		retval = terminal3_array[i-1];
-		terminal_array3[i-1] = -1;		
+		terminal3_array[i-1] = -1;		
 	}
 
 	return retval;
 }
 
+/*  pop
+ *  DESCRIPTION: returns the current process of the given terminal
+ *    INPUTS: terminal_num -- the number of the terminal whose current process we check
+ *    OUTPUTS: none
+ *    RETURN VALUE: the current process_num 
+ */
 int32_t top(int32_t terminal_num)
 {
 	int32_t retval = NULL;
@@ -614,7 +664,7 @@ int32_t top(int32_t terminal_num)
 		if(terminal1_array[0] == -1)
 			return NULL;
 
-		while((terminal_array1[i] != -1) && (i < 6))
+		while((terminal1_array[i] != -1) && (i < 6))
 			i++;
 
 		retval = terminal1_array[i-1];
@@ -626,7 +676,7 @@ int32_t top(int32_t terminal_num)
 		if(terminal2_array[0] == -1)
 			return NULL;
 
-		while((terminal_array2[i] != -1) && (i < 5))
+		while((terminal2_array[i] != -1) && (i < 5))
 			i++;
 
 		retval = terminal2_array[i-1];
@@ -638,7 +688,7 @@ int32_t top(int32_t terminal_num)
 		if(terminal3_array[0] == -1)
 			return NULL;
 
-		while((terminal_array3[i] != -1) && (i < 5))
+		while((terminal3_array[i] != -1) && (i < 5))
 			i++;
 
 		retval = terminal3_array[i-1];
@@ -646,4 +696,54 @@ int32_t top(int32_t terminal_num)
 	}
 
 	return retval;
+}
+
+/*  pop
+ *  DESCRIPTION: returns the current process of the given terminal
+ *    INPUTS: terminal_num -- the number of the terminal whose current process we check
+ *    OUTPUTS: none
+ *    RETURN VALUE: the current process_num 
+ */
+int32_t top_pid(int32_t terminal_num)
+{
+    int32_t retval = NULL;
+    int i = 0;
+
+    if(terminal_num == 1)
+    {
+        if(terminal1_array[0] == -1)
+            return NULL;
+
+        while((terminal1_array[i] != -1) && (i < 6))
+            i++;
+
+        retval = i-1;
+        // terminal_array1[i-1] = -1;       
+    }
+
+    else if(terminal_num == 2)
+    {
+        if(terminal2_array[0] == -1)
+            return NULL;
+
+        while((terminal2_array[i] != -1) && (i < 5))
+            i++;
+
+        retval = i-1;
+        // terminal_array2[i-1] = -1;       
+    }
+
+    else if(terminal_num == 3)
+    {
+        if(terminal3_array[0] == -1)
+            return NULL;
+
+        while((terminal3_array[i] != -1) && (i < 5))
+            i++;
+
+        retval = i-1;
+        // terminal_array3[i-1] = -1;       
+    }
+
+    return retval;
 }
