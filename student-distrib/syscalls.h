@@ -36,5 +36,8 @@ int32_t sigreturn(void);
 /* Helper Functions */
 void change_process(int32_t new_process_num, int32_t execute_halt_switch);
 void terminal_switch(int32_t new_terminal_num); /* Switch to the next terminal */
+
+int32_t push(int32_t* terminal_array);
+int32_t pop(int32_t* terminal_array);
 	
 #endif

@@ -16,9 +16,9 @@ int32_t terminal_num = 1;
 uint8_t halt_status = 0;
 pcb_t* current_pcb;
 
-terminal1_array = [-1, -1, -1, -1, -1, -1, -1];
-terminal2_array = [-1, -1, -1, -1, -1, -1];
-terminal3_array = [-1, -1, -1, -1, -1, -1];
+terminal1_array = [-1, -1, -1, -1, -1, -1];
+terminal2_array = [-1, -1, -1, -1, -1];
+terminal3_array = [-1, -1, -1, -1, -1];
 
 /*
  * halt
@@ -44,6 +44,9 @@ int32_t halt(uint8_t status)
     /* STEP 2: restore parent paging */
     if(current_pcb->parent != -1)
         change_process(current_pcb->parent, 2);
+
+    // update the terminal arrays
+    pop(terminal_num);
 
     /* STEP 3: close relevant fds */
     pcb_t* parent_pcb;
@@ -144,7 +147,11 @@ int32_t execute(const uint8_t* command)
     /* STEP 6: prepare for context switch */
     if(process_num < 6)
     {
+    	// Steps 3, 5, and 6
 	    change_process((process_num+1), 1);
+	    // update the terminal arrays
+    	push(terminal_num, process_num);
+
 	    current_pcb->program = program;
 	    current_pcb->arguments = arguments;
     }
@@ -179,11 +186,7 @@ int32_t execute(const uint8_t* command)
         "movl %%esp, %0;"
         "movl %%ebp, %1;" 
         : "=g" (current_pcb->p_esp), "=g" (current_pcb->p_ebp)
-    );
-
-    // update the terminal arrays
-    if(terminal_num == 1)
-        
+    );  
 
     /* STEP 7: fake IRET */
     uint32_t* eip_value = (uint32_t*) (buf + 24);
@@ -527,4 +530,120 @@ void change_process(int32_t new_process_num, int32_t execute_halt_switch)
     tss.esp0 = MB_8 - (KB_8*process_num) - 4;
 
     sti();
+}
+
+void push(int32_t terminal_num, int32_t new_process_num)
+{
+	int i = 0;
+
+	if(terminal_num == 1)
+	{
+		while((terminal_array1[i] != -1) && (i < 6))
+			i++;
+		terminal_array1[i] = new_process_num;		
+	}
+
+	else if(terminal_num == 2)
+	{
+		while((terminal_array2[i] != -1) && (i < 5))
+			i++;
+		terminal_array2[i] = new_process_num;		
+	}
+
+	else if(terminal_num == 3)
+	{
+		while((terminal_array3[i] != -1) && (i < 5))
+			i++;
+		terminal_array3[i] = new_process_num;		
+	}
+
+	return;
+}
+
+int32_t pop(int32_t terminal_num)
+{
+	int32_t retval = NULL;
+	int i = 0;
+
+	if(terminal_num == 1)
+	{
+		if(terminal1_array[0] == -1)
+			return NULL;
+
+		while((terminal_array1[i] != -1) && (i < 6))
+			i++;
+
+		retval = terminal1_array[i-1];
+		terminal_array1[i-1] = -1;		
+	}
+
+	else if(terminal_num == 2)
+	{
+		if(terminal2_array[0] == -1)
+			return NULL;
+
+		while((terminal_array2[i] != -1) && (i < 5))
+			i++;
+
+		retval = terminal2_array[i-1];
+		terminal_array2[i-1] = -1;		
+	}
+
+	else if(terminal_num == 3)
+	{
+		if(terminal3_array[0] == -1)
+			return NULL;
+
+		while((terminal_array3[i] != -1) && (i < 5))
+			i++;
+
+		retval = terminal3_array[i-1];
+		terminal_array3[i-1] = -1;		
+	}
+
+	return retval;
+}
+
+int32_t top(int32_t terminal_num)
+{
+	int32_t retval = NULL;
+	int i = 0;
+
+	if(terminal_num == 1)
+	{
+		if(terminal1_array[0] == -1)
+			return NULL;
+
+		while((terminal_array1[i] != -1) && (i < 6))
+			i++;
+
+		retval = terminal1_array[i-1];
+		// terminal_array1[i-1] = -1;		
+	}
+
+	else if(terminal_num == 2)
+	{
+		if(terminal2_array[0] == -1)
+			return NULL;
+
+		while((terminal_array2[i] != -1) && (i < 5))
+			i++;
+
+		retval = terminal2_array[i-1];
+		// terminal_array2[i-1] = -1;		
+	}
+
+	else if(terminal_num == 3)
+	{
+		if(terminal3_array[0] == -1)
+			return NULL;
+
+		while((terminal_array3[i] != -1) && (i < 5))
+			i++;
+
+		retval = terminal3_array[i-1];
+		// terminal_array3[i-1] = -1;		
+	}
+
+	return retval;
 }
