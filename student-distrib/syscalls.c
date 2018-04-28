@@ -14,6 +14,11 @@
 int32_t process_num = -1;
 int32_t terminal_num = 1;
 uint8_t halt_status = 0;
+pcb_t* current_pcb;
+
+terminal1_array = [-1, -1, -1, -1, -1, -1, -1];
+terminal2_array = [-1, -1, -1, -1, -1, -1];
+terminal3_array = [-1, -1, -1, -1, -1, -1];
 
 /*
  * halt
@@ -80,12 +85,14 @@ int32_t execute(const uint8_t* command)
     uint8_t arguments[96] = "\0";
     uint32_t i = 0;
 
+    // error handing extra spaces before the command
     while(command[i] == ' ')
     {
         spaces++;
         i++;
     }
 
+    // loading the program command 
     while(command[i] != ' ' && command[i] != '\0')
     {
         program[i-spaces] = command[i];
@@ -93,12 +100,14 @@ int32_t execute(const uint8_t* command)
     }
     program[i] = '\0';
 
+    // handling spaces between the command and the arguments 
     while(command[i] == ' ')
     {
         spaces++;
         i++;
     }
 
+    // loading the program arguments 
     while(i<(strlen((int8_t*)command)))
     {
         arguments[i-strlen((int8_t*)program)-spaces] = command[i];
@@ -116,6 +125,7 @@ int32_t execute(const uint8_t* command)
         return FAIL;
     }
 
+    // read the first four bytes of the program image
     uint8_t elf_buf[ELF_BYTES];
     retval = read_data(exec_file_dentry.inode_num, 0, elf_buf, ELF_BYTES);
     if(retval != ELF_BYTES) {
@@ -123,6 +133,7 @@ int32_t execute(const uint8_t* command)
         return FAIL;
     }
 
+    // check if the first four bytes are ELF (executable)
     if((elf_buf[0]!=DEL) || (elf_buf[1]!=E) || (elf_buf[2]!=L) || (elf_buf[3]!=F)) {
         // printf("fail 3\n");
         return FAIL;
@@ -154,9 +165,11 @@ int32_t execute(const uint8_t* command)
     current_pcb->file_array[0].file_jmp_tbl = &terminal_ops;
     current_pcb->file_array[1].file_jmp_tbl = &terminal_ops;
     
+    // setting stdin and stdout to in-use
     current_pcb->file_array[0].flags = 1;
     current_pcb->file_array[1].flags = 1;
 
+    // setting the rest of the files to not in-use
     for(i=2; i<FD_SIZE; i++)
         current_pcb->file_array[i].flags = 0;
 
@@ -167,6 +180,10 @@ int32_t execute(const uint8_t* command)
         "movl %%ebp, %1;" 
         : "=g" (current_pcb->p_esp), "=g" (current_pcb->p_ebp)
     );
+
+    // update the terminal arrays
+    if(terminal_num == 1)
+        
 
     /* STEP 7: fake IRET */
     uint32_t* eip_value = (uint32_t*) (buf + 24);
@@ -445,10 +462,12 @@ void terminal_switch(int32_t new_terminal_num)
 {
     cli();
 
+    /* store video memory of the current terminal and load the video memory of the new terminal */
     terminal_vidmem(terminal_num, new_terminal_num);
+    /* update the terminal_num */
     terminal_num = new_terminal_num;
-    // use lazy allocation 
-    change_process(, 3);
+    /* use lazy allocation to change the process stack and the current_pcb, among other things */
+    change_process(0, 3);
 
     sti();
 }
@@ -466,20 +485,45 @@ void change_process(int32_t new_process_num, int32_t execute_halt_switch)
 {
     cli();
 
+    pcb_t* old_pcb = current_pcb;
+    /* calculating address of new current_pcb pointer */
     current_pcb = (pcb_t*)(MB_8 - (KB_8*(new_process_num+1)));
-    current_pcb->pid = new_process_num;
+    current_pcb->pid = new_process_num; 
+
     switch(execute_halt_switch)
     {
-        case 1:
+        case 1: /* execute */
             current_pcb->parent = process_num;
             break;
-        case 2:
+
+        case 2: /* halt */
             break;
-        case 3:
+
+        case 3: /* switching processes */
+            /* save the esp and ebp of the process we are switching from */
+            asm volatile 
+            (
+                "movl %%esp, %0;"
+                "movl %%ebp, %1;" 
+                : "=g" (old_pcb->c_esp), "=g" (old_pcb->c_ebp)
+            );
+
+            /* restore esp and ebp of the process we are switching to s*/ 
+            asm volatile 
+            (
+                "movl %0, %%esp;"
+                "movl %1, %%ebp;" 
+                :
+                : "g" (current_pcb->c_esp), "g" (current_pcb->c_ebp)
+            );
             break;
     }
+
+    /* updating process_num */
     process_num = new_process_num;
+    /* mapping the current process' user space into the page directory */
     process_page(process_num);
+    /* tss.esp0 should point to the bottom of the process' kernel stack */
     tss.esp0 = MB_8 - (KB_8*process_num) - 4;
 
     sti();

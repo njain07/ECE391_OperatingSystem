@@ -16,7 +16,9 @@
 
 extern int32_t process_num;
 extern int32_t terminal_num;
-pcb_t* current_pcb;
+int32_t terminal1_array[6];
+int32_t terminal2_array[5];
+int32_t terminal3_array[5];
 
 int32_t halt(uint8_t status);
 int32_t execute(const uint8_t* command);
@@ -33,6 +35,6 @@ int32_t sigreturn(void);
 
 /* Helper Functions */
 void change_process(int32_t new_process_num, int32_t execute_halt_switch);
-void terminal_switch(uint8_t terminal_id); /* Switch to the next terminal */
+void terminal_switch(int32_t new_terminal_num); /* Switch to the next terminal */
 	
 #endif

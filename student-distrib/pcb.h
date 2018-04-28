@@ -49,7 +49,10 @@ typedef struct pcb_t
 	/* for halt syscall */
 	uint32_t p_ebp;			// parent_ebp
 	uint32_t p_esp;			// parent_esp
-	uint32_t p_eip;			// parent_eip
+
+	uint32_t c_ebp;			// current_ebp
+	uint32_t c_esp;			// current_esp
+	// uint32_t p_eip;			// parent_eip
 	
 	//maybe add kernel stack?
     

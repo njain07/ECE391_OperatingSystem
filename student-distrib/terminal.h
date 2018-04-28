@@ -24,7 +24,7 @@
 
 
 #define  BUFFER_SIZE    128
-#define  TERMINAL_NUM   3
+// #define  TERMINAL_NUM   3
 
 // #define  FAIL           -1
 #define  READ           0

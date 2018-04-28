@@ -4,6 +4,8 @@
 
 #include "keyboard.h"
 
+int32_t terminal_num;
+
 /* character arrays */
 /* Scan Code Set 1 from OSDEV */
 
@@ -44,7 +46,9 @@ const uint8_t shift_caps_case[59] =
 /* Simple init helper for keyboard initialization */
 void keyboard_init(void) {
     enable_irq(KEYBOARD_IRQ);
-    buffer_index = 0;
+    buffer_index1 = 0;
+    buffer_index2 = 0;
+    buffer_index3 = 0;
     flags.shift = 0;
     flags.caps = 0;
     flags.ctrl = 0;
@@ -123,11 +127,32 @@ char get_character(uint8_t scancode){
     // backspace
     if(scancode == 0x0E)
     {
-        if(buffer_index>0)
+        if(terminal_num == 1)
         {
-            buffer[buffer_index-1] = KEY_NULL;
-            buffer_index--;
-            backspace();
+            if(buffer_index1>0)
+            {
+                buffer1[buffer_index1-1] = KEY_NULL;
+                buffer_index1--;
+                backspace();
+            }
+        }
+        if(terminal_num == 2)
+        {
+            if(buffer_index2>0)
+            {
+                buffer2[buffer_index2-1] = KEY_NULL;
+                buffer_index2--;
+                backspace();
+            }
+        }
+        if(terminal_num == 3)
+        {
+            if(buffer_index3>0)
+            {
+                buffer3[buffer_index3-1] = KEY_NULL;
+                buffer_index3--;
+                backspace();
+            }
         }
     }
 
@@ -281,7 +306,19 @@ void clear_buffer(void){
     int i;
 
     for(i=0; i < BUFFER_SIZE; i++)
-        buffer[i] = KEY_NULL;
+    {
+        if(terminal_num == 1)
+            buffer1[i] = KEY_NULL;
+        if(terminal_num == 2)
+            buffer2[i] = KEY_NULL;
+        if(terminal_num == 3)
+            buffer3[i] = KEY_NULL;
+    }
 
-    buffer_index = 0;
+    if(terminal_num == 1)
+        buffer_index1 = 0;
+    if(terminal_num == 2)
+        buffer_index2 = 0;
+    if(terminal_num == 3)
+        buffer_index3 = 0;
 }

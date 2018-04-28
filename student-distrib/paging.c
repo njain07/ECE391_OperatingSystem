@@ -1,6 +1,8 @@
 #include "types.h"
 #include "paging.h"
 
+int32_t terminal_num;
+
 /* 0-4MB has 4KB pages
  * 4-8MB has
  */
@@ -90,9 +92,9 @@ void vidmap_page(uint8_t** screen_start)
 void terminal_vidmem(int32_t terminal_num, int32_t new_terminal_num)
 {
 	// memcpy current terminal_num video memory into video_memory_array
-	memcpy((int*)VIDEO_MEM, (int*)video_memory_array[terminal_num-1], FOUR_KB);
+	memcpy((int*)terminal_vidmem_array[terminal_num-1], (int*)VIDEO_MEM, FOUR_KB);
     // memcpy new terminal_num video memory from video_memory_array
-    memcpy((int*)video_memory_array[new_terminal_num-1], (int*)VIDEO_MEM, FOUR_KB);
+    memcpy((int*)VIDEO_MEM, (int*)terminal_vidmem_array[new_terminal_num-1], FOUR_KB);
 }
 
 void flush_TLB(void)

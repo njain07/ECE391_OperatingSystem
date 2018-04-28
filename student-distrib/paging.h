@@ -1,6 +1,8 @@
 #ifndef PAGING
 #define PAGING
 
+#include "lib.h"
+
 #define ONE_KB 1024
 #define FOUR_KB ONE_KB*4
 #define ONE_MB ONE_KB*ONE_KB

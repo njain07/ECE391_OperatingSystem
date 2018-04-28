@@ -19,8 +19,6 @@
 
 #include "lib.h"
 
-int32_t terminal_num;
-
 typedef struct flag_struct
 {
 	uint8_t shift;
