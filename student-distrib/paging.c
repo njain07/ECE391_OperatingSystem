@@ -41,9 +41,9 @@ void paging_init()
 
 	enable_paging();
 
-	terminal_vidmem_array[0] = terminal1;
-	terminal_vidmem_array[1] = terminal2;
-	terminal_vidmem_array[2] = terminal3;
+	terminal_vidmem_array[0] = terminal1_vidmem;
+	terminal_vidmem_array[1] = terminal2_vidmem;
+	terminal_vidmem_array[2] = terminal3_vidmem;
 }
 
 /*

@@ -1,18 +1,3 @@
-/* terminal.c - Defines used in interactions with the terminals including basic file syste
- *              functions
- * vim:ts=4 noexpandtab
- */
-
-
-/*
- * Editor: Hyun Do Jung, 03.19.18
- * Reference materials: OSDEV website, appendix B, MP3 document
- * Filename: terminal.c
- * History:
- *    SL    1    Thu Sep 10 22:08:20 2018
- *        First made for MP3.3
- */
-
 #ifndef _TERMINAL_H_
 #define _TERMINAL_H_
 
@@ -23,32 +8,34 @@
 #include "keyboard.h"
 #include "syscalls.h"
 
-
 #define  BUFFER_SIZE    128
-// #define  TERMINAL_NUM   3
 
-// #define  FAIL           -1
 #define  READ           0
 #define  READ_DONE      1
 #define  WRITE          2
 #define  WAIT           3
 
-// int b_index;
-// int read_index;
-
-/* TERMINAL DATA STRUCTURE
-typedef struct terminals{
-    int terminal_id;
-    int current_process;
-    
-    uint8_t x;
-    uint8_t y;
-    
-    volatile
-    
-}*/
+#define NUM_OF_TERMINALS	3
 
 int32_t terminal_num;
+
+/* terminal data structure for multiple terminals */
+typedef struct terminal_t
+{
+	int initialized;
+    
+    int32_t terminal_processes_array[6];
+
+    uint8_t x_pos;
+    uint8_t y_pos;
+
+} terminal_t;
+
+extern terminal_t terminal1;
+extern terminal_t terminal2;
+extern terminal_t terminal3;
+
+extern terminal_t terminal_array[NUM_OF_TERMINALS];
 
 /* initialize terminal */
 void terminal_init(void);
@@ -59,4 +46,4 @@ int32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes);
 int32_t terminal_open(const uint8_t* filename);
 int32_t terminal_close(int32_t fd);
 
-#endif /* _TERMINAL_H_ */
+#endif

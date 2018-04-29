@@ -16,11 +16,29 @@ int32_t terminal_num = 1;
 uint8_t halt_status = 0;
 pcb_t* current_pcb;
 
-int32_t terminal1_array[] = {-1, -1, -1, -1, -1, -1};
-int32_t terminal2_array[] = {-1, -1, -1, -1, -1};
-int32_t terminal3_array[] = {-1, -1, -1, -1, -1};
+terminal_t terminal1;
+terminal_t terminal2;
+terminal_t terminal3;
 
-uint8_t initialized_terminals[] = {0, 0, 0};
+// terminal_t* terminal1->initialized = 0;
+// terminal_t* terminal1->terminal_processes_array[] = {-1, -1, -1, -1, -1, -1};
+
+// terminal_t* terminal2->initialized = 0;
+// terminal_t* terminal2->terminal_processes_array[] = {-1, -1, -1, -1, -1, -1};
+
+// terminal_t* terminal3->initialized = 0;
+// terminal_t* terminal3->terminal_processes_array[] = {-1, -1, -1, -1, -1, -1};
+
+terminal_t terminal_array[];
+
+int screen_x;
+int screen_y;
+
+// int32_t terminal1_array[] = {-1, -1, -1, -1, -1, -1};
+// int32_t terminal2_array[] = {-1, -1, -1, -1, -1};
+// int32_t terminal3_array[] = {-1, -1, -1, -1, -1};
+
+// uint8_t initialized_terminals[] = {0, 0, 0};
 
 /*
  * halt
@@ -44,16 +62,17 @@ int32_t halt(uint8_t status)
 
     /* STEP 1: restore parent data in PCB */
     /* STEP 2: restore parent paging */
-    if((terminal1_array[0] != current_pcb->pid) && (terminal2_array[0] != current_pcb->pid) && (terminal3_array[0] != current_pcb->pid))
+    if((terminal1.terminal_processes_array[0] != current_pcb->pid) && (terminal2.terminal_processes_array[0] != current_pcb->pid) && (terminal3.terminal_processes_array[0] != current_pcb->pid))
     {
-        curr_pid = top_pid(terminal_num);
+        uint32_t curr_pid = top_pid(terminal_num);
 
-        if(terminal_num == 1)
-            change_process(terminal1_array[curr_pid-1], 2);
-        else if(terminal_num == 2)
-            change_process(terminal2_array[curr_pid-1], 2);
-        else if(terminal_num == 3)
-            change_process(terminal3_array[curr_pid-1], 2);
+        change_process(terminal_array[terminal_num-1].terminal_processes_array[curr_pid-1], 2);
+        // if(terminal_num == 1)
+        //     change_process(terminal1->terminal_processes_array[curr_pid-1], 2);
+        // else if(terminal_num == 2)
+        //     change_process(terminal2->terminal_processes_array[curr_pid-1], 2);
+        // else if(terminal_num == 3)
+        //     change_process(terminal3->terminal_processes_array[curr_pid-1], 2);
     }
 
     // update the terminal arrays
@@ -434,9 +453,6 @@ int32_t vidmap(uint8_t** screen_start)
 
     vidmap_page(screen_start);
     *screen_start = (uint8_t*)MB_132;
-    // printf("screen_start: %x\n", screen_start);
-    // printf("*screen_start: %x\n", *screen_start);
-    // printf("**screen_start: %x\n", **screen_start);
     return (int32_t)*screen_start;
 }
 
@@ -480,10 +496,18 @@ void terminal_switch(int32_t new_terminal_num)
 
     /* store video memory of the current terminal and load the video memory of the new terminal */
     terminal_vidmem(terminal_num, new_terminal_num);
-    /* update the terminal_num */
-    terminal_num = new_terminal_num;
     /* use lazy allocation to change the process stack and the current_pcb, among other things */
     change_process((process_num+1), 3);
+    /* save the screen_x and screen_y of the current terminal */
+    printf("old screen_x: %d\n", screen_x);
+    terminal_array[terminal_num-1].x_pos = screen_x;
+    terminal_array[terminal_num-1].y_pos = screen_y;
+    /* update the terminal_num */
+    terminal_num = new_terminal_num;
+    /* update the cursor position */
+    screen_x = terminal_array[terminal_num-1].x_pos;
+    screen_y = terminal_array[terminal_num-1].y_pos;
+    printf("new screen_x: %d\n", screen_x);
 
     sti();
 }
@@ -515,23 +539,27 @@ void change_process(int32_t new_process_num, int32_t execute_halt_switch)
                 break;
             }
 
-            if(terminal_num == 1)
-                current_pcb->parent = terminal1_array[old_pcb->terminal_idx - 1];
-            else if(terminal_num == 2)
-                current_pcb->parent = terminal2_array[old_pcb->terminal_idx - 1];
-            else if(terminal_num == 3)
-                current_pcb->parent = terminal3_array[old_pcb->terminal_idx - 1];
+            current_pcb->parent = terminal_array[terminal_num-1].terminal_processes_array[old_pcb->terminal_idx - 1];
+
+            // if(terminal_num == 1)
+            //     current_pcb->parent = terminal1->terminal_processes_array[old_pcb->terminal_idx - 1];
+            // else if(terminal_num == 2)
+            //     current_pcb->parent = terminal2->terminal_processes_array[old_pcb->terminal_idx - 1];
+            // else if(terminal_num == 3)
+            //     current_pcb->parent = terminal3->terminal_processes_array[old_pcb->terminal_idx - 1];
             break;
 
         case 2: /* halt */
             break;
 
         case 3: /* switching processes */
+
             /* initialize shell if it hasn't been initialized yet */
-            if(!initialized_terminals[terminal_num-1])
+            if((terminal_array[terminal_num-1]).initialized == 0)
             {
-                execute("shell");
-                initialized_terminals[terminal_num-1] = 1;
+            	clear();
+                execute((uint8_t*)"shell");
+                (terminal_array[terminal_num-1]).initialized = 1;
             }
 
             /* save the esp and ebp of the process we are switching from */
@@ -574,26 +602,30 @@ void push(int32_t terminal_num, int32_t new_process_num)
 {
 	int i = 0;
 
-	if(terminal_num == 1)
-	{
-		while((terminal1_array[i] != -1) && (i < 6))
-			i++;
-		terminal1_array[i] = new_process_num;		
-	}
+	while(terminal_array[terminal_num-1].terminal_processes_array[i] != -1 && (i<6))
+		i++;
+	terminal_array[terminal_num-1].terminal_processes_array[i] = new_process_num;
 
-	else if(terminal_num == 2)
-	{
-		while((terminal2_array[i] != -1) && (i < 5))
-			i++;
-		terminal2_array[i] = new_process_num;		
-	}
+	// if(terminal_num == 1)
+	// {
+	// 	while((terminal1->terminal_processes_array[i] != -1) && (i < 6))
+	// 		i++;
+	// 	terminal1->terminal_processes_array[i] = new_process_num;		
+	// }
 
-	else if(terminal_num == 3)
-	{
-		while((terminal3_array[i] != -1) && (i < 5))
-			i++;
-		terminal3_array[i] = new_process_num;		
-	}
+	// else if(terminal_num == 2)
+	// {
+	// 	while((terminal2->terminal_processes_array[i] != -1) && (i < 5))
+	// 		i++;
+	// 	terminal2->terminal_processes_array[i] = new_process_num;		
+	// }
+
+	// else if(terminal_num == 3)
+	// {
+	// 	while((terminal3->terminal_processes_array[i] != -1) && (i < 5))
+	// 		i++;
+	// 	terminal3->terminal_processes_array[i] = new_process_num;		
+	// }
 
 	return;
 }
@@ -609,41 +641,50 @@ int32_t pop(int32_t terminal_num)
 	int32_t retval = NULL;
 	int i = 0;
 
-	if(terminal_num == 1)
-	{
-		if(terminal1_array[0] == -1)
-			return NULL;
+	if(terminal_array[terminal_num-1].terminal_processes_array[0] == -1)
+		return NULL;
 
-		while((terminal1_array[i] != -1) && (i < 6))
-			i++;
+	while((terminal_array[terminal_num-1].terminal_processes_array[i] != -1) && (i < 6))
+		i++;
 
-		retval = terminal1_array[i-1];
-		terminal1_array[i-1] = -1;		
-	}
+	retval = terminal_array[terminal_num-1].terminal_processes_array[i-1];
+	terminal_array[terminal_num-1].terminal_processes_array[i-1] = -1;
 
-	else if(terminal_num == 2)
-	{
-		if(terminal2_array[0] == -1)
-			return NULL;
+	// if(terminal_num == 1)
+	// {
+	// 	if(terminal1->terminal_processes_array[0] == -1)
+	// 		return NULL;
 
-		while((terminal2_array[i] != -1) && (i < 5))
-			i++;
+	// 	while((terminal1->terminal_processes_array[i] != -1) && (i < 6))
+	// 		i++;
 
-		retval = terminal2_array[i-1];
-		terminal2_array[i-1] = -1;		
-	}
+	// 	retval = terminal1->terminal_processes_array[i-1];
+	// 	terminal1->terminal_processes_array[i-1] = -1;		
+	// }
 
-	else if(terminal_num == 3)
-	{
-		if(terminal3_array[0] == -1)
-			return NULL;
+	// else if(terminal_num == 2)
+	// {
+	// 	if(terminal2->terminal_processes_array[0] == -1)
+	// 		return NULL;
 
-		while((terminal3_array[i] != -1) && (i < 5))
-			i++;
+	// 	while((terminal2->terminal_processes_array[i] != -1) && (i < 5))
+	// 		i++;
 
-		retval = terminal3_array[i-1];
-		terminal3_array[i-1] = -1;		
-	}
+	// 	retval = terminal2->terminal_processes_array[i-1];
+	// 	terminal2->terminal_processes_array[i-1] = -1;		
+	// }
+
+	// else if(terminal_num == 3)
+	// {
+	// 	if(terminal3->terminal_processes_array[0] == -1)
+	// 		return NULL;
+
+	// 	while((terminal3->terminal_processes_array[i] != -1) && (i < 5))
+	// 		i++;
+
+	// 	retval = terminal3->terminal_processes_array[i-1];
+	// 	terminal3->terminal_processes_array[i-1] = -1;		
+	// }
 
 	return retval;
 }
@@ -659,41 +700,50 @@ int32_t top(int32_t terminal_num)
 	int32_t retval = NULL;
 	int i = 0;
 
-	if(terminal_num == 1)
-	{
-		if(terminal1_array[0] == -1)
-			return NULL;
+	if(terminal_array[terminal_num-1].terminal_processes_array[0] == -1)
+		return NULL;
 
-		while((terminal1_array[i] != -1) && (i < 6))
-			i++;
+	while((terminal_array[terminal_num-1].terminal_processes_array[i] != -1) && (i < 6))
+		i++;
 
-		retval = terminal1_array[i-1];
-		// terminal_array1[i-1] = -1;		
-	}
+	retval = terminal_array[terminal_num-1].terminal_processes_array[i-1];
+	// terminal_array[terminal_num-1]->terminal_processes_array[i-1] = -1;
 
-	else if(terminal_num == 2)
-	{
-		if(terminal2_array[0] == -1)
-			return NULL;
+	// if(terminal_num == 1)
+	// {
+	// 	if(terminal1->terminal_processes_array[0] == -1)
+	// 		return NULL;
 
-		while((terminal2_array[i] != -1) && (i < 5))
-			i++;
+	// 	while((terminal1->terminal_processes_array[i] != -1) && (i < 6))
+	// 		i++;
 
-		retval = terminal2_array[i-1];
-		// terminal_array2[i-1] = -1;		
-	}
+	// 	retval = terminal1->terminal_processes_array[i-1];
+	// 	// terminal_array1[i-1] = -1;		
+	// }
 
-	else if(terminal_num == 3)
-	{
-		if(terminal3_array[0] == -1)
-			return NULL;
+	// else if(terminal_num == 2)
+	// {
+	// 	if(terminal2->terminal_processes_array[0] == -1)
+	// 		return NULL;
 
-		while((terminal3_array[i] != -1) && (i < 5))
-			i++;
+	// 	while((terminal2->terminal_processes_array[i] != -1) && (i < 5))
+	// 		i++;
 
-		retval = terminal3_array[i-1];
-		// terminal_array3[i-1] = -1;		
-	}
+	// 	retval = terminal2->terminal_processes_array[i-1];
+	// 	// terminal_array2[i-1] = -1;		
+	// }
+
+	// else if(terminal_num == 3)
+	// {
+	// 	if(terminal3->terminal_processes_array[0] == -1)
+	// 		return NULL;
+
+	// 	while((terminal3->terminal_processes_array[i] != -1) && (i < 5))
+	// 		i++;
+
+	// 	retval = terminal3->terminal_processes_array[i-1];
+	// 	// terminal_array3[i-1] = -1;		
+	// }
 
 	return retval;
 }
@@ -709,41 +759,49 @@ int32_t top_pid(int32_t terminal_num)
     int32_t retval = NULL;
     int i = 0;
 
-    if(terminal_num == 1)
-    {
-        if(terminal1_array[0] == -1)
-            return NULL;
+    if(terminal_array[terminal_num-1].terminal_processes_array[i] == -1)
+    	return NULL;
 
-        while((terminal1_array[i] != -1) && (i < 6))
-            i++;
+    while((terminal_array[terminal_num-1].terminal_processes_array[i] != -1) && (i < 6))
+    	i++;
 
-        retval = i-1;
-        // terminal_array1[i-1] = -1;       
-    }
+    retval = i-1;
 
-    else if(terminal_num == 2)
-    {
-        if(terminal2_array[0] == -1)
-            return NULL;
+    // if(terminal_num == 1)
+    // {
+    //     if(terminal1->terminal_processes_array[0] == -1)
+    //         return NULL;
 
-        while((terminal2_array[i] != -1) && (i < 5))
-            i++;
+    //     while((terminal1->terminal_processes_array[i] != -1) && (i < 6))
+    //         i++;
 
-        retval = i-1;
-        // terminal_array2[i-1] = -1;       
-    }
+    //     retval = i-1;
+    //     // terminal_array1[i-1] = -1;       
+    // }
 
-    else if(terminal_num == 3)
-    {
-        if(terminal3_array[0] == -1)
-            return NULL;
+    // else if(terminal_num == 2)
+    // {
+    //     if(terminal2->terminal_processes_array[0] == -1)
+    //         return NULL;
 
-        while((terminal3_array[i] != -1) && (i < 5))
-            i++;
+    //     while((terminal2->terminal_processes_array[i] != -1) && (i < 5))
+    //         i++;
 
-        retval = i-1;
-        // terminal_array3[i-1] = -1;       
-    }
+    //     retval = i-1;
+    //     // terminal_array2[i-1] = -1;       
+    // }
+
+    // else if(terminal_num == 3)
+    // {
+    //     if(terminal3->terminal_processes_array[0] == -1)
+    //         return NULL;
+
+    //     while((terminal3->terminal_processes_array[i] != -1) && (i < 5))
+    //         i++;
+
+    //     retval = i-1;
+    //     // terminal_array3[i-1] = -1;       
+    // }
 
     return retval;
 }

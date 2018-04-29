@@ -1,18 +1,10 @@
-/* terminal.c - Defines used in interactions with the terminals including basic file syste
- *              functions
- * vim:ts=4 noexpandtab
- */
-
-/*
- * Editor: Hyun Do Jung, 03.19.18
- * Reference materials: OSDEV website, appendix B, MP3 document
- * Filename: terminal.c
- * History:
- *    SL    1    Thu Sep 10 22:08:20 2018
- *        First made for MP3.3
-*/
- 
 #include "terminal.h"
+
+terminal_t terminal1 = {0, {-1, -1, -1, -1, -1, -1}, 0, 0};
+terminal_t terminal2 = {0, {-1, -1, -1, -1, -1, -1}, 0, 0};
+terminal_t terminal3 = {0, {-1, -1, -1, -1, -1, -1}, 0, 0};
+
+// terminal_t terminal_array[] = {terminal1, terminal2, terminal3};
 
 /*
  * terminal_init
@@ -25,6 +17,9 @@
 void terminal_init(void)
 {
     keyboard_init();
+    terminal_array[0] = terminal1;
+    terminal_array[1] = terminal2;
+    terminal_array[2] = terminal3;
 }
 
 /*
@@ -38,7 +33,6 @@ void terminal_init(void)
  */
 int32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
 {
-    
     int i = 0;
 
     /* spin until flag is up */
@@ -47,6 +41,25 @@ int32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
     char* temp_buf = (char*) buf;
 
     /* Changing name with buffer for given parameter buf*/
+    int buffer_index;
+    char buffer[BUFFER_SIZE];
+
+    if(terminal_num == 1)
+    {
+        buffer_index = buffer_index1;
+        *buffer = *buffer1;
+    }
+    else if(terminal_num == 2)
+    {
+        buffer_index = buffer_index2;
+        *buffer = *buffer2;
+    }
+    else if(terminal_num == 3)
+    {
+        buffer_index = buffer_index3;
+        *buffer = *buffer3;
+    }
+
     for(i=0; i < buffer_index; i++)
     {
         temp_buf[i] = buffer[i];

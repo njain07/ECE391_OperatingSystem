@@ -8,9 +8,6 @@
 #define MAX_FD_STRUCT_SIZE 8
 #define FD_MAX_INDEX       7
 
-/* Edited by HD for CP4, set_handler in syscalls.c */
-#define SIGNUM_MAX_INDEX   5
-
 /* Lumetta course notes, page 42 */
 typedef struct file_ops_t
 {

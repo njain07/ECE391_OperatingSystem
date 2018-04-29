@@ -7,6 +7,7 @@
 #include "paging.h"
 #include "pcb.h"
 #include "x86_desc.h"
+#include "terminal.h"
 
 #define NULL        0
 #define FD_SIZE     8
@@ -17,11 +18,11 @@
 extern int32_t process_num;
 extern int32_t terminal_num;
 
-extern int32_t terminal1_array[];
-extern int32_t terminal2_array[];
-extern int32_t terminal3_array[];
+// extern int32_t terminal1_array[];
+// extern int32_t terminal2_array[];
+// extern int32_t terminal3_array[];
 
-exterm uint8_t initialized_terminals[];
+// extern uint8_t initialized_terminals[];
 
 int32_t halt(uint8_t status);
 int32_t execute(const uint8_t* command);
@@ -43,5 +44,6 @@ void terminal_switch(int32_t new_terminal_num); /* Switch to the next terminal *
 void push(int32_t terminal_num, int32_t new_process_num);
 int32_t pop(int32_t terminal_num);
 int32_t top(int32_t terminal_num);
+int32_t top_pid(int32_t terminal_num);
 	
 #endif
