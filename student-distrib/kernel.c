@@ -14,6 +14,7 @@
 #include "keyboard.h"
 #include "terminal.h"
 #include "filesys.h"
+#include "syscalls.h"
 #define RUN_TESTS
 
 uint32_t FILESYS_ADDR;
@@ -179,7 +180,7 @@ void entry(unsigned long magic, unsigned long addr) {
     /* Execute the first program ("shell") ... */
     // CALL EXECUTE
     clear();
-    execute((uint8_t*)"shell");
+    terminal_switch(1);
     /* Spin (nicely, so we don't chew up cycles) */
     asm volatile (".1: hlt; jmp .1;");
 }

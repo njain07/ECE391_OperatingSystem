@@ -29,9 +29,9 @@ int video_memory[ONE_KB] __attribute__((aligned (FOUR_KB)));
 
 /* saving each terminal video memory */
 int* terminal_vidmem_array[3];
-int terminal1_vidmem[ONE_KB] __attribute__((aligned (FOUR_KB)));
-int terminal2_vidmem[ONE_KB] __attribute__((aligned (FOUR_KB)));
-int terminal3_vidmem[ONE_KB] __attribute__((aligned (FOUR_KB)));
+int terminal1_vidmem[FOUR_KB]; // __attribute__((aligned (FOUR_KB)));
+int terminal2_vidmem[FOUR_KB]; // __attribute__((aligned (FOUR_KB)));
+int terminal3_vidmem[FOUR_KB]; // __attribute__((aligned (FOUR_KB)));
 
 void paging_init();
 //void create4MBpage();

@@ -74,7 +74,7 @@ void scrolling(void)
     }
 }
 
-void update_cursor(int x, int y )
+void update_cursor(int x, int y)
 {
     uint16_t pos = y * NUM_COLS + x ;
 
@@ -84,6 +84,22 @@ void update_cursor(int x, int y )
     outb(0x0E, 0x3D4) ;
     outb( (uint8_t) ((pos >> 8) & 0xFF),0x3D5) ;
 
+}
+
+void change_screen_location(int x, int y)
+{
+    screen_x = x;
+    screen_y = y;
+}
+
+int get_screen_x(void)
+{
+   return screen_x;
+}
+
+int get_screen_y(void)
+{
+   return screen_y;
 }
 
 /* void clear(void);

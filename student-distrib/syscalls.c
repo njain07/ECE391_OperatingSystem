@@ -20,25 +20,7 @@ terminal_t terminal1;
 terminal_t terminal2;
 terminal_t terminal3;
 
-// terminal_t* terminal1->initialized = 0;
-// terminal_t* terminal1->terminal_processes_array[] = {-1, -1, -1, -1, -1, -1};
-
-// terminal_t* terminal2->initialized = 0;
-// terminal_t* terminal2->terminal_processes_array[] = {-1, -1, -1, -1, -1, -1};
-
-// terminal_t* terminal3->initialized = 0;
-// terminal_t* terminal3->terminal_processes_array[] = {-1, -1, -1, -1, -1, -1};
-
 terminal_t terminal_array[];
-
-int screen_x;
-int screen_y;
-
-// int32_t terminal1_array[] = {-1, -1, -1, -1, -1, -1};
-// int32_t terminal2_array[] = {-1, -1, -1, -1, -1};
-// int32_t terminal3_array[] = {-1, -1, -1, -1, -1};
-
-// uint8_t initialized_terminals[] = {0, 0, 0};
 
 /*
  * halt
@@ -50,10 +32,12 @@ int screen_y;
  */
 int32_t halt(uint8_t status)
 {
+    // printf("HALT\n");
     if(current_pcb->parent == -1)
     {
         process_num = -1;
-        execute((uint8_t*)"shell");
+        terminal_switch(terminal_num);
+        // execute((uint8_t*)"shell");
     }
 
     int32_t old_process_num = process_num;
@@ -79,11 +63,11 @@ int32_t halt(uint8_t status)
     pop(terminal_num);
 
     /* STEP 3: close relevant fds */
-    pcb_t* parent_pcb;
-    parent_pcb = (pcb_t*)(MB_8 - (KB_8*(old_process_num+1)));
+    pcb_t* old_pcb;
+    old_pcb = (pcb_t*)(MB_8 - (KB_8*(old_process_num+1)));
     int32_t i;
     for(i=0; i<FD_SIZE; i++)
-        parent_pcb->file_array[i].flags = 0;
+        old_pcb->file_array[i].flags = 0;
 
     halt_status = status;
 
@@ -109,6 +93,7 @@ int32_t halt(uint8_t status)
  */
 int32_t execute(const uint8_t* command)
 {
+    // printf("EXECUTE\n");
     if((command == NULL) || (*command == NULL))
         return FAIL;
 
@@ -125,8 +110,8 @@ int32_t execute(const uint8_t* command)
         i++;
     }
 
-    // loading the program command 
-    while(command[i] != ' ' && command[i] != '\0')
+    // loading the program command; if the command length is larger than the length of "testprint" then the command is wrong 
+    while((command[i] != ' ') && (command[i] != '\0') && ((i-spaces) <= 9))
     {
         program[i-spaces] = command[i];
         i++;
@@ -148,6 +133,7 @@ int32_t execute(const uint8_t* command)
         
     }
     arguments[i-strlen((int8_t*)program)-spaces] = '\0'; 
+
 
     /* STEP 2: check file validity (DEL ELF at beginning of executable files) */
     int32_t retval;
@@ -193,7 +179,6 @@ int32_t execute(const uint8_t* command)
     	return FAIL;
     }	
 
-
     /* STEP 4: load file into memory */
     uint8_t* buf = (uint8_t*)0x08048000;
     uint8_t* fa = (uint8_t*)FILESYS_ADDR;
@@ -212,7 +197,7 @@ int32_t execute(const uint8_t* command)
     for(i=2; i<FD_SIZE; i++)
         current_pcb->file_array[i].flags = 0;
 
-    // save esp and ebp inside current_pcb
+    // save esp and ebp inside current_pcb for context switching purposes
     asm volatile 
     (
         "movl %%esp, %0;"
@@ -492,22 +477,24 @@ int32_t sigreturn(void)
  */
 void terminal_switch(int32_t new_terminal_num)
 {
+    // printf("TERMINAL SWITCH\n");
     cli();
 
-    /* store video memory of the current terminal and load the video memory of the new terminal */
-    terminal_vidmem(terminal_num, new_terminal_num);
-    /* use lazy allocation to change the process stack and the current_pcb, among other things */
-    change_process((process_num+1), 3);
     /* save the screen_x and screen_y of the current terminal */
-    printf("old screen_x: %d\n", screen_x);
-    terminal_array[terminal_num-1].x_pos = screen_x;
-    terminal_array[terminal_num-1].y_pos = screen_y;
+    // printf("old screen_x: %d\n", screen_x);
+    terminal_array[terminal_num-1].x_pos = get_screen_x();
+    terminal_array[terminal_num-1].y_pos = get_screen_y();
+    /* store video memory of the current terminal and load the video memory of the new terminal */
+    // printf("terminal_vidmem\n");
+    terminal_vidmem(terminal_num, new_terminal_num);
     /* update the terminal_num */
     terminal_num = new_terminal_num;
+    /* use lazy allocation to change the process stack and the current_pcb, among other things */
+    // printf("calling change_process\n");
+    change_process((process_num+1), 3);
     /* update the cursor position */
-    screen_x = terminal_array[terminal_num-1].x_pos;
-    screen_y = terminal_array[terminal_num-1].y_pos;
-    printf("new screen_x: %d\n", screen_x);
+    change_screen_location(terminal_array[terminal_num-1].x_pos, terminal_array[terminal_num-1].y_pos);
+    // printf("new screen_x: %d\n", screen_x);
 
     sti();
 }
@@ -523,6 +510,7 @@ void terminal_switch(int32_t new_terminal_num)
  */
 void change_process(int32_t new_process_num, int32_t execute_halt_switch)
 {
+    // printf("CHANGE PROCESS\n");
     cli();
 
     pcb_t* old_pcb = current_pcb;
@@ -533,6 +521,7 @@ void change_process(int32_t new_process_num, int32_t execute_halt_switch)
     switch(execute_halt_switch)
     {
         case 1: /* execute */
+            // printf("case 1\n");
             if(current_pcb->terminal_idx == 0)
             {
                 current_pcb->parent = -1;
@@ -553,15 +542,19 @@ void change_process(int32_t new_process_num, int32_t execute_halt_switch)
             break;
 
         case 3: /* switching processes */
+            // printf("case 3\n");
 
             /* initialize shell if it hasn't been initialized yet */
             if((terminal_array[terminal_num-1]).initialized == 0)
             {
-            	clear();
-                execute((uint8_t*)"shell");
                 (terminal_array[terminal_num-1]).initialized = 1;
+                // clear();
+                change_screen_location(0, 0);
+                printf("Initializing Terminal %d\n", terminal_num);
+                execute((uint8_t*)"shell");
             }
 
+            // printf("saving esp ebp\n");
             /* save the esp and ebp of the process we are switching from */
             asm volatile 
             (
@@ -570,6 +563,7 @@ void change_process(int32_t new_process_num, int32_t execute_halt_switch)
                 : "=g" (old_pcb->c_esp), "=g" (old_pcb->c_ebp)
             );
 
+            // printf("restoring esp ebp\n");
             /* restore esp and ebp of the process we are switching to s*/ 
             asm volatile 
             (
@@ -582,10 +576,13 @@ void change_process(int32_t new_process_num, int32_t execute_halt_switch)
     }
 
     /* updating process_num */
+    // printf("updating process number\n");
     process_num = new_process_num;
     /* mapping the current process' user space into the page directory */
+    // printf("running process_page\n");
     process_page(process_num);
     /* tss.esp0 should point to the bottom of the process' kernel stack */
+    // printf("tss\n");
     tss.esp0 = MB_8 - (KB_8*process_num) - 4;
 
     sti();

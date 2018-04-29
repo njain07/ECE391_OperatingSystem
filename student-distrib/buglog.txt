@@ -153,17 +153,34 @@ Checkpoint 4:
 	Problem: issue in read_data: not keeping track of offset
 	Fix: fixed edge cases with offset
 
-	NEED TO BE FIXED:
-
-12) page faulting or getting a general protection error when we fill up most of the buffer and press enter
-	Problem: check for boundary conditions in the keyboard buffer
-	Fix:
-
-13) cat: pausing in infinite loop (waiting for user to press enter in terminal read) after printing 1024 bytes from large files
-	Problem: ebp is not being restored to kernel (still in user space) and ebx also gets overwritten for the second call to read (fd = 0 so it goes into terminal read); possible stack corruption??? or should I save the ebp in the tss?????
-	Fix:
+12) cat: pausing in infinite loop (waiting for user to press enter in terminal read) after printing 1024 bytes from large files
+	Problem: ebx gets overwritten for the second call to read (fd = 0 so it goes into terminal read)
+	Fix: appending a NULL character to the buffer passed into read_data which was overwriting ebx
 
 14) fish: not working; just accepting keyboard interrupts to allow the user to type
-	Problem: 
+	Problem: setting wrong permissions in vidmap_page function
+	Fix: changed 0x87 to 0x07
+
+15) page faulting or getting a general protection error when we fill up most of the buffer and press enter
+	Problem: check for size of program name exceeding DENTRY_FILE_NAME_SIZE?
+	Fix: set a limit for the size of the program in execute
+
+Checkpoint 5:
+
+1) programs were not working
+	Problem: command being passed into execute was wrong (ex. passing in 'f' for "fish")
+	Fix: did a strcpy in terminal_read which copied the entire string instead of just the first letter
+
+2) new terminal did not start at top; it started off where the previous terminal left
+	Problem: did not set screen_x and screen_y properly
+	Fix: created helper functions in lib.c 
+
+	NEED TO BE FIXED:
+
+2) ls: crashes the system before working
+	Problem: triple faulting??
 	Fix: 
+
+
+
 

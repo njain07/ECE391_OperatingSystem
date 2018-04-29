@@ -7,9 +7,6 @@
 
 #include "types.h"
 
-extern int screen_x;
-extern int screen_y;
-
 int32_t printf(int8_t *format, ...);
 void putc(uint8_t c);
 int32_t puts(int8_t *s);
@@ -21,6 +18,9 @@ void backspace(void);
 void enter_func(void);
 void scrolling(void);
 void update_cursor(int x, int y);
+void change_screen_location(int x, int y);
+int get_screen_x(void);
+int get_screen_y(void);
 
 void* memset(void* s, int32_t c, uint32_t n);
 void* memset_word(void* s, int32_t c, uint32_t n);

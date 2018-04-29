@@ -47,17 +47,17 @@ int32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
     if(terminal_num == 1)
     {
         buffer_index = buffer_index1;
-        *buffer = *buffer1;
+        strcpy(buffer, buffer1);
     }
     else if(terminal_num == 2)
     {
         buffer_index = buffer_index2;
-        *buffer = *buffer2;
+        strcpy(buffer, buffer2);
     }
     else if(terminal_num == 3)
     {
         buffer_index = buffer_index3;
-        *buffer = *buffer3;
+        strcpy(buffer, buffer3);
     }
 
     for(i=0; i < buffer_index; i++)
