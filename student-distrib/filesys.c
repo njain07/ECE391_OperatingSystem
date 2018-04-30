@@ -1,3 +1,6 @@
+/* Written by: Nikita
+ * Debugged by: Nikita */
+
 #include "filesys.h"
 
 /* filesys_init
@@ -231,7 +234,7 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length
 	// find pointer to inode
 	inode_t* inode_ptr;
 	uint8_t* fa = (uint8_t*)FILESYS_ADDR;
-	inode_ptr = (inode_t*) (fa + ((inode+1)*BLOCK_SIZE_ADDR));
+	inode_ptr = (inode_t*) (fa + ((inode+1)*BLOCK_SIZE));
 
 	// check for valid offset
 	if(offset<0 || offset>(inode_ptr->length))
@@ -260,7 +263,7 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length
 
 		// calculating the pointer to the correct data block to read from
 		data_block_num = inode_ptr->data_blocks[data_block];
-		data_block_ptr = (uint8_t*) (fa + ((boot_block->num_inodes+1)*BLOCK_SIZE_ADDR) + (data_block_num*BLOCK_SIZE_ADDR));
+		data_block_ptr = (uint8_t*) (fa + ((boot_block->num_inodes+1)*BLOCK_SIZE) + (data_block_num*BLOCK_SIZE));
 		
 		// copying data from the filesystem to the buffer
 		if(data_block_ptr != NULL)

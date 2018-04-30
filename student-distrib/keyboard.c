@@ -1,3 +1,6 @@
+/* Written by: Michael
+ * Re-written and debugged by: Nikita and Vismayak */
+
 #include "keyboard.h"
 
 #define KEYBOARD_SIZE 59

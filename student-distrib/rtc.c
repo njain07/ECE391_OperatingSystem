@@ -1,3 +1,6 @@
+/* Written by: Michael
+ * Debugged by: Nikita */
+
 #include "rtc.h"
 #include "i8259.h"
 #include "lib.h"

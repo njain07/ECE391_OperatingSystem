@@ -1,3 +1,6 @@
+/* Written by: Nikita and Michael
+ * Debugged by: Nikita */
+
 #include "syscalls.h"
 
 #define SUCCESS   0
@@ -180,7 +183,7 @@ int32_t execute(const uint8_t* command)
     /* STEP 4: load file into memory */
     uint8_t* buf = (uint8_t*)PROGRAM_IMG;
     uint8_t* fa = (uint8_t*)FILESYS_ADDR;
-    inode_t* inode_ptr = (inode_t*) (fa + ((exec_file_dentry.inode_num+1)*BLOCK_SIZE_ADDR));
+    inode_t* inode_ptr = (inode_t*) (fa + ((exec_file_dentry.inode_num+1)*BLOCK_SIZE));
     read_data(exec_file_dentry.inode_num, 0, buf, inode_ptr->length);
 
     /* STEP 5: open fd's */

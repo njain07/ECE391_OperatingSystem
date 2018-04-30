@@ -1,16 +1,10 @@
+/* Written by: Nikita
+ * Debugged by: Vismayak */
+
 #include "types.h"
 #include "paging.h"
 
 int32_t terminal_num;
-
-/* 0-4MB has 4KB pages
- * 4-8MB has
- */
-
-//one page is 4kb
-//video memory is 4kb page
-//one page table is 4mb
-//one page directory is 4gb2
 
 /*
  * init_paging

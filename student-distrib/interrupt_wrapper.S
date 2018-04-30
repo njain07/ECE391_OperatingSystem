@@ -1,3 +1,6 @@
+# Written by: Vismayak
+# Debugged by: Vismayak and Nikita
+
 .global interrupt_rtc, interrupt_keyboard, interrupt_sys
 .global DE, DB, NMI, BP, OF, BR, UD, NM, DF, CSO, TS, NP, SS, GP, PF, IntelR, MF, AC, MC, XF, unknown
 

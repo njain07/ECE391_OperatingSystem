@@ -1,3 +1,6 @@
+/* Written by: Nikita and Vismayak
+ * Debugged by: Nikita and Vismayak */
+
 #include "terminal.h"
 
 terminal_t terminal1 = {0, {-1, -1, -1, -1, -1, -1}, 0, 0};

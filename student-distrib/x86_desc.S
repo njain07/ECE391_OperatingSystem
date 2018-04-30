@@ -1,3 +1,5 @@
+# Edited by: Vismayak
+
 # x86_desc.S - Set up x86 segment descriptors, descriptor tables
 # vim:ts=4 noexpandtab
 

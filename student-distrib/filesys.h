@@ -16,7 +16,6 @@
 #define BOOT_BLOCK_RESERVED 13
 #define NUM_DENTRIES 63
 
-#define BLOCK_SIZE_ADDR 4096 //*8
 #define BLOCK_SIZE 4096
 
 extern uint32_t FILESYS_ADDR;

@@ -1,3 +1,6 @@
+/* Written by: Nikita 
+ * Debugged by: Nikita */
+
 #include "pcb.h"
 
 file_ops_t rtc_ops = {rtc_read, rtc_write, rtc_open, rtc_close};

@@ -1,3 +1,6 @@
+/* Written by: Vismayak
+ * Debugged by: Vismayak */
+
 #include "idt.h"
 
 #define RTC_VECTOR 		0x28

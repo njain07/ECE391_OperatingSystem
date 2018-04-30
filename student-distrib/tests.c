@@ -1,3 +1,5 @@
+/* Written by: Vismayak and Nikita */
+
 #include "tests.h"
 
 #define PASS 1
@@ -215,7 +217,7 @@ void filesys_file_content(uint32_t dentry_index)
 	if(dentry.file_type == 2)
 	{
 		uint8_t* fa = (uint8_t*)FILESYS_ADDR;
-		inode_ptr = (inode_t*) (fa + ((inode_index+1)*BLOCK_SIZE_ADDR));
+		inode_ptr = (inode_t*) (fa + ((inode_index+1)*BLOCK_SIZE));
 		printf("inode_ptr: %x", inode_ptr);
 		inode_index = dentry.inode_num;
 		printf("i reached here\n ");
