@@ -93,6 +93,7 @@ void terminal_vidmem(int32_t terminal_num, int32_t new_terminal_num)
 {
 	// memcpy current terminal_num video memory into video_memory_array
 	memcpy((int*)terminal_vidmem_array[terminal_num-1], (int*)VIDEO_MEM, FOUR_KB);
+	clear();
     // memcpy new terminal_num video memory from video_memory_array
     memcpy((int*)VIDEO_MEM, (int*)terminal_vidmem_array[new_terminal_num-1], FOUR_KB);
 }

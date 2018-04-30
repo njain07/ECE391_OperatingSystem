@@ -184,6 +184,8 @@ void entry(unsigned long magic, unsigned long addr) {
     // CALL EXECUTE
     clear();
     terminal_switch(1);
+    while(1)
+        printf("exited all processes \n");
     /* Spin (nicely, so we don't chew up cycles) */
     asm volatile (".1: hlt; jmp .1;");
 }
