@@ -33,8 +33,8 @@ typedef struct file_descriptor_struct
 typedef struct pcb_t
 {
 	file_descriptor_struct file_array[MAX_FD_STRUCT_SIZE];
-	uint8_t* program;
-	uint8_t* arguments;
+	uint8_t* program;		// program name (ie. cat, grep, etc.)
+	uint8_t* arguments;		// program arguments (ie. filename, etc.)
 
 	int32_t pid;			// process id
 	int32_t parent;			// parent process id
