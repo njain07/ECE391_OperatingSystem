@@ -219,6 +219,7 @@ int32_t execute(const uint8_t* command)
         : "r" (*eip_value), "r" (USER_CS), "r" (esp_value), "r" (USER_DS)
     );
 
+    printf("returned from halt\n");
 	return halt_status;
 }
 
@@ -476,33 +477,36 @@ void terminal_switch(int32_t new_terminal_num)
     /* store video memory of the current terminal and load the video memory of the new terminal */
     terminal_vidmem(terminal_num, new_terminal_num);
     /* update the terminal_num */
-    pcb_t* old_pcb;
-    old_pcb = (pcb_t*)(MB_8 - (KB_8*(top_pid(terminal_num) +1)));
-
+    int32_t old_terminal_num = terminal_num;
     terminal_num = new_terminal_num;
     /* use lazy allocation to change the process stack and the current_pcb, among other things */
     // printf("calling change_process\n");
     change_process((process_num+1), SWITCH);
     /* update the cursor position */
     change_screen_location(terminal_array[terminal_num-1].x_pos, terminal_array[terminal_num-1].y_pos);
-    /* save the esp and ebp of the process we are switching from */
+    
+    if(current_pcb->parent != -1)
+    {
+	    pcb_t* old_pcb;
+    	old_pcb = (pcb_t*)(MB_8 - (KB_8*(top_pid(old_terminal_num)+1))); 
+    	/* save the esp and ebp of the process we are switching from */
+    	asm volatile 
+	    (
+	        "movl %%esp, %0;"
+	        "movl %%ebp, %1;" 
+	        ""
+	        : "=g" (old_pcb->c_esp), "=g" (old_pcb->c_ebp)
+	    );
 
-    asm volatile 
-    (
-        "movl %%esp, %0;"
-        "movl %%ebp, %1;" 
-        ""
-        : "=g" (old_pcb->c_esp), "=g" (old_pcb->c_ebp)
-    );
-
-    /* restore esp and ebp of the process we are switching to s*/ 
-    asm volatile 
-    (
-        "movl %0, %%esp;"
-        "movl %1, %%ebp;" 
-        :
-        : "g" (current_pcb->c_esp), "g" (current_pcb->c_ebp)
-    );
+    	/* restore esp and ebp of the process we are switching to*/ 
+	    asm volatile 
+	    (
+	        "movl %0, %%esp;"
+	        "movl %1, %%ebp;" 
+	        :
+	        : "g" (current_pcb->c_esp), "g" (current_pcb->c_ebp)
+	    );
+	}
 
     sti();
 }
