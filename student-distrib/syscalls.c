@@ -421,8 +421,8 @@ int32_t vidmap(uint8_t** screen_start)
     if(screen_start == NULL)
         return FAIL;
 
-   // if(((uint32_t)screen_start < MB_128) || ((uint32_t)screen_start >= MB_132))
-        //return FAIL;
+   if(((uint32_t)screen_start < MB_128) || ((uint32_t)screen_start >= MB_132))
+        return FAIL;
 
     vidmap_page(screen_start);
     *screen_start = (uint8_t*)MB_132;
@@ -431,8 +431,8 @@ int32_t vidmap(uint8_t** screen_start)
 
 /*  set_handler
  *  DESCRIPTION: used for signals (optional)
- *    INPUTS: signum -- 
- *            handler_address --
+ *    INPUTS: signum -- signal number
+ *            handler_address -- not used
  *    OUTPUTS: none
  *    RETURN VALUE: -1 for failure
  */
@@ -467,22 +467,20 @@ void terminal_switch(int32_t new_terminal_num)
 {
     cli();
 
+    pcb_t* old_pcb;
+    old_pcb = (pcb_t*)(MB_8 - (KB_8*(top_pid(terminal_num) +1)));
     /* save the screen_x and screen_y of the current terminal */
     terminal_array[terminal_num-1].x_pos = get_screen_x();
     terminal_array[terminal_num-1].y_pos = get_screen_y();
     /* store video memory of the current terminal and load the video memory of the new terminal */
     terminal_vidmem(terminal_num, new_terminal_num);
     /* update the terminal_num */
-    pcb_t* old_pcb;
-    old_pcb = (pcb_t*)(MB_8 - (KB_8*(top_pid(terminal_num) +1)));
-
     terminal_num = new_terminal_num;
     /* use lazy allocation to change the process stack and the current_pcb, among other things */
     change_process((process_num+1), SWITCH);
     /* update the cursor position */
     change_screen_location(terminal_array[terminal_num-1].x_pos, terminal_array[terminal_num-1].y_pos);
     /* save the esp and ebp of the process we are switching from */
-
     asm volatile 
     (
         "movl %%esp, %0;"

@@ -177,8 +177,8 @@ Checkpoint 5:
 
 	NEED TO BE FIXED:
 
-2) ls: crashes the system before working
-	Problem: triple faulting??
+?) all programs: the system crashes once before working
+	Problem: triple faulting
 	Fix: 
 
 
