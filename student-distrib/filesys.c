@@ -338,7 +338,7 @@ uint32_t find_dentry_by_fd(uint32_t fd)
 		retval = read_dentry_by_index(dentry_index, &dentry);
 		dentry_index++;
 
-		if((dentry_index > 62) || (retval == -1))
+		if((dentry_index >= NUM_DENTRIES) || (retval == -1))
 			return -1;
 	}
 

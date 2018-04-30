@@ -17,6 +17,9 @@
 #include "syscalls.h"
 #define RUN_TESTS
 
+#define KEYBOARD_IRQ 1
+#define RTC_IRQ      8
+
 uint32_t FILESYS_ADDR;
 
 /* Macros. */
@@ -162,8 +165,8 @@ void entry(unsigned long magic, unsigned long addr) {
 
 
     /* Enable interrupts */
-    enable_irq(1); //keyboard
-    enable_irq(8); //rtc
+    enable_irq(KEYBOARD_IRQ);
+    enable_irq(RTC_IRQ);
     
 
     /* Do not enable the following until after you have set up your

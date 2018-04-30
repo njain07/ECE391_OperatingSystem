@@ -47,6 +47,7 @@ typedef struct pcb_t
 
 	uint32_t c_ebp;			// current_ebp
 	uint32_t c_esp;			// current_esp
+	uint32_t c_eip;			// current_eip
     
 } pcb_t;
 

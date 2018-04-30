@@ -4,6 +4,8 @@
 
 #include "keyboard.h"
 
+#define KEYBOARD_SIZE 59
+
 int32_t terminal_num;
 
 /* character arrays */
@@ -15,28 +17,28 @@ int32_t terminal_num;
  * left shift
  * right shift, keypad*, left alt, caps
  */
-const uint8_t lowercase[59] = 
+const uint8_t lowercase[KEYBOARD_SIZE] = 
     {0, 0, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 0, 
     0, 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', 
     0, 0, 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', 
     '`', 0, '\\', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 
     0, 0, 0, ' ', 0};
 
-const uint8_t shift_case[59] = 
+const uint8_t shift_case[KEYBOARD_SIZE] = 
     {0, 0, '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', 0, 
     0, 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', 
     0, 0, 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '\"', 
     '~', 0, '|', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', '<', '>', '?', 
     0, 0, 0, ' ', 0};
 
-const uint8_t caps_case[59] = 
+const uint8_t caps_case[KEYBOARD_SIZE] = 
     {0, 0, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 0, 
     0, 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '[', ']', 
     0, 0, 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ';', '\'', 
     '`', 0, '\\', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', ',', '.', '/', 
     0, 0, 0, ' ', 0};
 
-const uint8_t shift_caps_case[59] = 
+const uint8_t shift_caps_case[KEYBOARD_SIZE] = 
     {0, 0, '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', 0, 
     0, 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '{', '}', 
     0, 0, 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ':', '\"', 
@@ -182,17 +184,22 @@ char get_character(uint8_t scancode){
         // check for alt+F1 for terminal change
         if(scancode == 0x3B)
         {
-            terminal_switch(1);
+            terminal_switch(1);     // switch to terminal 1
+            // asm volatile 
+            // ( 
+            //     "movl [%%esp], %0;"
+            //     : "=g" (current_pcb->c_eip)
+            // );
         }
         // check for alt+F2 for terminal change
         if(scancode == 0x3C)
         {
-            terminal_switch(2);
+            terminal_switch(2);     // switch to terminal 2
         }
         // check for alt+F3 for terminal change
         if(scancode == 0x3D)
         {
-            terminal_switch(3);
+            terminal_switch(3);     // switch to terminal 3
         }
     }
 
