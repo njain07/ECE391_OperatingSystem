@@ -1,17 +1,5 @@
 #include "filesys.h"
 
-/*
- * Authors: Nikita Jain and Vismayak Mohanarajan
- * Reference materials: MP3 Documentation
- * Filename: filesys.c
- * History:
- *    SL    1    Sun Mar 26 2018
- *        Wrote read_dentry_by_name and read_dentry_by_index
- *    SL    2    Thu Mar 29 2018
- *        Wrote filesys_init
- */
-
-
 /* filesys_init
  *   DESCRIPTION: initializes the filesystem
  *   INPUTS: none
@@ -46,7 +34,6 @@ int32_t file_read(int32_t fd, void* buf, int32_t nbytes)
 	uint32_t offset = file.file_pos;
 
 	retval = read_data(inode, offset, (uint8_t*) buf, nbytes);
-	// printf("file_read retval: %d", retval);
 
 	current_pcb->file_array[fd].file_pos+=retval;
 	return retval;
@@ -116,8 +103,8 @@ int32_t dir_read(int32_t fd, void* buf, int32_t nbytes)
 	{
 		uint32_t file_name_size;
 		file_name_size = strlen((int8_t*)dentry.file_name);
-		if(file_name_size>32)
-			file_name_size = 32;
+		if(file_name_size > DENTRY_FILE_NAME_SIZE)
+			file_name_size = DENTRY_FILE_NAME_SIZE;
 		strncpy((int8_t*)buf, (int8_t*)dentry.file_name, file_name_size);
 		return file_name_size;
 	}
@@ -211,18 +198,13 @@ int32_t read_dentry_by_index(uint32_t index, dentry_t* dentry)
 {
 	uint32_t num_dentries;
 	num_dentries = boot_block->num_dir;
-	if(index < 0 || index > (num_dentries-1) || dentry == NULL || dentry == 0){
-		// printf("error");
+	if(index < 0 || index > (num_dentries-1) || dentry == NULL || dentry == 0)
 		return -1;
-	}
 
 	strncpy((int8_t*)dentry->file_name, (int8_t*)boot_block->dentries[index].file_name, DENTRY_FILE_NAME_SIZE);
 	dentry->file_name[DENTRY_FILE_NAME_SIZE] = '\0';
 	dentry->file_type = boot_block->dentries[index].file_type;
 	dentry->inode_num = boot_block->dentries[index].inode_num;
-	// printf("file name: %d\n", dentry->file_name);
-	// printf("file type: %d\n", dentry->file_type);
-	// printf("inode_num: %d\n", dentry->inode_num);
 	return 0;
 }
 
@@ -252,20 +234,15 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length
 	inode_ptr = (inode_t*) (fa + ((inode+1)*BLOCK_SIZE_ADDR));
 
 	// check for valid offset
-	if(offset<0 || offset>(inode_ptr->length)){
-		// printf("offset error\n");
+	if(offset<0 || offset>(inode_ptr->length))
 		return -1;
-	}
 
 	// check for valid length
-	if(length<0)
+	if(length < 0)
 		return -1;
 
-	if((offset+length)>=(inode_ptr->length)) {
-		// printf("resizing length\n");
+	if((offset+length) >= (inode_ptr->length))
 		length = (inode_ptr->length) - offset;
-	}
-
 
 	// loop through data blocks
 	uint32_t data_block, data_block_num, block_offset, read_from_block, length_left, bytes_read_successfully;
@@ -274,7 +251,6 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length
 	block_offset = offset % BLOCK_SIZE;
 
 	length_left = length;
-	// printf("length: %d\n", length);
 	buf_ptr = buf;
 	bytes_read_successfully = 0;
 	while(length_left > 0)
@@ -289,20 +265,14 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length
 		// copying data from the filesystem to the buffer
 		if(data_block_ptr != NULL)
 		{
-			// if(read_from_block>1024)
-			// {
-				// printf("read_from_block: %d\n", read_from_block);
-			// }
-
 			memcpy(buf_ptr, (data_block_ptr + block_offset), read_from_block);
-			// *(buf_ptr+i) =  *(data_block_ptr + block_offset + i);
 			bytes_read_successfully += read_from_block;
 		}
 		else
 		{
-			// if data_block_ptr is NULL then we return -1 if we haven't read anything; if we have read some
-			// number of bytes successfully before reaching a NULL data_block_ptr then we return that number of bytes
-			// buf[bytes_read_successfully] = '\0';
+			// if data_block_ptr is NULL then we return -1 if we haven't read anything;
+			// if we have read some number of bytes successfully before reaching a NULL data_block_ptr, 
+			// then we return that number of bytes
 			bytes_read_successfully = (bytes_read_successfully==0)? -1 : bytes_read_successfully;
 			return bytes_read_successfully;
 		}
@@ -315,8 +285,6 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length
 		}
 	}
 
-
-	// printf("bytes_read_successfully: %d\n", bytes_read_successfully);
 	if(bytes_read_successfully < orig_length)
 		buf[bytes_read_successfully] = '\0';
 	return bytes_read_successfully;

@@ -1,20 +1,3 @@
-/* rtc.h - Defines used in interactions with the rtc and its interrupts
- * vim:ts=4 noexpandtab
- */
-
-
-/*
- * Author: Hyun Do Jung, 03.10.18
- * Reference materials: OSDEV website
- * Filename: rtc.c
- * History:
- *    SL    1    Sun Mar 11 14:20:50 2018
- *        First written for MP3.1
- *    SL    2    Thu Mar 22 10:13:12 2018
- *        Modified, commented for MP3.1 and added firstly for MP3.2
- */
-
-
 #ifndef _RTC_H_
 #define _RTC_H_
 
@@ -62,4 +45,4 @@ int32_t rtc_close(int32_t fd);
 /* handler for setting an interrupt frequency of rtc */
 void rtc_set_int_freq(int32_t target_freq);
 
-#endif /* _RTC_H_ */
+#endif

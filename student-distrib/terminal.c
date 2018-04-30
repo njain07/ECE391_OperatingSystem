@@ -4,8 +4,6 @@ terminal_t terminal1 = {0, {-1, -1, -1, -1, -1, -1}, 0, 0};
 terminal_t terminal2 = {0, {-1, -1, -1, -1, -1, -1}, 0, 0};
 terminal_t terminal3 = {0, {-1, -1, -1, -1, -1, -1}, 0, 0};
 
-// terminal_t terminal_array[] = {terminal1, terminal2, terminal3};
-
 /*
  * terminal_init
  *   DESCRIPTION: initialize terminals; values set
@@ -61,9 +59,7 @@ int32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
     }
 
     for(i=0; i < buffer_index; i++)
-    {
         temp_buf[i] = buffer[i];
-    }
     temp_buf[i] = '\n';
     i++;
     clear_buffer();
@@ -84,10 +80,8 @@ int32_t terminal_read(int32_t fd, void* buf, int32_t nbytes)
 int32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes)
 {
     int i = 0;
-    
     char* temp_buf = (char*) buf;
 
-    /* critical section begins */
     cli();
     
     /* implementing putc */
@@ -97,7 +91,6 @@ int32_t terminal_write(int32_t fd, const void* buf, int32_t nbytes)
             putc((char) temp_buf[i]);
     }
     
-    /* critical section ends */
     sti();
     
     return nbytes;

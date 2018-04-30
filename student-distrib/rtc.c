@@ -1,20 +1,3 @@
-/* rtc.c - Functions to interact with the rtc and its interrupts
- * vim:ts=4 noexpandtab
- */
-
-
-/*
- * Author: Hyun Do Jung, 03.10.18
- * Reference materials: OSDEV website
- * Filename: rtc.c
- * History:
- *    SL    1    Sun Mar 11 14:20:50 2018
- *        First written for MP3.1
- *    SL    2    Thu Mar 22 10:13:12 2018
- *        Modified, commented for MP3.1 and added firstly for MP3.2
- */
-
-
 #include "rtc.h"
 #include "i8259.h"
 #include "lib.h"
@@ -27,22 +10,20 @@
  *   RETURN VALUE: none
  *   SIDE EFFECTS: rtc is initialized
  */
-
-void rtc_init(void){
+void rtc_init(void)
+{
     /* interrupt flag set */
-    rtc_interrupt_flag = 0; // moved from rtc.h since any intialization in header files are inhibited.
+    rtc_interrupt_flag = 0;
     
     /* variable holding the old register value */
     outb(RTC_NMIDIS_REG_B, RTC_REG_NUM_PORT);             // outportb(0x70, 0x8B), select register b, disable NMI
-    unsigned char old_reg_val = inb(RTC_DATA_PORT);        // read from RTC_DATA_PORT
+    unsigned char old_reg_val = inb(RTC_DATA_PORT);       // read from RTC_DATA_PORT
 
     outb(RTC_NMIDIS_REG_B, RTC_REG_NUM_PORT);
     /* periodic interrupt, turning on IRQ8 */
     outb(old_reg_val | RTC_INTERRUPT, RTC_DATA_PORT);     // outportb(0x71, old_reg_val | 0x40) -- write the old register value ORed with 0x40, turning on bit 6 of register B
     rtc_set_int_freq(2); 
-    enable_irq(RTC_IRQ);                                    // write to RTC_DATA_PORT
-    // The last statement is confusing
-
+    enable_irq(RTC_IRQ);                                  // write to RTC_DATA_PORT
 }
 
 
@@ -55,20 +36,14 @@ void rtc_init(void){
  *   RETURN VALUE: none
  *   SIDE EFFECTS: handles with RTC interrupts
  */
-
-void rtc_interrupt_handler(){
-    /* critical section */
-    // cli();
+void rtc_interrupt_handler()
+{
     outb(RTC_STATUS_REG_C, RTC_REG_NUM_PORT);            // select Register C, read from register C
     inb(RTC_DATA_PORT);                                  // just throw away contents
-    // putc('a');
 
     send_eoi(RTC_IRQ);                                   // done int, send EOI to IRQ8
-    
-    // test_interrupts();                                 // let us keep this one in hold
+
     rtc_interrupt_flag = 1;
-    /* critical section ended */
-    // sti();
 }
 
 /*
@@ -79,16 +54,14 @@ void rtc_interrupt_handler(){
  *   RETURN VALUE: always return 0
  *   SIDE EFFECTS: flag is cleared after an interrupt
  */
-
-/* handler for reading RTC */
-int32_t rtc_read(int32_t fd, void* buf, int32_t nbytes){
-    
+int32_t rtc_read(int32_t fd, void* buf, int32_t nbytes)
+{    
     /* during interrupt, do nothing */
     rtc_interrupt_flag = 0;
-    while(rtc_interrupt_flag == 0){ /* SPIN, waiting until the next RTC interrupt */  
-    }
-    
-    /* clear the interrupt flag */
+    /* SPIN, waiting until the next RTC interrupt */ 
+    while(rtc_interrupt_flag == 0)
+    {} 
+
     return 0;
 }
 
@@ -100,16 +73,13 @@ int32_t rtc_read(int32_t fd, void* buf, int32_t nbytes){
  *   RETURN VALUE: return -1 on failure, return 0 on success
  *   SIDE EFFECTS: flag is cleared after an interrupt
  */
-
-/* handler for reading RTC */
-int32_t rtc_write(int32_t fd, const void* buf, int32_t nbytes){
-    
+int32_t rtc_write(int32_t fd, const void* buf, int32_t nbytes)
+{   
     /* set local variable */
     int32_t target_freq;
     
-    
     /* Boundary check, only accepts 4 bytes */
-    if( (nbytes != 4) || ((int32_t)buf == NULL) )
+    if((nbytes != 4) || ((int32_t)buf == NULL))
         return -1;
     else
         target_freq = *((int32_t*)buf);
@@ -118,14 +88,6 @@ int32_t rtc_write(int32_t fd, const void* buf, int32_t nbytes){
     cli();
     rtc_set_int_freq(target_freq);
     sti();
-
-
-    /* testing */
-    //int i, count;
-    // for(i = 0; i < target_freq; i++){
-    //     count = 1;
-    //     putc('1');
-    // }
 
     return nbytes;
 }
@@ -138,10 +100,8 @@ int32_t rtc_write(int32_t fd, const void* buf, int32_t nbytes){
  *   RETURN VALUE: always return 0
  *   SIDE EFFECTS: handles with opening RTC, set frequency to 2 Hz.
  */
-
-int32_t rtc_open(const uint8_t* filename){
-     
-     /* SET rtc frequnecy = 2 Hz */
+int32_t rtc_open(const uint8_t* filename)
+{
      rtc_set_int_freq(2);
      return 0;
 }
@@ -154,11 +114,8 @@ int32_t rtc_open(const uint8_t* filename){
  *   RETURN VALUE: always return 0
  *   SIDE EFFECTS: handles with closing RTC, reset frequency to 2 Hz.
  */
-
-int32_t rtc_close(int32_t fd){
-    
-    /* RESET rtc frequnecy = 2 Hz */
-    //rtc_set_int_freq(2);
+int32_t rtc_close(int32_t fd)
+{
     return 0;
 }
 
@@ -170,10 +127,8 @@ int32_t rtc_close(int32_t fd){
  *   RETURN VALUE:
  *   SIDE EFFECTS:
  */
-
-/* handler for setting an interrupt frequency of rtc */
-void rtc_set_int_freq(int32_t target_freq){
-    
+void rtc_set_int_freq(int32_t target_freq)
+{
     /* set local variables */
     char freq;
     unsigned char old_a_val;
@@ -189,16 +144,36 @@ void rtc_set_int_freq(int32_t target_freq){
         case 2048:
             return;
             
-        case 1024: freq = 0x06; break;
-        case 512: freq = 0x07; break;
-        case 256: freq = 0x08; break;
-        case 128: freq = 0x09; break;
-        case 64:  freq = 0x0A; break;
-        case 32:  freq = 0x0B; break;
-        case 16:  freq = 0x0C; break;
-        case 8:   freq = 0x0D; break;
-        case 4:   freq = 0x0E; break;
-        case 2:   freq = 0x0F; break;
+        case 1024: 
+            freq = 0x06; 
+            break;
+        case 512: 
+            freq = 0x07; 
+            break;
+        case 256: 
+            freq = 0x08; 
+            break;
+        case 128: 
+            freq = 0x09; 
+            break;
+        case 64:  
+            freq = 0x0A; 
+            break;
+        case 32:  
+            freq = 0x0B; 
+            break;
+        case 16:  
+            freq = 0x0C; 
+            break;
+        case 8:   
+            freq = 0x0D;
+            break;
+        case 4:   
+            freq = 0x0E; 
+            break;
+        case 2:   
+            freq = 0x0F; 
+            break;
         
         default: return;
     }

@@ -20,7 +20,7 @@ int32_t terminal_num;
  *   RETURN VALUE: none
  *   SIDE EFFECTS: sets up page directories and page tables
  */
-void paging_init()
+void paging_init(void)
 {
 	/* Initialize all entries in the page directory as not present, and
 	 * map the pages in the page table to the beginning of memory
@@ -37,7 +37,7 @@ void paging_init()
 
 	/* Setting video memory attributes */
 	first_page_table[VIDEO_MEM >> SHIFT12] = VIDEO_MEM | S_RW_PRESENT;
-	page_directory[1]= FOUR_MB | 0x83; // supervisor, present, read, write, size
+	page_directory[1]= FOUR_MB | S_RW_PRESENT_SIZE;
 
 	enable_paging();
 
@@ -56,7 +56,7 @@ void paging_init()
  * 				   CR0 - the 32nd bit of this register holds the paging bit; we set it to 1 to enable paging
  * 				   CR3 - holds the address of the page directory; used when virtual addressing is enabled
  */
-void enable_paging()
+void enable_paging(void)
 {
     asm volatile (
 		"movl %0, %%eax;"			/* move the address of the page directory into CR3 indirectly through eax */
@@ -78,7 +78,7 @@ void enable_paging()
 void process_page(int32_t pid)
 {
 	int32_t user_loc = EIGHT_MB + (pid * FOUR_MB);
-	page_directory[32] = user_loc | U_W_PRESENT; // 0x87 user, present, read, write, size
+	page_directory[32] = user_loc | U_W_PRESENT;
 	flush_TLB();
 }
 
@@ -91,10 +91,10 @@ void vidmap_page(uint8_t** screen_start)
 
 void terminal_vidmem(int32_t terminal_num, int32_t new_terminal_num)
 {
-	// memcpy current terminal_num video memory into video_memory_array
+	// memcpy current video memory into terminal_num's video memory
 	memcpy((int*)terminal_vidmem_array[terminal_num-1], (int*)VIDEO_MEM, FOUR_KB);
 	clear();
-    // memcpy new terminal_num video memory from video_memory_array
+    // memcpy new_terminal_num's video memory into current video memory
     memcpy((int*)VIDEO_MEM, (int*)terminal_vidmem_array[new_terminal_num-1], FOUR_KB);
 }
 

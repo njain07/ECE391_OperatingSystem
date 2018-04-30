@@ -116,50 +116,19 @@ unknown:
 	pushl $20
 	jmp common_interrupt
 
+
 common_interrupt:
-	# save all the registers 
-	# as in the pt_regs struct
-	#pushw $0
-	#pushl %fs
-	#pushw $0
- 	#pushl %es
-	#pushw $0
-	#pushl %ds
-	# cli	
-	#push %eax
-	#push %ebp
-	#push %edi
-	#push %esi
-	#push %edx
-	#push %ecx
-	#push %ebx
- 	#push %esp
-	#pushl 44(%esp)	
+	
+	call do_irq
 
-    call do_irq
-
-	#addl $8,%esp
-	#pop  %ebx
-	#pop  %ecx
-	#pop  %edx
-	#pop  %esi
-	#pop  %edi
-	#pop  %ebp
-	#pop  %eax
-	# sti	
-	#popl %ds
-	#popl %es
-	#popl %fs
-    addl $4,%esp
+	addl $4,%esp
     popal
     iret
 
- #  CP 3 
-interrupt_sys:
-	# pushal 
 
+interrupt_sys:
 	# callee-saved registers (C calling convention)
-	# pushl	%ebx
+	# pushl		%ebx
 	# pushl 	%edi
 	# pushl 	%esi
 
@@ -183,7 +152,7 @@ interrupt_sys:
 	cmpl	$0, %eax	
 	jl 		ERROR
 
-	cmpl	$9, %eax	#change to 9 for cp4
+	cmpl	$9, %eax
 	jg		ERROR
 
 	call 	*jmp_table( ,%eax, 4)
@@ -196,7 +165,6 @@ POP:
 	# popl 	%ebx
 	# popl 	%ecx
 	# popl 	%edx
-
 	addl	$12, %esp
 
 	popl 	%edi
@@ -207,11 +175,6 @@ POP:
 	popl 	%ecx
 	popl 	%ebx
 
-	# popl 	%esi
-	# popl	%edi
-	# popl	%ebx
-
-	# popal # pop everything except eax, which has the return value 
 	iret
 
 jmp_table:

@@ -1,5 +1,11 @@
 #include "idt.h"
 
+#define RTC_VECTOR 		0x28
+#define KEYBOARD_VECTOR 0x21
+#define SYSTEM_CALL 	0x80
+
+#define PAGE_FAULT 		14
+
 /*
  * do_irq
  *   DESCRIPTION: 
@@ -10,20 +16,15 @@
  *   SIDE EFFECTS: none
  */
 void do_irq(int i){
-	// get i to hold the vec num pushed by the assembly code
-	// using the pt_regs struct
-
-	if(i == 40)
-	{
+	if(i == RTC_VECTOR)
 		rtc_interrupt_handler();
-	}
-	else if (i == 33)
-	{
+
+	else if (i == KEYBOARD_VECTOR)
 		keyboard_interrupt_handler();
-	}
-	else if (i < 32)
+
+	else if (i < (KEYBOARD_VECTOR-1))
 	{
-		if(i == 14)
+		if(i == PAGE_FAULT)
 		{
 			uint32_t page_fault_addr;
 			asm volatile 
@@ -33,7 +34,7 @@ void do_irq(int i){
 		        :
 		        : "ecx"
 		    );
-		    printf("the address was %x\n", page_fault_addr);
+		    printf("The address being accessed was %x\n", page_fault_addr);
 		}
 		printf("The exception raised was :%s", error_messages[i]);
 		while(1);
@@ -48,48 +49,37 @@ void do_irq(int i){
  *   RETURN VALUE: none
  *   SIDE EFFECTS: none
  */
-void init_idt()
+void idt_init()
 {
 	int i;
-	//void (*idt_interrupts[22]) = {DE, DB, NMI, BP, OF, BR, UD, NM, DF, CSO, TS, NP, SS, GP, PF, IntelR, MF, AC, MC, XF, Sys_Error, unknown}; // first 19 interrupts stored in an array of function pointers
-	//notice that the 15th one is some intel reserved interrupt I will just keep an intel reserved error
 	for (i = 0; i < NUM_VEC; i++)
+	{
+		idt[i].seg_selector = KERNEL_CS;
+		idt[i].reserved4 = 0;
+		idt[i].reserved3 = 0; //when set to 1 -> trap gate (doesn't mask interrupts, unlike interrupt gates)
+		idt[i].reserved2 = 1;
+		idt[i].reserved1 = 1; // these three lines initialize the entry to be that of an interrupt gate since they are all 32 bits
+		idt[i].reserved0 = 0; 
+		idt[i].dpl = 0;
+		idt[i].size = 1;
+		idt[i].present = 1;
+
+		if (i == SYSTEM_CALL)
 		{
-			idt[i].seg_selector = KERNEL_CS;
-			idt[i].reserved4 = 0;
-			idt[i].reserved3 = 0; //when set to 1 -> trap gate (doesn't mask interrupts, unlike interrupt gates)
-			idt[i].reserved2 = 1;
-			idt[i].reserved1 = 1; // these three lines initialize the entry to be that of an interrupt gate since they are all 32 bits
-			idt[i].reserved0 = 0; 
-			idt[i].dpl = 0;
-			idt[i].size = 1;
-			idt[i].present = 1;
-
-			if (i == 0x80) 		//remember to magic number this one
-			{
-				idt[i].dpl = 3;
-				idt[i].reserved3 = 1; // use trap gate so it doesn't mask interrupts
-				SET_IDT_ENTRY(idt[0x80], &interrupt_sys);
-			}
-
-			else if (i == 0x28)
-			{
-				SET_IDT_ENTRY(idt[0x28], &interrupt_rtc);
-			}
-			
-			else if (i == 0x21)
-			{
-				SET_IDT_ENTRY(idt[0x21], &interrupt_keyboard);
-			}
-			
-			else
-			{
-			 	SET_IDT_ENTRY(idt[i], unknown);
-			}
-
-			// 	SET_IDT_ENTRY(idt[i], idt_interrupts[21]); // if this doesnt work try SET_IDT_ENTRY(idt[i], *unknown);
-			// note that we could change the if else if to add more interrupts when needed 
+			idt[i].dpl = 3;
+			idt[i].reserved3 = 1; // use trap gate so it doesn't mask interrupts
+			SET_IDT_ENTRY(idt[SYSTEM_CALL], &interrupt_sys);
 		}
+
+		else if (i == RTC_VECTOR)
+			SET_IDT_ENTRY(idt[RTC_VECTOR], &interrupt_rtc);
+		
+		else if (i == KEYBOARD_VECTOR)
+			SET_IDT_ENTRY(idt[KEYBOARD_VECTOR], &interrupt_keyboard);
+		
+		else
+		 	SET_IDT_ENTRY(idt[i], unknown);
+	}
 
 	SET_IDT_ENTRY(idt[0],DE);
 	SET_IDT_ENTRY(idt[1],DB);

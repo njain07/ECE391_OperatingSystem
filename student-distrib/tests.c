@@ -44,22 +44,6 @@ int idt_test(){
 	return result;
 }
 
-// void zero_error()
-// {
-// 	TEST_HEADER;
-// 	int a = 1/0;
-// }
-
-// int idt_pf_test()
-// {
-// 		TEST_HEADER;
-// }
-
-// int idt_mf_test()
-// {
-// 		TEST_HEADER;
-// }
-
 /*
  * fault_paging_test
  *   DESCRIPTION: should page fault when testing paging
@@ -316,9 +300,9 @@ void launch_tests(){
 	// terminal_test();
 
 	// filesys_list_of_files();
-	filesys_file_content(10);
+	// filesys_file_content(10);
 	// filesys_read_dentry_by_name((uint8_t*)"hello");
 
 	//checkpoint 3
-	// open_close_syscall((uint8_t*)"hello");
+	open_close_syscall((uint8_t*)"hello");
 }

@@ -11,18 +11,13 @@
 
 #define NULL        0
 #define FD_SIZE     8
+
 #define KB_8		0x2000
 #define	MB_4		0x400000
 #define MB_8		0x800000
 
 extern int32_t process_num;
 extern int32_t terminal_num;
-
-// extern int32_t terminal1_array[];
-// extern int32_t terminal2_array[];
-// extern int32_t terminal3_array[];
-
-// extern uint8_t initialized_terminals[];
 
 int32_t halt(uint8_t status);
 int32_t execute(const uint8_t* command);

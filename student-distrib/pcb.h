@@ -28,7 +28,7 @@ typedef struct file_descriptor_struct
 	int32_t inode_num;			//only valid for data files; should be 0 for directories and RTC device file
 	int32_t file_pos;			//keeps track of where the user is currently reading from the file
 	int32_t flags;				//marks file descriptor as "in-use" (=1) etc.
-} file_descriptor_struct;	//fd_t
+} file_descriptor_struct;
 
 typedef struct pcb_t
 {

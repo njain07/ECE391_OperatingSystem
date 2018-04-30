@@ -177,10 +177,20 @@ Checkpoint 5:
 
 	NEED TO BE FIXED:
 
-?) all programs: the system crashes once before working
+?) all programs: the system crashes in each terminal once before working
 	Problem: triple faulting
 	Fix: 
 
+?) fish: usually does not work in second or third terminal
+	Problem: didn't assign pages to video memory for second or third terminal??
+	Fix:
 
+?) cursor sometimes vanishes in second or third terminal
+	Problem:
+	Fix:
+
+?) it usually crashes when we return back to a terminal which has been initialized
+	Problem:
+	Fix:
 
 

@@ -8,7 +8,7 @@
 #include "keyboard.h"
 
 // Initalizing the IDT
-void init_idt();
+void idt_init();
 
 // taken from the linux kernel
 typedef struct pt_regs {
@@ -28,9 +28,9 @@ typedef struct pt_regs {
 	long eflags;
 	long esp;
 	int  xss;
-}pt_regs;
+} pt_regs;
 
-char *error_messages[21];
+char* error_messages[21];
 extern void interrupt_sys();
 extern void interrupt_rtc();
 extern void interrupt_keyboard();
@@ -54,7 +54,6 @@ extern void MF();
 extern void AC();
 extern void MC();
 extern void XF();
-//extern void Sys_Error();
 extern void unknown();
 
 #endif

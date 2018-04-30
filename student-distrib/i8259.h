@@ -1,19 +1,3 @@
-/* i8259.h - Defines used in interactions with the 8259 interrupt controller
- * vim:ts=4 noexpandtab
- */
-
-
-/*
- * Editor: Hyun Do Jung, 03.10.18
- * Reference materials: lecture 10 of ECE391sp18, OSDEV website, appendix
- * Filename: i8259.c
- * History:
- *    SL    1    Fri Sep 10 08:11:42 2018
- *        First editted for MP3.1
- *    SL    2    Thu Mar 15 16:02:00 2018
- *        Revision 1, adding more comments, making sure it works
- */
-
 #ifndef _I8259_H
 #define _I8259_H
 
@@ -58,4 +42,4 @@ void disable_irq(uint32_t irq_num);
 /* Send end-of-interrupt signal for the specified IRQ */
 void send_eoi(uint32_t irq_num);
 
-#endif /* _I8259_H */
+#endif

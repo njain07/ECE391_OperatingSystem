@@ -1,7 +1,3 @@
-/* keyboard.c - Functions to interact with the keyboard devices and its interrupts
- * vim:ts=4 noexpandtab
- */
-
 #include "keyboard.h"
 
 #define KEYBOARD_SIZE 59
@@ -66,7 +62,6 @@ void keyboard_init(void) {
  *   RETURN VALUE: returns actual character being pressed
  *   SIDE EFFECTS: none
  */
-
 char get_character(uint8_t scancode){
     // handles flags
     switch(scancode)
@@ -166,7 +161,6 @@ char get_character(uint8_t scancode){
         enter = 1;
         enter_func();
         return_char = '\n';
-        // clear_buffer();
     }
 
     if(flags.ctrl == 1)
@@ -184,12 +178,7 @@ char get_character(uint8_t scancode){
         // check for alt+F1 for terminal change
         if(scancode == 0x3B)
         {
-            terminal_switch(1);     // switch to terminal 1
-            // asm volatile 
-            // ( 
-            //     "movl [%%esp], %0;"
-            //     : "=g" (current_pcb->c_eip)
-            // );
+            terminal_switch(1);
         }
         // check for alt+F2 for terminal change
         if(scancode == 0x3C)

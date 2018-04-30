@@ -12,6 +12,14 @@ int screen_x;
 int screen_y;
 static char* video_mem = (char *)VIDEO;
 
+/*
+ * backspace
+ *   DESCRIPTION: implements backspace for terminal
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: none
+ *   SIDE EFFECTS: none
+ */
 void backspace(void) {
     if(screen_y > 0) {
         if(screen_x > 0) {
@@ -44,6 +52,14 @@ void backspace(void) {
     update_cursor(screen_x, screen_y);
 }
 
+/*
+ * enter_func
+ *   DESCRIPTION: implements enter for terminal
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: none
+ *   SIDE EFFECTS: none
+ */
 void enter_func(void) {
     if(screen_y == (NUM_ROWS-1)) {
         scrolling();
@@ -56,6 +72,14 @@ void enter_func(void) {
     update_cursor(screen_x, screen_y);
 }
 
+/*
+ * scrolling
+ *   DESCRIPTION: helper function which implements scrolling
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: none
+ *   SIDE EFFECTS: none
+ */
 void scrolling(void)
 {
     int i,j;
@@ -74,6 +98,14 @@ void scrolling(void)
     }
 }
 
+/*
+ * update_cursor
+ *   DESCRIPTION: referred to OSDEV
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: none
+ *   SIDE EFFECTS: none
+ */
 void update_cursor(int x, int y)
 {
     uint16_t pos = y * NUM_COLS + x ;
@@ -86,17 +118,42 @@ void update_cursor(int x, int y)
 
 }
 
+/*
+ * backspace
+ *   DESCRIPTION: changes screen_x and screen_y
+ *   INPUTS: x -- the value for screen_x
+ *           y -- the value for screen_y
+ *   OUTPUTS: none
+ *   RETURN VALUE: none
+ *   SIDE EFFECTS: none
+ */
 void change_screen_location(int x, int y)
 {
     screen_x = x;
     screen_y = y;
 }
 
+/*
+ * get_screen_x
+ *   DESCRIPTION: returns the screen_x value 
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: none
+ *   SIDE EFFECTS: none
+ */
 int get_screen_x(void)
 {
    return screen_x;
 }
 
+/*
+ * get_screen_y
+ *   DESCRIPTION: returns the screen_y value
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: none
+ *   SIDE EFFECTS: none
+ */
 int get_screen_y(void)
 {
    return screen_y;
@@ -261,7 +318,7 @@ int32_t puts(int8_t* s) {
  * Return Value: void
  *  Function: Output a character to the console */
 void putc(uint8_t c) {
-    // original putc 
+    // updated putc to implement scrolling
     if(c == '\n' || c == '\r') 
     {
         if(screen_y == (NUM_ROWS-1)) 
