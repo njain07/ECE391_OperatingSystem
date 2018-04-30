@@ -69,7 +69,11 @@ int32_t halt(uint8_t status)
     old_pcb = (pcb_t*)(MB_8 - (KB_8*(old_process_num+1)));
     int32_t i;
     for(i=0; i<FD_SIZE; i++)
+    {
+    	if((old_pcb->file_array[i].flags) == 1)
+    		close(i);
         old_pcb->file_array[i].flags = 0;
+    }
 
     halt_status = status;
 
